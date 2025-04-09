@@ -12,8 +12,8 @@
 
     📦 SHIVA
     ├─ 📂 apps		# Submodules / local clones of AI apps
-    │   ├─ 📂 repo_<service_name>
-    │   ├─ 📂 …
+    │   ├─ 📂 <service_name>
+    │   └─ 📂 …
     ├─ 📂 gateway	# Master API gateway
     │   ├─ 📄 config.py		# Service loading logic
     │   ├─ 📄 main.py		# Loads routers from `apps`
@@ -32,31 +32,87 @@
     └─ …
 
 
-### AI Application
+### Application
 
-    📦 repo-<service_name>
+    📦 <service_name>
     ├─ 📂 src		# Core AI Logic - reuse original source code
     ├─ 📂 fapi		# FastAPI Application
     | ├─ 📄 api.py      # Inference routes
     | ├─ 📄 config.py   # Configs like model paths, constants
     | ├─ 📄 main.py     # FastAPI entrypoint
-    | ├─ 📄 service.py  # Core logic for model dispatch + inference
+    | └─ 📄 service.py  # Core logic for model dispatch + inference
     ├─ 📂 grui      # Gradio app for user interface
     | ├─ 📂 assets      # Images, stylesheets
     | ├─ 📄 ui.py       # Gradio interface setup
-    | ├─ 📄 utils.py    # Helpers for UI rendering
+    | └─ 📄 utils.py    # Helpers for UI rendering
     ├─ …
     ├─ 📄 Dockerfile
     ├─ 📄 README.md         # Documentation
     └─ 📄 requirements.txt  # Libraries to install
 
+## Application
+
+### Preprocessing
+
+- [x] Background Removal
+
+- [ ] Controlnet Preprocessors
+
+- [ ] Object Segmentation
+
+- [ ] Pose Keypoint ([JavaScript](https://github.com/Mikubill/sd-webui-controlnet/blob/main/javascript/openpose_editor.mjs))
+
+- [ ] Camera Trajectory ([Viser](https://github.com/Stability-AI/stable-virtual-camera/blob/main/demo_gr.py#L769))
+
+### Uni-modal Generation
+
+- [ ] Text Generation ([WebUI](https://github.com/oobabooga/text-generation-webui))
+
+- [ ] Image Generation ([AUTOMATIC1111](https://github.com/AUTOMATIC1111/stable-diffusion-webui))
+
+### View Synthesis
+
+- [ ] Text-to-MV ([MVDream](https://github.com/bytedance/MVDream) | [MVDiffusion](https://github.com/Tangshitao/MVDiffusion))
+
+- [ ] Image-to-MV ([Zero123++](https://github.com/SUDO-AI-3D/zero123plus) | [MVDiffusion](https://github.com/Tangshitao/MVDiffusion))
+
+- [ ] Image/Text-to-Panorama ([SD-T2I-360PanoImage](https://github.com/ArcherFMY/SD-T2I-360PanoImage))
+
+- [ ] Camera Control ([Stable Virtual Camera](https://github.com/Stability-AI/stable-virtual-camera) | [CameraCtrl](https://github.com/hehao13/CameraCtrl))
+
 <details>
+    <summary><i>Notation</i></summary>
 
-<summary>List of applications</summary>
-
-- 
+- <b>MV</b>: Multi-view
 
 </details>
 
+### Editing
+
+- [ ] Image Editing ([MagicQuill](https://github.com/ant-research/MagicQuill))
+
+- [ ] Re-Lighting ([ICLight](https://github.com/lllyasviel/IC-Light))
+
+- [ ] Style Transfer ([CSGO](https://github.com/instantX-research/CSGO))
+
+### 3D Reconstruction
+
+- [ ] Image-to-3D-Anime-Character ([CharacterGen](https://github.com/zjp-shadow/CharacterGen))
+
+- [ ] Image-to-3D ([Unique3D](https://github.com/AiuniAI/Unique3D) | [StableFast3D](https://github.com/Stability-AI/stable-fast-3d) | [InstantMesh](https://github.com/TencentARC/InstantMesh))
+
+- [ ] Multi-Instance-to-3D ([MIDI-3D](https://github.com/VAST-AI-Research/MIDI-3D))
+
+### Animation
+
+- [ ] 2D Animation ([Animate Anything](https://github.com/alibaba/animate-anything))
+
+- [ ] 3D Animation ([Make It Animatable](https://github.com/jasongzy/Make-It-Animatable))
+
+### Virtual Try-on (ViTon)
+
+- [ ] Multi-View ViTon ([MV-VTON](https://github.com/hywang2002/MV-VTON))
+
+- [ ] Full-Body ViTon ([OOTDiffusion](https://huggingface.co/spaces/levihsu/OOTDiffusion) | [PICTURE](https://github.com/GAP-LAB-CUHK-SZ/PICTURE))
 
 
