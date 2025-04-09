@@ -49,11 +49,13 @@
     ├─ 📄 README.md         # Documentation
     └─ 📄 requirements.txt  # Libraries to install
 
-## Application
+## Services
 
 ### Preprocessing
 
 - [x] Background Removal ([RemBg](https://github.com/HariWu1995/Anilluminus.AI/tree/main/src/apps/rembg))
+
+- [ ] Video Matting ([RobustVideoMatting](https://github.com/PeterL1n/RobustVideoMatting))
 
 - [ ] Controlnet Preprocessors ([ControlNet](https://github.com/Mikubill/sd-webui-controlnet))
 
@@ -67,7 +69,9 @@
 
 - [ ] Text Generation ([WebUI](https://github.com/oobabooga/text-generation-webui))
 
-- [ ] Image Generation ([AUTOMATIC1111](https://github.com/AUTOMATIC1111/stable-diffusion-webui))
+- [ ] Image Generation ([AUTOMATIC-1111](https://github.com/AUTOMATIC1111/stable-diffusion-webui))
+
+- [ ] Audio Generation ([Make-An-Audio](https://github.com/Text-to-Audio/Make-An-Audio) | [AudioLDM](https://github.com/haoheliu/AudioLDM) | [Amphion](https://github.com/open-mmlab/Amphion) | [AudioCraft](https://github.com/facebookresearch/audiocraft) | [Suno|Bark](https://github.com/suno-ai/bark))
 
 ### View Synthesis
 
@@ -113,5 +117,18 @@
 - [ ] Multi-View ViTon ([MV-VTON](https://github.com/hywang2002/MV-VTON))
 
 - [ ] Full-Body ViTon ([OOTDiffusion](https://huggingface.co/spaces/levihsu/OOTDiffusion) | [PICTURE](https://github.com/GAP-LAB-CUHK-SZ/PICTURE))
+
+### Sound
+
+- [ ] Music Generation ([MusicGPT](https://github.com/gabotechs/MusicGPT))
+
+- [ ] Voice Clone ([Fish Speech](https://github.com/fishaudio/fish-speech) | [OpenVoice](https://github.com/myshell-ai/OpenVoice) | [Real-Time-Voice-Cloning](https://github.com/CorentinJ/Real-Time-Voice-Cloning) | [Bark-Voice-Clone](https://github.com/serp-ai/bark-with-voice-clone))
+
+- [ ] Voice Clone VN ([viXTTS](https://github.com/thinhlpg/vixtts-demo) | [EraX-Female](https://huggingface.co/erax-ai/EraX-Smile-Female-F5-V1.0))
+
+
+## Applications
+
+- [ ] Digital Clone ([HeyGem](https://github.com/GuijiAI/HeyGem.ai))
 
 
