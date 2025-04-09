@@ -31,8 +31,7 @@
     ├─ 📄 docker-compose.yaml
     └─ …
 
-
-### Application
+### AI Service
 
     📦 <service_name>
     ├─ 📂 src		# Core AI Logic - reuse original source code
@@ -54,11 +53,11 @@
 
 ### Preprocessing
 
-- [x] Background Removal
+- [x] Background Removal ([RemBg](https://github.com/HariWu1995/Anilluminus.AI/tree/main/src/apps/rembg))
 
-- [ ] Controlnet Preprocessors
+- [ ] Controlnet Preprocessors ([ControlNet](https://github.com/Mikubill/sd-webui-controlnet))
 
-- [ ] Object Segmentation
+- [ ] Object Segmentation ([SAM-WebUI](https://github.com/5663015/segment_anything_webui))
 
 - [ ] Pose Keypoint ([JavaScript](https://github.com/Mikubill/sd-webui-controlnet/blob/main/javascript/openpose_editor.mjs))
 
@@ -105,7 +104,7 @@
 
 ### Animation
 
-- [ ] 2D Animation ([Animate Anything](https://github.com/alibaba/animate-anything))
+- [ ] 2D Animation ([Animate Anything](https://github.com/alibaba/animate-anything) | [MOFA-Video](https://github.com/MyNiuuu/MOFA-Video))
 
 - [ ] 3D Animation ([Make It Animatable](https://github.com/jasongzy/Make-It-Animatable))
 
