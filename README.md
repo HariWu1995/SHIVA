@@ -53,15 +53,17 @@
 
 ### Preprocessing
 
-- [x] Background Removal ([RemBg](https://github.com/HariWu1995/Anilluminus.AI/tree/main/src/apps/rembg))
+- [x] Background Decomposition ([RemBg](https://github.com/HariWu1995/Anilluminus.AI/tree/main/src/apps/rembg))
+
+- [ ] Instance Segmentation ([SAM-WebUI](https://github.com/5663015/segment_anything_webui))
 
 - [ ] Video Matting ([RobustVideoMatting](https://github.com/PeterL1n/RobustVideoMatting))
 
 - [ ] Controlnet Preprocessors ([ControlNet](https://github.com/Mikubill/sd-webui-controlnet))
 
-- [ ] Object Segmentation ([SAM-WebUI](https://github.com/5663015/segment_anything_webui))
+- [ ] Human-Keypoint Editor ([JavaScript](https://github.com/Mikubill/sd-webui-controlnet/blob/main/javascript/openpose_editor.mjs))
 
-- [ ] Pose Keypoint ([JavaScript](https://github.com/Mikubill/sd-webui-controlnet/blob/main/javascript/openpose_editor.mjs))
+- [ ] Animal-Keypoint Editor ([DeepLabCut](https://github.com/DeepLabCut/DeepLabCut))
 
 - [ ] Camera Trajectory ([Viser](https://github.com/Stability-AI/stable-virtual-camera/blob/main/demo_gr.py#L769))
 
@@ -111,6 +113,8 @@
 - [ ] 2D Animation ([Animate Anything](https://github.com/alibaba/animate-anything) | [MOFA-Video](https://github.com/MyNiuuu/MOFA-Video))
 
 - [ ] 3D Animation ([Make It Animatable](https://github.com/jasongzy/Make-It-Animatable))
+
+- [ ] Face Animation ([X-Pose](https://github.com/IDEA-Research/X-Pose) | [MimicTalk](https://github.com/yerfor/MimicTalk/) | [GeneFace++](https://github.com/yerfor/GeneFacePlusPlus/) | [Real3DPortrait](https://github.com/yerfor/Real3DPortrait))
 
 ### Virtual Try-on (ViTon)
 

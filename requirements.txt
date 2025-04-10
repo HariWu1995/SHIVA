@@ -1,0 +1,35 @@
+# Interfaces
+gradio==4.44.1
+fastapi==0.115.12
+
+# Computation
+numpy==1.23.5
+torch==2.5.1 --index-url https://download.pytorch.org/whl/cu124
+torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu124
+torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu124
+onnxruntime==1.15.1
+# onnxruntime-gpu==1.17.1
+onnxoptimizer==0.3.13
+
+# Data Manipulation
+pandas==2.2.3
+pydantic==2.6.4
+
+# Data Processing
+opencv-python==4.7.0.72
+pymatting
+scikit-image==0.22.0
+scikit-learn==1.4.1.post1
+scipy==1.12.0
+
+# AI Models
+accelerate==0.33.0
+transformers==4.39.1
+pytorch-lightning==2.2.1
+# SAM-2 @ git+https://github.com/facebookresearch/segment-anything-2.git@778e1127404547429b281d9c9394ddb3652b85a5
+# clip @ git+https://github.com/openai/CLIP.git@a1d071733d7111c9c014f024669f959182114e33
+
+# Others
+numba==0.57.0
+pooch==1.8.1
+jsonschema==4.21.1
