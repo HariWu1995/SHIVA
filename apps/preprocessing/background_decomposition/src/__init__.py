@@ -10,7 +10,7 @@ all_models = [
 ]
 
 
-def run_rembg(img, alpha, alpha_fg_threshold, alpha_bg_threshold, alpha_erosion_size, model):
+def inference(img, alpha, alpha_fg_threshold, alpha_bg_threshold, alpha_erosion_size, model):
     
     masked_obj = remove_background(img, alpha, 
                                         alpha_fg_threshold, 

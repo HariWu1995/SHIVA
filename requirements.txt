@@ -26,8 +26,9 @@ scipy==1.12.0
 accelerate==0.33.0
 transformers==4.39.1
 pytorch-lightning==2.2.1
-# SAM-2 @ git+https://github.com/facebookresearch/segment-anything-2.git@778e1127404547429b281d9c9394ddb3652b85a5
-# clip @ git+https://github.com/openai/CLIP.git@a1d071733d7111c9c014f024669f959182114e33
+git+https://github.com/facebookresearch/segment-anything.git
+# SAM-2 @ git+https://github.com/facebookresearch/segment-anything-2.git
+# clip @ git+https://github.com/openai/CLIP.git
 
 # Others
 numba==0.57.0

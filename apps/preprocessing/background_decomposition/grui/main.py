@@ -3,7 +3,7 @@ Emojis: 🎑🌁🌆🖼️🏞️🌄🏜️🏙🗺️🖼🌉🏕️
 """
 import gradio as gr
 
-from ..src import all_models, default_model, run_rembg
+from ..src import all_models, default_model, inference
 from .utils import invert_mask, apply_mask, save_all, expand_img
 
 
@@ -65,7 +65,7 @@ def create_ui(min_width: int = 25):
                                                 t_size, b_size], outputs=[img_in])
 
         inv_button.click(fn=invert_mask, inputs=[img_mask], outputs=[img_mask])
-        run_button.click(fn=run_rembg, inputs=rembg_inputs, outputs=[img_out, img_mask])
+        run_button.click(fn=inference, inputs=rembg_inputs, outputs=[img_out, img_mask])
         save_button.click(fn=save_all, inputs=[img_out, img_mask], outputs=None)
 
     return gui, [img_out, img_mask]
