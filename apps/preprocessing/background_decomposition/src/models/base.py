@@ -9,6 +9,14 @@ import numpy as np
 import onnxruntime as ort
 
 
+CHECKPOINT_ROOT = os.environ.get('SHIVA_CKPT_ROOT', None)
+if CHECKPOINT_ROOT is not None:
+    MODEL_DIR = Path(CHECKPOINT_ROOT) / 'rembg'
+else:
+    MODEL_DIR = Path(__file__).parents[5] / 'checkpoints/rembg'
+MODEL_DIR = str(MODEL_DIR)
+
+
 class BaseModel:
     """
     This is a base class for managing a session with a machine learning model.
@@ -79,7 +87,7 @@ class BaseModel:
         try:
             from src.config.paths import rembg_dir as ckpt_diroot
         except:
-            ckpt_diroot = str(Path(__file__).parents[5] / 'checkpoints/rembg')
+            ckpt_diroot = MODEL_DIR
             # ckpt_diroot = os.path.expanduser(
             #     os.getenv("U2NET_HOME", os.path.join(os.getenv("XDG_DATA_HOME", "~"), ".u2net"))
             # )
