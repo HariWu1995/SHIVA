@@ -55,7 +55,7 @@
 
 - [x] Background Decomposition ([RemBg](https://github.com/HariWu1995/Anilluminus.AI/tree/main/src/apps/rembg))
 
-- [ ] Instance Segmentation ([OWL-ViT+SAM](https://huggingface.co/spaces/SkalskiP/florence-sam) | [Florence+SAM](https://huggingface.co/spaces/SkalskiP/florence-sam))
+- [x] Instance Segmentation ([OWL-ViT+SAM](https://huggingface.co/spaces/SkalskiP/florence-sam) | [Florence+SAM](https://huggingface.co/spaces/SkalskiP/florence-sam))
 
 - [ ] 3D Object Segmentation ([Point-SAM](https://github.com/zyc00/Point-SAM))
 
