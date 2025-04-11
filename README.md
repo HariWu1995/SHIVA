@@ -59,7 +59,7 @@
 
 - [ ] 3D Object Segmentation ([Point-SAM](https://github.com/zyc00/Point-SAM))
 
-- [ ] Video Matting ([RobustVideoMatting](https://github.com/PeterL1n/RobustVideoMatting))
+- [x] Video Matting ([RobustVideoMatting](https://github.com/PeterL1n/RobustVideoMatting))
 
 - [ ] Controlnet Preprocessors ([ControlNet](https://github.com/Mikubill/sd-webui-controlnet))
 
