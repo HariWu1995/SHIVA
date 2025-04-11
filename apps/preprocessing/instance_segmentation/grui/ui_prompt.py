@@ -50,7 +50,7 @@ def create_ui(min_width: int = 25):
                         thresh = gr.Slider(value=0.01, minimum=0, maximum=1.0, step=0.01, label="Detection Threshold",
                                             info="A filtering threshold in [0,1], using the model's detection quality.")
             with gr.Column(scale=1):
-                button = gr.Button("Detect & Segment")
+                button = gr.Button("Detect & Segment", variant="primary")
 
         # Events
         button.click(

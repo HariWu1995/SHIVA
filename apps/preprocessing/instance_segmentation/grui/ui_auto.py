@@ -53,7 +53,7 @@ def create_ui(min_width: int = 25):
                     crop_nms_thresh = gr.Slider(value=0.7, minimum=0, maximum=1.0, step=0.01, label="crop_nms_thresh",
                                                 info='The box IoU cutoff used by NMS to filter duplicated masks between different crops.')
             with gr.Column(scale=1):
-                button = gr.Button("Segment")
+                button = gr.Button("Segment", variant="primary")
 
         # Events
         button.click(

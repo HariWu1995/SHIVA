@@ -62,9 +62,9 @@ def undo_points(image, excluded):
 
     global FG_POINTS, BG_POINTS
     if excluded:
-        BG_POINTS = BG_POINTS[::-1]
+        BG_POINTS = BG_POINTS[:-1]
     else:
-        FG_POINTS = FG_POINTS[::-1]
+        FG_POINTS = FG_POINTS[:-1]
 
     if isinstance(image, np.ndarray):
         image = Image.fromarray(image)

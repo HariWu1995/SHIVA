@@ -3,7 +3,7 @@ import numpy as np
 from .utils import load_model, SamPredictor
 
 
-def inference_prompt(
+def inference_point(
         image, 
         model, 
         points_coord,

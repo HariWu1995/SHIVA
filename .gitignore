@@ -4,7 +4,7 @@ temp/
 result/
 output/
 checkpoints/
-.gradio/
+.gradio
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
