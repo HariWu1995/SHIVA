@@ -11385,14 +11385,14 @@ var Zp = {}, Uh = {}, Bs = Xv(Tv({ __proto__: null, default: Uh }, [Uh]));
       }, toSVG: function (f) {
         var i = 40, r = 40, s = a.Object.NUM_FRACTION_DIGITS, u = a.util.rotateVector({ x: this.offsetX, y: this.offsetY }, a.util.degreesToRadians(-f.angle)), h = new a.Color(this.color);
         return f.width && f.height && (i = 100 * c((Math.abs(u.x) + this.blur) / f.width, s) + 20, r = 100 * c((Math.abs(u.y) + this.blur) / f.height, s) + 20), f.flipX && (u.x *= -1), f.flipY && (u.y *= -1), '<filter id="SVGID_' + this.id + '" y="-' + r + '%" height="' + (100 + 2 * r) + '%" x="-' + i + '%" width="' + (100 + 2 * i) + `%" >
-	<feGaussianBlur in="SourceAlpha" stdDeviation="` + c(this.blur ? this.blur / 2 : 0, s) + `"></feGaussianBlur>
-	<feOffset dx="` + c(u.x, s) + '" dy="' + c(u.y, s) + `" result="oBlur" ></feOffset>
-	<feFlood flood-color="` + h.toRgb() + '" flood-opacity="' + h.getAlpha() + `"/>
-	<feComposite in2="oBlur" operator="in" />
-	<feMerge>
-		<feMergeNode></feMergeNode>
-		<feMergeNode in="SourceGraphic"></feMergeNode>
-	</feMerge>
+    <feGaussianBlur in="SourceAlpha" stdDeviation="` + c(this.blur ? this.blur / 2 : 0, s) + `"></feGaussianBlur>
+    <feOffset dx="` + c(u.x, s) + '" dy="' + c(u.y, s) + `" result="oBlur" ></feOffset>
+    <feFlood flood-color="` + h.toRgb() + '" flood-opacity="' + h.getAlpha() + `"/>
+    <feComposite in2="oBlur" operator="in" />
+    <feMerge>
+        <feMergeNode></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+    </feMerge>
 </filter>
 `;
       }, toObject: function () {
@@ -11616,12 +11616,12 @@ var Zp = {}, Uh = {}, Bs = Xv(Tv({ __proto__: null, default: Uh }, [Uh]));
           for (this._objects.forEach(function I(T) {
             W.push(T), T._objects && T._objects.forEach(I);
           }), D = 0, M = W.length; D < M; D++) if (m = (p = W[D]).fontFamily, p.type.indexOf("text") !== -1 && !O[m] && N[m] && (O[m] = !0, p.styles)) for (S in y = p.styles) for (k in x = y[S]) !O[m = x[k].fontFamily] && N[m] && (O[m] = !0);
-          for (var X in O) C += [`		@font-face {
-`, "			font-family: '", X, `';
-`, "			src: url('", N[X], `');
-`, `		}
+          for (var X in O) C += [`        @font-face {
+`, "            font-family: '", X, `';
+`, "            src: url('", N[X], `');
+`, `        }
 `].join("");
-          return C && (C = ['	<style type="text/css">', `<![CDATA[
+          return C && (C = ['    <style type="text/css">', `<![CDATA[
 `, C, "]]>", `</style>
 `].join("")), C;
         }, _setSVGObjects: function (p, m) {
@@ -12804,13 +12804,13 @@ var Zp = {}, Uh = {}, Bs = Xv(Tv({ __proto__: null, default: Uh }, [Uh]));
       }, _setSVGBg: function (c) {
         if (this.backgroundColor) {
           var f = v.Object.NUM_FRACTION_DIGITS;
-          c.push("		<rect ", this._getFillAttributes(this.backgroundColor), ' x="', a(-this.width / 2, f), '" y="', a(-this.height / 2, f), '" width="', a(this.width, f), '" height="', a(this.height, f), `"></rect>
+          c.push("        <rect ", this._getFillAttributes(this.backgroundColor), ' x="', a(-this.width / 2, f), '" y="', a(-this.height / 2, f), '" width="', a(this.width, f), '" height="', a(this.height, f), `"></rect>
 `);
         }
       }, toSVG: function (c) {
         return this._createBaseSVGMarkup(this._toSVG(c), { reviver: c });
       }, toClipPathSVG: function (c) {
-        return "	" + this._createBaseClipPathSVGMarkup(this._toSVG(c), { reviver: c });
+        return "    " + this._createBaseClipPathSVGMarkup(this._toSVG(c), { reviver: c });
       }, _createBaseClipPathSVGMarkup: function (c, f) {
         var i = (f = f || {}).reviver, r = f.additionalTransform || "", s = [this.getSvgTransform(!0, r), this.getSvgCommons()].join(""), u = c.indexOf("COMMON_PARTS");
         return c[u] = s, i ? i(c.join("")) : c.join("");
@@ -13217,7 +13217,7 @@ var Zp = {}, Uh = {}, Bs = Xv(Tv({ __proto__: null, default: Uh }, [Uh]));
         return " translate(" + s(-this.pathOffset.x, u) + ", " + s(-this.pathOffset.y, u) + ")";
       }, toClipPathSVG: function (u) {
         var h = this._getOffsetTransform();
-        return "	" + this._createBaseClipPathSVGMarkup(this._toSVG(), { reviver: u, additionalTransform: h });
+        return "    " + this._createBaseClipPathSVGMarkup(this._toSVG(), { reviver: u, additionalTransform: h });
       }, toSVG: function (u) {
         var h = this._getOffsetTransform();
         return this._createBaseSVGMarkup(this._toSVG(), { reviver: u, additionalTransform: h });
@@ -13388,14 +13388,14 @@ var Zp = {}, Uh = {}, Bs = Xv(Tv({ __proto__: null, default: Uh }, [Uh]));
         this.width = y, this.height = x, s || this.setPositionByOrigin({ x: m, y: p }, "left", "top");
       }, _toSVG: function (i) {
         for (var r = ["<g ", "COMMON_PARTS", ` >
-`], s = 0, u = this._objects.length; s < u; s++) r.push("		", this._objects[s].toSVG(i));
+`], s = 0, u = this._objects.length; s < u; s++) r.push("        ", this._objects[s].toSVG(i));
         return r.push(`</g>
 `), r;
       }, getSvgStyles: function () {
         var i = this.opacity !== void 0 && this.opacity !== 1 ? "opacity: " + this.opacity + ";" : "", r = this.visible ? "" : " visibility: hidden;";
         return [i, this.getSvgFilter(), r].join("");
       }, toClipPathSVG: function (i) {
-        for (var r = [], s = 0, u = this._objects.length; s < u; s++) r.push("	", this._objects[s].toClipPathSVG(i));
+        for (var r = [], s = 0, u = this._objects.length; s < u; s++) r.push("    ", this._objects[s].toClipPathSVG(i));
         return this._createBaseClipPathSVGMarkup(r, { reviver: i });
       }
     }), a.Group.fromObject = function (i, r) {
@@ -13485,14 +13485,14 @@ var Zp = {}, Uh = {}, Bs = Xv(Tv({ __proto__: null, default: Uh }, [Uh]));
         if (this.hasCrop()) {
           var m = v.Object.__uid++;
           f.push('<clipPath id="imageCrop_' + m + `">
-`, '	<rect x="' + s + '" y="' + u + '" width="' + this.width + '" height="' + this.height + `" />
+`, '    <rect x="' + s + '" y="' + u + '" width="' + this.width + '" height="' + this.height + `" />
 `, `</clipPath>
 `), h = ' clip-path="url(#imageCrop_' + m + ')" ';
         }
-        if (this.imageSmoothing || (p = '" image-rendering="optimizeSpeed'), i.push("	<image ", "COMMON_PARTS", 'xlink:href="', this.getSvgSrc(!0), '" x="', s - this.cropX, '" y="', u - this.cropY, '" width="', r.width || r.naturalWidth, '" height="', r.height || r.height, p, '"', h, `></image>
+        if (this.imageSmoothing || (p = '" image-rendering="optimizeSpeed'), i.push("    <image ", "COMMON_PARTS", 'xlink:href="', this.getSvgSrc(!0), '" x="', s - this.cropX, '" y="', u - this.cropY, '" width="', r.width || r.naturalWidth, '" height="', r.height || r.height, p, '"', h, `></image>
 `), this.stroke || this.strokeDashArray) {
           var y = this.fill;
-          this.fill = null, c = ["	<rect ", 'x="', s, '" y="', u, '" width="', this.width, '" height="', this.height, '" style="', this.getSvgStyles(), `"/>
+          this.fill = null, c = ["    <rect ", 'x="', s, '" y="', u, '" width="', this.width, '" height="', this.height, '" style="', this.getSvgStyles(), `"/>
 `], this.fill = y;
         }
         return f = this.paintFirst !== "fill" ? f.concat(c, i) : f.concat(i, c);
@@ -15289,7 +15289,7 @@ gl_FragColor.rgb *= color.a;
         return { textLeft: -this.width / 2, textTop: -this.height / 2, lineTop: this.getHeightOfLine(0) };
       }, _wrapSVGTextAndBg: function (c) {
         var f = this.getSvgTextDecoration(this);
-        return [c.textBgRects.join(""), '		<text xml:space="preserve" ', this.fontFamily ? 'font-family="' + this.fontFamily.replace(/"/g, "'") + '" ' : "", this.fontSize ? 'font-size="' + this.fontSize + '" ' : "", this.fontStyle ? 'font-style="' + this.fontStyle + '" ' : "", this.fontWeight ? 'font-weight="' + this.fontWeight + '" ' : "", f ? 'text-decoration="' + f + '" ' : "", 'style="', this.getSvgStyles(!0), '"', this.addPaintOrder(), " >", c.textSpans.join(""), `</text>
+        return [c.textBgRects.join(""), '        <text xml:space="preserve" ', this.fontFamily ? 'font-family="' + this.fontFamily.replace(/"/g, "'") + '" ' : "", this.fontSize ? 'font-size="' + this.fontSize + '" ' : "", this.fontStyle ? 'font-style="' + this.fontStyle + '" ' : "", this.fontWeight ? 'font-weight="' + this.fontWeight + '" ' : "", f ? 'text-decoration="' + f + '" ' : "", 'style="', this.getSvgStyles(!0), '"', this.addPaintOrder(), " >", c.textSpans.join(""), `</text>
 `];
       }, _getSVGTextAndBg: function (c, f) {
         var i, r = [], s = [], u = c;
@@ -15305,7 +15305,7 @@ gl_FragColor.rgb *= color.a;
         for (var M = 0, C = D.length - 1; M <= C; M++) m = M === C || this.charSpacing, S += D[M], h = this.__charBounds[f][M], k === 0 ? (i += h.kernedWidth - h.width, k += h.width) : k += h.kernedWidth, x && !m && this._reSpaceAndTab.test(D[M]) && (m = !0), m || (s = s || this.getCompleteStyleDeclaration(f, M), u = this.getCompleteStyleDeclaration(f, M + 1), m = this._hasStyleChangedForSvg(s, u)), m && (p = this._getStyleDeclaration(f, M) || {}, c.push(this._createTextCharSpan(S, p, i, r)), S = "", s = u, i += k, k = 0);
       }, _pushTextBgRect: function (c, f, i, r, s, u) {
         var h = v.Object.NUM_FRACTION_DIGITS;
-        c.push("		<rect ", this._getFillAttributes(f), ' x="', l(i, h), '" y="', l(r, h), '" width="', l(s, h), '" height="', l(u, h), `"></rect>
+        c.push("        <rect ", this._getFillAttributes(f), ' x="', l(i, h), '" y="', l(r, h), '" width="', l(s, h), '" height="', l(u, h), `"></rect>
 `);
       }, _setSVGTextLineBg: function (c, f, i, r) {
         for (var s, u, h = this._textLines[f], p = this.getHeightOfLine(f) / this.lineHeight, m = 0, y = 0, x = this.getValueOfPropertyAt(f, 0, "textBackgroundColor"), S = 0, k = h.length; S < k; S++) s = this.__charBounds[f][S], (u = this.getValueOfPropertyAt(f, S, "textBackgroundColor")) !== x ? (x && this._pushTextBgRect(c, x, i + y, r, m, p), y = s.left, m = s.width, x = u) : m += s.kernedWidth;

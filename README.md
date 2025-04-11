@@ -11,19 +11,19 @@
 ### SHIVA
 
     📦 SHIVA
-    ├─ 📂 apps		# Submodules / local clones of AI apps
+    ├─ 📂 apps        # Submodules / local clones of AI apps
     │   ├─ 📂 <service_name>
     │   └─ 📂 …
-    ├─ 📂 gateway	# Master API gateway
-    │   ├─ 📄 config.py		# Service loading logic
-    │   ├─ 📄 main.py		# Loads routers from `apps`
-    │   └─ 📄 utils.py		# Dynamic import helpers
-    ├─ 📂 uinified	# Unified Gradio interface
-    │   ├─ 📄 config.py		# UI metadata config
-    │   ├─ 📄 main.py		# Builds dynamic UI from `apps`
-    │   └─ 📄 utils.py		# Dynamic import helpers
+    ├─ 📂 gateway    # Master API gateway
+    │   ├─ 📄 config.py        # Service loading logic
+    │   ├─ 📄 main.py        # Loads routers from `apps`
+    │   └─ 📄 utils.py        # Dynamic import helpers
+    ├─ 📂 uinified    # Unified Gradio interface
+    │   ├─ 📄 config.py        # UI metadata config
+    │   ├─ 📄 main.py        # Builds dynamic UI from `apps`
+    │   └─ 📄 utils.py        # Dynamic import helpers
     ├─ 📂 configs   # Service discovery config
-    │   ├─ 📄 apps.yaml		# [Optional] app config
+    │   ├─ 📄 apps.yaml        # [Optional] app config
     │   └─ 📄 services.yaml # Service Registry / Discovery
     ├─ 📂 controller
     │   ├─ 📄 orchestrator.py
@@ -34,8 +34,8 @@
 ### AI Service
 
     📦 <service_name>
-    ├─ 📂 src		# Core AI Logic - reuse original source code
-    ├─ 📂 fapi		# FastAPI Application
+    ├─ 📂 src        # Core AI Logic - reuse original source code
+    ├─ 📂 fapi        # FastAPI Application
     | ├─ 📄 api.py      # Inference routes
     | ├─ 📄 config.py   # Configs like model paths, constants
     | ├─ 📄 main.py     # FastAPI entrypoint
@@ -55,7 +55,9 @@
 
 - [x] Background Decomposition ([RemBg](https://github.com/HariWu1995/Anilluminus.AI/tree/main/src/apps/rembg))
 
-- [ ] Instance Segmentation ([SAM-WebUI](https://github.com/5663015/segment_anything_webui))
+- [ ] Instance Segmentation ([OWL-ViT+SAM](https://huggingface.co/spaces/SkalskiP/florence-sam) | [Florence+SAM](https://huggingface.co/spaces/SkalskiP/florence-sam))
+
+- [ ] 3D Object Segmentation ([Point-SAM](https://github.com/zyc00/Point-SAM))
 
 - [ ] Video Matting ([RobustVideoMatting](https://github.com/PeterL1n/RobustVideoMatting))
 
