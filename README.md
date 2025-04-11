@@ -63,7 +63,7 @@
 
 - [ ] Controlnet Preprocessors ([ControlNet](https://github.com/Mikubill/sd-webui-controlnet))
 
-- [x] Human-Keypoint Editor ([Controlnet](https://github.com/Mikubill/sd-webui-controlnet/blob/main/javascript/openpose_editor.mjs) | [OpenPose Editor](https://github.com/ZhUyU1997/open-pose-editor/releases))
+- [x] Human-Keypoint Editor ([2D Editor](https://github.com/huchenlei/sd-webui-openpose-editor) | [3D Editor](https://github.com/ZhUyU1997/open-pose-editor/releases))
 
 - [ ] Animal-Keypoint Editor ([DeepLabCut](https://github.com/DeepLabCut/DeepLabCut))
 
