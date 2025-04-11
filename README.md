@@ -63,9 +63,7 @@
 
 - [ ] Controlnet Preprocessors ([ControlNet](https://github.com/Mikubill/sd-webui-controlnet))
 
-- [x] Human-Keypoint Editor ([2D Editor](https://github.com/huchenlei/sd-webui-openpose-editor) | [3D Editor](https://github.com/ZhUyU1997/open-pose-editor/releases))
-
-- [ ] Animal-Keypoint Editor ([DeepLabCut](https://github.com/DeepLabCut/DeepLabCut))
+- [x] OpenPose Editor ([2D Editor](https://github.com/huchenlei/sd-webui-openpose-editor) | [3D Editor](https://github.com/ZhUyU1997/open-pose-editor/releases))
 
 - [ ] Camera Trajectory ([Viser](https://github.com/Stability-AI/stable-virtual-camera/blob/main/demo_gr.py#L769))
 
