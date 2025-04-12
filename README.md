@@ -11,20 +11,22 @@
 ### SHIVA
 
     📦 SHIVA
-    ├─ 📂 apps        # Submodules / local clones of AI apps
-    │   ├─ 📂 <service_name>
+    ├─ 📂 apps       # Submodules / local clones of AI apps
+    │   ├─ 📂 <service_group>
+    │   │   ├─ 📂 <service_name>
+    │   │   └─ 📂 …
     │   └─ 📂 …
     ├─ 📂 gateway    # Master API gateway
-    │   ├─ 📄 config.py        # Service loading logic
-    │   ├─ 📄 main.py        # Loads routers from `apps`
+    │   ├─ 📄 config.py       # Service loading logic
+    │   ├─ 📄 main.py         # Loads routers from `apps`
     │   └─ 📄 utils.py        # Dynamic import helpers
-    ├─ 📂 uinified    # Unified Gradio interface
-    │   ├─ 📄 config.py        # UI metadata config
-    │   ├─ 📄 main.py        # Builds dynamic UI from `apps`
+    ├─ 📂 uinified   # Unified Gradio interface
+    │   ├─ 📄 config.py       # UI metadata config
+    │   ├─ 📄 main.py         # Builds dynamic UI from `apps`
     │   └─ 📄 utils.py        # Dynamic import helpers
-    ├─ 📂 configs   # Service discovery config
-    │   ├─ 📄 apps.yaml        # [Optional] app config
-    │   └─ 📄 services.yaml # Service Registry / Discovery
+    ├─ 📂 configs    # Service discovery config
+    │   ├─ 📄 apps.yaml       # [Optional] app config
+    │   └─ 📄 services.yaml   # Service Registry / Discovery
     ├─ 📂 controller
     │   ├─ 📄 orchestrator.py
     │   └─ 📄 utils.py
