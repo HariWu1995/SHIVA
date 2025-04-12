@@ -1,6 +1,7 @@
 # Interfaces
 gradio==5.24.0
 fastapi==0.115.12
+viser
 
 # Computation
 numpy==1.23.5
@@ -12,7 +13,9 @@ onnxruntime==1.15.1
 onnxoptimizer==0.3.13
 timm
 einops
-# flash_attn 
+# flash_attn
+roma # 3D rotation
+splines
 
 # Data Manipulation
 pandas==2.2.3
@@ -42,3 +45,7 @@ jsonschema==4.21.1
 # av==8.0.3
 # https://pyav.org/docs/develop/overview/installation.html#build-on-windows
 pims==0.5
+pyliblzfse
+plyfile
+yourdfpy
+robot_descriptions
