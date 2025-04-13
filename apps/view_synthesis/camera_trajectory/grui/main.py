@@ -1,21 +1,37 @@
-from pathlib import Path
-import threading
+"""
+Stable Virtual Camera
+    https://github.com/Stability-AI/stable-virtual-camera/blob/main/demo_gr.py
+"""
 import time
 import httpx
+import threading
+
+from pathlib import Path
+from glob import glob
 
 import numpy as np
 import gradio as gr
 import viser
 
-from .utils import set_bg_color
-from .render import Renderer
-from .examples import EXAMPLE_MAP
+from ..src import Renderer, set_bg_color
+from .utils import find_available_ports
 
+
+ROOT_DIR = Path(__file__).resolve().parents[4]
+
+SAVE_DIR = ROOT_DIR / "temp"
+SAMPLE_DIR = ROOT_DIR / "_samples" / "camera"
+MODEL_DIR = ROOT_DIR / "checkpoints"
+DUST3R_PATH = MODEL_DIR / "DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth"
 
 SERVERS = {}
 ABORT_EVENTS = {}
 
-DUST3R_CKPT_PATH = Path(__file__).resolve().parents[5] / "checkpoints" / "DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth"
+EXAMPLE_MAP = []
+for ex in  ['garden-4_*.jpg', 'telebooth-2_*.jpg', 
+            'vgg-lab-4_*.png', 'backyard-7_*.jpg']:
+    ex_mv = sorted(glob(str(SAMPLE_DIR / ex)))
+    EXAMPLE_MAP.append((ex_mv[0], ex_mv))
 
 
 # Make sure that gradio uses dark theme.
@@ -28,11 +44,37 @@ function refresh() {
 }
 """
 
+USER_GUIDE = """
+---
+## 🛠️ User Guide:
+
+### 1️⃣ Start the Server
+- Click the **`Run Viser`** button to initialize and launch the Viser server.
+
+### 2️⃣ Select Multi-view
+- In the **`Examples`** section:
+  - Choose your desired image. It will expand the relative multi-view.
+  - Click **`Confirm`** to proceed.
+- Then, click **`Process multi-view`** to begin processing the selected image.
+
+### 3️⃣ Viser Interaction
+- For detailed instructions and tips on using Viser, click [**Viser Interaction**](https://github.com/Stability-AI/stable-virtual-camera/blob/main/docs/GR_USAGE.md#advanced)
+
+#### 4️⃣ Save Your Setup
+- Once the camera trajectory is already set, click the **`Save data`** button to store your configuration and processed results.
+"""
+
+attention_catcher = """
+<div style="border: 2px solid #f39c12; background-color: #fffbe6; padding: 16px; border-radius: 8px; font-weight: bold; color: #c0392b; font-size: 13px; text-align: center;">
+    👇 Click the Button start server
+</div>
+"""
+
 
 def start_server_and_abort_event(
+    host: str,
+    port: int,
     request: gr.Request, 
-    host: str = "localhost",
-    port: int = 1234,
 ):
     server = viser.ViserServer(host=host, port=port)
 
@@ -43,18 +85,18 @@ def start_server_and_abort_event(
         set_bg_color(client)
 
     server_url = f"http://{server.get_host()}:{server.get_port()}"
-    print(f"Starting server @ {server_url}")
-    SERVERS[request.session_hash] = server
     if server_url is None:
         raise gr.Error("Failed to get a viewport URL. Please check your network connection.")
+    print(f"\n\nStarting Viser server @ {server_url}")
     
     # Give it enough time to start.
-    time.sleep(1)
+    time.sleep(3)
 
+    SERVERS[request.session_hash] = server
     ABORT_EVENTS[request.session_hash] = threading.Event()
 
     return (
-        Renderer(server, model_path=DUST3R_CKPT_PATH),
+        Renderer(server, model_path=DUST3R_PATH),
         gr.HTML(
             f'<iframe src="{server_url}" style="display: block; margin: auto; width: 100%; height: max(60vh, 600px);" frameborder="0"></iframe>',
             container=True,
@@ -94,37 +136,34 @@ def get_advance_examples(selection: gr.SelectData):
 
 
 def main(
-    viser_port: int = 1234,
     server_port: int = 8080, 
     share: bool = False,
 ):
     with gr.Blocks(js=_APP_JS) as app:
+
+        gr.Markdown("## 🎥 3D Camera Trajectory Setup")
+
         renderer = gr.State()
-        session = gr.State()
+        process_btn = gr.Button("Process multi-view", interactive=False, variant="primary", render=False)
+        process_pbar = gr.Textbox(label="Progress", interactive=False, visible=False, render=False)
 
-        render_btn = gr.Button("Render video", interactive=False, render=False)
-        viewport = gr.HTML(container=True, render=False)
-
-        gr.Timer(0.1).tick(
-            lambda renderer: gr.update(
-                interactive=renderer is not None
-                and renderer.gui_state is not None
-                and renderer.gui_state.camera_traj_list is not None
-            ),
-            inputs=[renderer],
-            outputs=[render_btn],
-        )
-
+        all_ports = find_available_ports(count=5)
         with gr.Row():
-            viewport.render()
+            with gr.Column(scale=4):
+                with gr.Row(variant="panel"):
+                    viser_host = gr.Textbox(value="localhost", interactive=False, label="Viser Host")
+                    viser_port = gr.Dropdown(value=all_ports[0], choices=all_ports, label="Viser Port")
+                    session = gr.Textbox(label="Session Hash", interactive=False)
+            with gr.Column(scale=1):
+                gr.Markdown(attention_catcher)
+                viser = gr.Button("Run Viser", variant="primary")
         
         with gr.Row():
-            with gr.Column():
-                
-                with gr.Group():
-                    # Initially disable the Preprocess Images button until images are selected.
-                    preprocess_btn = gr.Button("Preprocess images", interactive=False)
-                    preprocess_pbar = gr.Textbox(label="Progress", interactive=False, visible=False)
+            viewport = gr.HTML(container=True, render=True)
+        
+        with gr.Row():
+
+            with gr.Column(scale=3):
                 
                 with gr.Group():
                     input_imgs = gr.Gallery(label="Input", columns=4, interactive=True, height=200)
@@ -150,16 +189,9 @@ def main(
                         rows=1,
                     )
 
-                    chunk_strategy = gr.Dropdown(
-                        value="interp",
-                        choices=["interp", "interp-gt"],
-                        label="Chunk strategy",
-                        render=False,
-                    )
-
                     with gr.Row():
                         example_imgs_backer = gr.Button("Go back", visible=False)
-                        example_imgs_confirmer = gr.Button("Confirm", visible=False)
+                        example_imgs_confirmer = gr.Button("Confirm", visible=False, variant="primary")
 
                     example_imgs.select(
                         get_advance_examples,
@@ -187,7 +219,7 @@ def main(
                             example_imgs_confirmer,
                             example_imgs_backer,
                             example_imgs,
-                            preprocess_btn
+                            process_btn,
                         ],
                     )
 
@@ -212,84 +244,63 @@ def main(
                     input_imgs.change(
                         lambda imgs: gr.update(interactive=bool(imgs)),
                         inputs=[input_imgs],
-                        outputs=[preprocess_btn],
+                        outputs=[process_btn],
                     )
 
-                    preprocess_btn.click(
-                        lambda r, *args: r.preprocess(*args),
+                    process_btn.click(
+                        lambda _renderer, *args: [_renderer.preprocess(*args), gr.update(visible=False)],
                         inputs=[renderer, input_imgs],
-                        outputs=[preprocessed, preprocess_pbar, chunk_strategy],
-                        show_progress_on=[preprocess_pbar],
+                        outputs=[preprocessed, process_pbar],
+                        show_progress_on=[process_pbar],
                         concurrency_id="gpu_queue",
                     )
 
-                    preprocess_btn.click(
+                    process_btn.click(
                         lambda: gr.update(visible=True),
-                        outputs=[preprocess_pbar],
+                        outputs=[process_pbar],
                     )
 
                     preprocessed.change(
-                        lambda r, *args: r.visualize_scene(*args),
+                        lambda _renderer, *args: _renderer.visualize_scene(*args),
                         inputs=[renderer, preprocessed],
                     )
 
-                with gr.Row():
-                    seed = gr.Number(value=23, label="Random seed")
-                    chunk_strategy.render()
-                    cfg = gr.Slider(1.0, 7.0, value=3.0, label="CFG value")
-
-                with gr.Row():
-                    camera_scale = gr.Slider(0.1, 15.0, value=2.0, label="Camera scale (useful for single-view input)")
+            with gr.Column(scale=1):
+                
+                with gr.Group():
+                    # Initially disable the Process button until images are selected.
+                    process_btn.render()
+                    process_pbar.render()
 
                 with gr.Group():
-                    output_data_dir = gr.Textbox(label="Output data directory")
-                    output_data_btn = gr.Button(value="Export output data")
+                    save_dir = gr.Textbox(value=str(SAVE_DIR), label="Output data directory")
+                    save_btn = gr.Button(value="Save data")
 
-                output_data_btn.click(
-                    lambda r, *args: r.export_output_data(*args),
-                    inputs=[renderer, preprocessed, output_data_dir],
+                session.change(
+                    fn = lambda x: str(SAVE_DIR / str(x)),
+                    inputs = [session],
+                    outputs = [save_dir],
                 )
 
-            with gr.Column():
-                with gr.Group():
-                    abort_btn = gr.Button("Abort rendering", visible=False)
-                    render_btn.render()
-                    render_progress = gr.Textbox(label="", visible=False, interactive=False)
+                save_btn.click(
+                    lambda _renderer, *args: _renderer.export_output_data(*args),
+                    inputs=[renderer, preprocessed, save_dir],
+                )
                 
-                output_video = gr.Video(label="Output", interactive=False, autoplay=True, loop=True)
-                
-                render_btn.click(
-                    fn=lambda r, *args: (yield from r.render(*args)),
-                    inputs=[renderer, preprocessed, session, seed, chunk_strategy, 
-                            cfg, gr.State(), gr.State(), gr.State(), camera_scale],
-                    outputs=[output_video, render_btn, abort_btn, render_progress],
-                    show_progress_on=[render_progress],
-                    concurrency_id="gpu_queue",
-                )
-    
-                render_btn.click(
-                    fn=lambda: [gr.update(visible=False), 
-                                gr.update(visible=True),
-                                gr.update(visible=True)],
-                    outputs=[render_btn, abort_btn, render_progress],
-                )
-
-                abort_btn.click(set_abort_event)
-
         # Register the session initialization and cleanup functions.
-        app.load(fn=start_server_and_abort_event, outputs=[renderer, viewport, session])
+        viser.click(fn=start_server_and_abort_event, inputs=[viser_host, viser_port], outputs=[renderer, viewport, session])
         app.unload(fn=stop_server_and_abort_event)
+
+        gr.Markdown(USER_GUIDE)
 
     app.queue(max_size=5).launch(
         share=share,
         server_port=server_port,
         show_error=True,
-        # allowed_paths=[WORK_DIR],
-        # Badget rendering will be broken otherwise.
-        ssr_mode=False,
     )
 
 
 if __name__ == "__main__":
     import tyro
     tyro.cli(main)
+

@@ -10,7 +10,6 @@ import torch
 from einops import rearrange
 
 import numpy as np
-import gradio as gr
 import imageio.v3 as iio
 
 import viser
@@ -41,6 +40,29 @@ basic_trajectories = Literal[
 ]
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+def create_transforms_simple(save_path, img_paths, img_whs, c2ws, Ks):
+    out_frames = []
+    for img_path, img_wh, c2w, K in zip(img_paths, img_whs, c2ws, Ks):
+        out_frame = {
+            "fl_x": K[0][0].item(),
+            "fl_y": K[1][1].item(),
+            "cx": K[0][2].item(),
+            "cy": K[1][2].item(),
+            "w": img_wh[0].item(),
+            "h": img_wh[1].item(),
+            "file_path": f"./{osp.relpath(img_path, start=save_path)}" if img_path is not None else None,
+            "transform_matrix": c2w.tolist(),
+        }
+        out_frames.append(out_frame)
+    out = {
+        # "camera_model": "PINHOLE",
+        "orientation_override": "none",
+        "frames": out_frames,
+    }
+    with open(osp.join(save_path, "transforms.json"), "w") as of:
+        json.dump(out, of, indent=4)
 
 
 class Renderer:
@@ -75,19 +97,15 @@ class Renderer:
 
             # Simulate a small time interval such that gradio can update propgress properly.
             time.sleep(0.1)
-            return (
-                {
-                    "input_imgs": input_imgs,
-                    "input_Ks": input_Ks,
-                    "input_c2ws": input_c2ws,
-                    "input_wh": (input_imgs.shape[2], input_imgs.shape[1]),
-                    "points": [np.zeros((0, 3))],
-                    "point_colors": [np.zeros((0, 3))],
-                    "scene_scale": 1.0,
-                },
-                gr.update(visible=False),
-                gr.update(),
-            )
+            return {
+                "input_imgs": input_imgs,
+                "input_Ks": input_Ks,
+                "input_c2ws": input_c2ws,
+                "input_wh": (input_imgs.shape[2], input_imgs.shape[1]),
+                "points": [np.zeros((0, 3))],
+                "point_colors": [np.zeros((0, 3))],
+                "scene_scale": 1.0,
+            }
         
         # `Advance` mode: use Dust3r to extract camera parameters and points.    
         else:
@@ -144,20 +162,15 @@ class Renderer:
             input_imgs = torch.cat(new_input_imgs, 0)
             input_imgs = rearrange(input_imgs, "b c h w -> b h w c")[..., :3]
             input_Ks = torch.cat(new_input_Ks, 0)
-            return (
-                {
-                    "input_imgs": input_imgs,
-                    "input_Ks": input_Ks,
-                    "input_c2ws": input_c2ws,
-                    "input_wh": (input_imgs.shape[2], input_imgs.shape[1]),
-                    "points": points,
-                    "point_colors": point_colors,
-                    "scene_scale": scene_scale,
-                },
-                gr.update(visible=False),
-                gr.update(choices=["interp"], value="interp") if num_inputs > 10
-            else gr.update(),
-            )
+            return {
+                "input_imgs": input_imgs,
+                "input_Ks": input_Ks,
+                "input_c2ws": input_c2ws,
+                "input_wh": (input_imgs.shape[2], input_imgs.shape[1]),
+                "points": points,
+                "point_colors": point_colors,
+                "scene_scale": scene_scale,
+            }
 
     def visualize_scene(self, preprocessed: dict):
 
@@ -256,8 +269,8 @@ class Renderer:
         W, H = input_wh
         
         gui_state = self.gui_state
-        assert gui_state is not None \
-        and gui_state.camera_traj_list is not None
+        assert gui_state is not None
+        assert gui_state.camera_traj_list is not None
         
         target_c2ws, target_Ks = [], []
         for item in gui_state.camera_traj_list:
@@ -343,7 +356,6 @@ class Renderer:
     def render(
         self,
         preprocessed: dict,
-        session_hash: str,
         seed: int,
         chunk_strategy: str,
         cfg: float,
@@ -351,6 +363,8 @@ class Renderer:
         num_frames: int | None,
         zoom_factor: float | None,
         camera_scale: float,
+        session_hash: str = None,
+        run_gradio: bool = False,
     ):
         render_name = datetime.now().strftime("%Y%m%d_%H%M%S")
         render_dir = osp.join(WORK_DIR, render_name)
@@ -429,10 +443,11 @@ class Renderer:
         options["encoding_t"] = 1
         options["decoding_t"] = 1
 
-        assert session_hash in ABORT_EVENTS
-        abort_event = ABORT_EVENTS[session_hash]
-        abort_event.clear()
-        options["abort_event"] = abort_event
+        # assert session_hash in ABORT_EVENTS
+        # abort_event = ABORT_EVENTS[session_hash]
+        # abort_event.clear()
+        # options["abort_event"] = abort_event
+
         task = "img2trajvid"
 
         # Get number of first pass chunks.
@@ -475,16 +490,16 @@ class Renderer:
                 gt_input_inds=gt_input_inds,
             )[1]
         )
-        second_pass_pbar = gr.Progress().tqdm(
-            iterable=None,
-            desc="Second pass sampling",
-            total=num_chunks_1 * num_steps,
-        )
-        first_pass_pbar = gr.Progress().tqdm(
-            iterable=None,
-            desc="First pass sampling",
-            total=num_chunks_0 * num_steps,
-        )
+
+        if run_gradio:
+            import gradio as gr
+            first_pass_pbar = gr.Progress().tqdm(iterable=None, total=num_chunks_0*num_steps, desc="1st-pass sampling")
+            second_pass_pbar = gr.Progress().tqdm(iterable=None, total=num_chunks_1*num_steps, desc="2nd-pass sampling")
+        else:
+            from tqdm import tqdm
+            first_pass_pbar = tqdm(iterable=None, total=num_chunks_0*num_steps, desc="1st-pass sampling")
+            second_pass_pbar = tqdm(iterable=None, total=num_chunks_1*num_steps, desc="2nd-pass sampling")
+
         video_path_generator = run_one_scene(
             task=task,
             version_dict={
@@ -506,12 +521,19 @@ class Renderer:
             traj_prior_c2ws=anchor_c2ws,
             traj_prior_Ks=anchor_Ks,
             seed=seed,
-            gradio=True,
+            gradio=run_gradio,
             first_pass_pbar=first_pass_pbar,
             second_pass_pbar=second_pass_pbar,
             abort_event=abort_event,
         )
+
+        if not run_gradio:
+            return video_path_generator
+
         output_queue = queue.Queue()
+
+        import gradio as gr
+        from gradio.context import LocalContext
 
         blocks = LocalContext.blocks.get()
         event_id = LocalContext.event_id.get()
@@ -523,26 +545,15 @@ class Renderer:
             LocalContext.event_id.set(event_id)
             for i, video_path in enumerate(video_path_generator):
                 if i == 0:
-                    output_queue.put(
-                        (
-                            video_path,
-                            gr.update(),
-                            gr.update(),
-                            gr.update(),
-                        )
-                    )
+                    output_queue.put((video_path, gr.update(), gr.update(), gr.update()))
                 elif i == 1:
-                    output_queue.put(
-                        (
-                            video_path,
-                            gr.update(visible=True),
-                            gr.update(visible=False),
-                            gr.update(visible=False),
-                        )
-                    )
+                    output_queue.put((video_path, gr.update(visible=True), 
+                                                  gr.update(visible=False),
+                                                  gr.update(visible=False)))
                 else:
-                    gr.Error("More than two passes during rendering.")
+                    gr.Error("More than 2 passes during rendering.")
 
+        import threading
         thread = threading.Thread(target=worker, daemon=True)
         thread.start()
 

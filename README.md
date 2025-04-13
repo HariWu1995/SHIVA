@@ -44,7 +44,7 @@
     | └─ 📄 service.py  # Core logic for model dispatch + inference
     ├─ 📂 grui      # Gradio app for user interface
     | ├─ 📂 assets      # Images, stylesheets
-    | ├─ 📄 ui.py       # Gradio interface setup
+    | ├─ 📄 main.py     # Gradio interface layout
     | └─ 📄 utils.py    # Helpers for UI rendering
     ├─ …
     ├─ 📄 Dockerfile
@@ -67,8 +67,6 @@
 
 - [x] OpenPose Editor ([2D Editor](https://github.com/huchenlei/sd-webui-openpose-editor) | [3D Editor](https://github.com/ZhUyU1997/open-pose-editor/releases))
 
-- [x] 3D Visualization ([Viser](https://github.com/nerfstudio-project/viser) | [Camera Trajectory|SeVa](https://github.com/Stability-AI/stable-virtual-camera/blob/main/demo_gr.py#L769))
-
 ### Uni-modal Generation
 
 - [ ] Text Generation ([WebUI](https://github.com/oobabooga/text-generation-webui))
@@ -85,7 +83,9 @@
 
 - [ ] Image/Text-to-Panorama ([SD-T2I-360PanoImage](https://github.com/ArcherFMY/SD-T2I-360PanoImage))
 
-- [ ] Camera Control ([Stable Virtual Camera](https://github.com/Stability-AI/stable-virtual-camera) | [CameraCtrl](https://github.com/hehao13/CameraCtrl))
+- [ ] Camera Control ([SeVa](https://github.com/Stability-AI/stable-virtual-camera) | [CameraCtrl](https://github.com/hehao13/CameraCtrl))
+
+- [x] 3D Visualization ([Viser](https://github.com/nerfstudio-project/viser) | [Camera Trajectory|SeVa](https://github.com/Stability-AI/stable-virtual-camera/blob/main/demo_gr.py#L769))
 
 <details>
     <summary><i>Notation</i></summary>

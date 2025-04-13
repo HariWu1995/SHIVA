@@ -2,16 +2,20 @@ from pathlib import Path
 import gradio as gr
 
 import os
-import threading
+from threading import Thread
+from multiprocessing import Process
+
 from http.server import SimpleHTTPRequestHandler
 from socketserver import TCPServer
 
 
 root_path = Path(__file__).resolve().parents[0]
 
+HOST = "localhost"
 PORT = 3333
+
 local_path = root_path / "gausssplats" / "index.html"
-local_url = f"http://localhost:{PORT}/index.html"
+local_url = "http://{host}:{port}/index.html"
 
 remote_url_default = "https://antimatter15.com/splat/"
 remote_url_truck = "https://antimatter15.com/splat/?url=truck.splat"
@@ -35,53 +39,73 @@ instruction = """
 </div>
 """
 
+iframe = """
+<iframe id="viser3d_iframe" src="{url}" width="100%" height="768"></iframe>
+<script>
+    window.onload = function() {{
+        setTimeout(function() {{
+            var iframe = document.getElementById("viser3d_iframe");
+            iframe.src = "{url}";
+        }}, 500); // wait 500ms to ensure Viser is ready
+    }};
+</script>
+"""
+
 
 class ReusableTCPServer(TCPServer):
     allow_reuse_address = True  # Allow reuse after shutdown
 
 
-def serve_local_viewer():
+def serve_local(host=HOST, port=PORT):
 
     os.chdir(str(root_path / "gausssplats"))
     handler = SimpleHTTPRequestHandler
 
+    url = local_url.format(host=host, port=port)
+    print(f"\nServing {local_path} at {url}")
+
     global httpd
-    httpd = ReusableTCPServer(("localhost", PORT), handler)
-    print(f"\nServing {local_path} at {local_url}")
+    httpd = ReusableTCPServer((host, port), handler)
     httpd.serve_forever()
+
+
+def serve_local_view(host=HOST, port=PORT):
+
+    # Run server in background thread
+    global httpd
+    server_thread = Thread(target=serve_local, args=(host, port), daemon=True)
+    server_thread.start()
+
+    url = local_url.format(host=host, port=port)
+    return iframe.format(url=url)
 
 
 # Define UI settings & layout
 
-def create_ui(min_width: int = 25):
+def create_ui(min_width: int = 25, host = HOST, port = PORT):
 
     column_kwargs = dict(variant='panel', min_width=min_width)
+    url = local_url.format(host=host, port=port)
     
     with gr.Blocks(css=None, analytics_enabled=False) as gui:
 
         gr.Markdown("## 🧊 Gauss-Splat Visualization")
         gr.Markdown(remote_md)
-        gr.Markdown(instruction)
 
-        iframe = f"""<iframe id="gausssplat_iframe" src="{local_url}" width="100%" height="768"></iframe>"""
-        gr.HTML(label="Gauss-Splat iFrame", value=iframe, show_label=True)
+        with gr.Row():
+            vhost = gr.Textbox(value=host, interactive=False, label="Server Host", min_width=50)
+            vport = gr.Number(value=port, precision=0, label="Server Port", min_width=50)
+            with gr.Column():
+                button = gr.Button(value="Run Server", variant="primary", min_width=50)
+                gr.Markdown(instruction)
+
+        display = gr.HTML(label="Gauss-Splat iFrame", show_label=True)
+        button.click(fn=serve_local_view, inputs=[vhost, vport], outputs=[display])
 
     return gui, None
 
 
 if __name__ == "__main__":
-
-    # Run server in background thread
-    global httpd
-    server_thread = threading.Thread(target=serve_local_viewer, daemon=True)
-    server_thread.start()
-
-    # Run WebUI
     gui, _ = create_ui()
     gui.launch(server_name='localhost', server_port=8000)
 
-    # Exit
-    # print("\nShutting down server...")
-    # httpd.shutdown()
-    # httpd.server_close()
-    # print("Server stopped.")

@@ -227,11 +227,9 @@ class CameraTrajectory:
 
     def reset(self) -> None:
         for frame in self._keyframes.values():
-            print(f"removing {frame[1]}")
             frame[1].remove()
         self._keyframes.clear()
         self.update_spline()
-        print("camera traj reset")
 
     def spline_t_from_t_sec(self, time: np.ndarray) -> np.ndarray:
         """
@@ -621,18 +619,13 @@ def load_gui(
     def _(event: viser.GuiEvent) -> None:
         assert event.client_id is not None
         camera = server.get_clients()[event.client_id].camera
-        pose = vt.SE3.from_rotation_and_translation(
-            vt.SO3(camera.wxyz), camera.position
-        )
-        print(f"client {event.client_id} at {camera.position} {camera.wxyz}")
-        print(f"camera pose {pose.as_matrix()}")
+        pose = vt.SE3.from_rotation_and_translation(vt.SO3(camera.wxyz), camera.position)
+        # print(f"client {event.client_id} at {camera.position} {camera.wxyz}")
+        # print(f"camera pose {pose.as_matrix()}")
 
         # Add this camera to the trajectory.
         camera_traj.add_camera(
-            Keyframe.from_camera(
-                camera,
-                aspect=img_wh[0] / img_wh[1],
-            ),
+            Keyframe.from_camera(camera, aspect=img_wh[0] / img_wh[1]),
         )
         duration_number.value = camera_traj.compute_duration()
         camera_traj.update_spline()
@@ -649,9 +642,7 @@ def load_gui(
         client = server.get_clients()[event.client_id]
         with client.atomic(), client.gui.add_modal("Confirm") as modal:
             client.gui.add_markdown("Clear all keyframes?")
-            confirm_button = client.gui.add_button(
-                "Yes", color="red", icon=viser.Icon.TRASH
-            )
+            confirm_button = client.gui.add_button("Yes", color="red", icon=viser.Icon.TRASH)
             exit_button = client.gui.add_button("Cancel")
 
             @confirm_button.on_click
@@ -673,9 +664,7 @@ def load_gui(
                 modal.close()
 
     play_button = server.gui.add_button("Play", icon=viser.Icon.PLAYER_PLAY)
-    pause_button = server.gui.add_button(
-        "Pause", icon=viser.Icon.PLAYER_PAUSE, visible=False
-    )
+    pause_button = server.gui.add_button("Pause", icon=viser.Icon.PLAYER_PAUSE, visible=False)
 
     # Poll the play button to see if we should be playing endlessly.
     def play() -> None:
@@ -684,9 +673,7 @@ def load_gui(
                 max_frame = int(framerate_number.value * duration_number.value)
                 if max_frame > 0:
                     assert preview_frame_slider is not None
-                    preview_frame_slider.value = (
-                        preview_frame_slider.value + 1
-                    ) % max_frame
+                    preview_frame_slider.value = (preview_frame_slider.value + 1) % max_frame
                 time.sleep(1.0 / framerate_number.value)
             time.sleep(0.1)
 
@@ -837,9 +824,9 @@ def load_gui(
 
         def get_intrinsics(W, H, fov_rad):
             focal = 0.5 * H / np.tan(0.5 * fov_rad)
-            return np.array(
-                [[focal, 0.0, 0.5 * W], [0.0, focal, 0.5 * H], [0.0, 0.0, 1.0]]
-            )
+            return np.array([[focal,   0.0, 0.5 * W], 
+                             [  0.0, focal, 0.5 * H], 
+                             [  0.0,   0.0, 1.0    ]])
 
         camera_traj_list = []
         for i in range(num_frames):
@@ -853,21 +840,18 @@ def load_gui(
             w2c = pose.inverse().as_matrix()
             camera_traj_list.append({
                 "w2c": w2c.flatten().tolist(),
-                "K": K.flatten().tolist(),
+                  "K":   K.flatten().tolist(),
                 "img_wh": (W, H),
             })
 
         nonlocal gui_state
         gui_state.camera_traj_list = camera_traj_list
-        print(f"Get camera_traj_list: {gui_state.camera_traj_list}")
+        # print(f"Get camera_traj_list: {gui_state.camera_traj_list}")
 
         stop_preview_render()
 
     preview_frame_slider = add_preview_frame_slider()
-
-    loop_checkbox = server.gui.add_checkbox(
-        "Loop", False, hint="Add a segment between the first and last keyframes."
-    )
+    loop_checkbox = server.gui.add_checkbox("Loop", False, hint="Fill-in frames between last and 1st keyframes.")
 
     @loop_checkbox.on_update
     def _(_) -> None:
@@ -929,12 +913,7 @@ def load_gui(
         camera_traj.framerate = framerate_number.value
         camera_traj.update_spline()
 
-    camera_traj = CameraTrajectory(
-        server,
-        duration_number,
-        scene_node_prefix=scene_node_prefix,
-        **kwargs,
-    )
+    camera_traj = CameraTrajectory(server, duration_number, scene_node_prefix=scene_node_prefix, **kwargs)
     camera_traj.default_fov = fov_degree_slider.value / 180.0 * np.pi
     camera_traj.default_transition_sec = transition_sec_number.value
 

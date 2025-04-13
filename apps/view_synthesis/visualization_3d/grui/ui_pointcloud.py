@@ -10,7 +10,7 @@ from ..src.viz_pointcloud import main as viz_pointcloud
 
 HOST = "localhost"
 PORT = 5000
-URL = f"http://localhost:{PORT}"
+URL = "http://{host}:{port}"
 
 iframe = """
 <iframe id="viser3d_iframe" src="{url}" width="100%" height="768"></iframe>
@@ -22,7 +22,7 @@ iframe = """
         }}, 500); // wait 500ms to ensure Viser is ready
     }};
 </script>
-""".format(url=URL)
+"""
 
 warning = """
 <div style="padding: 10px; border: 1px solid #f0ad4e; border-radius: 8px; background-color: #fcf8e3;">
@@ -34,7 +34,7 @@ warning = """
 
 server_process = None
 
-def serve_local_view(data_path, note):
+def serve_local_view(data_path, note, host=HOST, port=PORT):
     if isinstance(data_path, (list, tuple)):
         data_path = data_path[0]
     data_path = Path(data_path)
@@ -47,18 +47,19 @@ def serve_local_view(data_path, note):
         time.sleep(1)  # Ensure the process has terminated
 
     # Start a new server process
-    server_config = dict(data_path=data_path, host=HOST, port=PORT)
+    server_config = dict(data_path=data_path, host=host, port=port)
     server_process = Process(target=viz_pointcloud, kwargs=server_config)
     server_process.start()
     time.sleep(5)
 
-    print(f"\nServing {data_path} at {URL}")
-    return iframe, gr.Markdown(warning)
+    url = URL.format(host=host, port=port)
+    print(f"\nServing {data_path} at {url}")
+    return iframe.format(url=url), gr.Markdown(warning)
 
 
 # Define UI settings & layout
 
-def create_ui(min_width: int = 25):
+def create_ui(min_width: int = 25, host = HOST, port = PORT):
 
     column_kwargs = dict(variant='panel', min_width=min_width)
     sample_dir = Path(__file__).resolve().parents[4] / "_samples" / "3d"
@@ -69,20 +70,23 @@ def create_ui(min_width: int = 25):
         gr.Markdown("## 🧊 Point-cloud Visualization")
 
         with gr.Row():
-            with gr.Column(scale=1):
+            with gr.Column(scale=1, variant="panel"):
+                with gr.Row():
+                    vhost = gr.Textbox(value=host, interactive=False, label="Server Host", min_width=50)
+                    vport = gr.Number(value=port, precision=0, label="Server Port", min_width=50)
+                with gr.Row():
+                    button = gr.Button(value="Run Server", variant="primary", min_width=50)
                 with gr.Row():
                     target = gr.FileExplorer(value=sample_path, root_dir=sample_dir, 
                                             label="Record3D Folder", max_height=250)
                     # target = gr.File(value=sample_path, label="Record3D Folder", file_count="directory")
                 with gr.Row():
-                    button = gr.Button(value="Run Server", variant="primary")
-                with gr.Row():
                     note = gr.Markdown()
             with gr.Column(scale=10):
                 display = gr.HTML(label="Viser3D iFrame", value=iframe, show_label=True)
 
-        button.click(fn=serve_local_view, inputs=[target, note], outputs=[display, note])
-
+        button.click(fn=serve_local_view, inputs=[target, note, vhost, vport], 
+                                        outputs=[display, note])
     return gui, None
 
 
