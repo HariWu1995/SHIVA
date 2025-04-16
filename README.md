@@ -63,7 +63,7 @@
 
 - [x] Video Matting ([RobustVideoMatting](https://github.com/PeterL1n/RobustVideoMatting))
 
-- [ ] Controlnet Preprocessors ([ControlNet](https://github.com/Mikubill/sd-webui-controlnet))
+- [x] Controlnet Preprocessors ([ControlNet](https://github.com/Mikubill/sd-webui-controlnet))
 
 - [x] OpenPose Editor ([2D Editor](https://github.com/huchenlei/sd-webui-openpose-editor) | [3D Editor](https://github.com/ZhUyU1997/open-pose-editor/releases))
 
