@@ -100,8 +100,9 @@ def reverse_channels(image):
 
 def generate_annotation(
     img_rgb,
-    max_faces: int,
-    min_confidence: float,
+    max_faces: int = 1_000,
+    min_face_size_pixels: int = -1,
+    min_confidence: float = 0.1,
 ):
     """
     Find up to 'max_faces' inside the provided input image.
@@ -109,10 +110,10 @@ def generate_annotation(
         it will be used to filter faces that occupy less than this many pixels in the image.
     """
     with mp_face_mesh.FaceMesh(
-        static_image_mode=True,
         max_num_faces=max_faces,
-        refine_landmarks=True,
         min_detection_confidence=min_confidence,
+        static_image_mode=True,
+        refine_landmarks=True,
     ) as facemesh:
         img_height, img_width, img_channels = img_rgb.shape
         assert(img_channels == 3)

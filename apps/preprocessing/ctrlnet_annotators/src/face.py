@@ -23,9 +23,9 @@ from .models.mediapipe_face import (
 #############################
 all_options_face = []
 if IS_MEDIAPIPE_INSTALLED:
-    all_options_pose.append("mediapipe")
+    all_options_face.append("mediapipe")
 
-def apply_face(input_image, model: str = "mediapipe", *, **kwargs):
+def apply_face(input_image, model: str = "mediapipe", **kwargs):
 
     if model == "mediapipe": 
         if not IS_MEDIAPIPE_INSTALLED:

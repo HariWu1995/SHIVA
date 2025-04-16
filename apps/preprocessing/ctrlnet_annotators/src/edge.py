@@ -1,5 +1,4 @@
 import os
-import functools
 
 import torch
 from einops import rearrange
@@ -49,8 +48,8 @@ class HolyEdgeDetection:
         if self.model is None:
             self.load_model()
 
-        if isinstance(img, np.ndarray):
-            img = Image.fromarray(img)
+        if isinstance(img, Image.Image):
+            img = np.array(img)
 
         assert img.ndim == 3
         H, W, C = img.shape
@@ -78,17 +77,17 @@ class CannyEdgeDetection:
 
     def auto_threshold(
         self, 
-        low_threshold: int = None,
-        high_threshold: int = None, 
+        low_threshold: int = -1,
+        high_threshold: int = -1, 
             is_noisy: bool = False,
             contrast: str = "normal",
             structure: str = "normal",      # visual quality and structure of edges
     ):
-        if low_threshold is None and high_threshold is not None:
+        if low_threshold < 0 and high_threshold > 0:
             low_threshold = max(0, high_threshold // 3)
-        elif high_threshold is None and low_threshold is not None:
+        elif high_threshold < 0 and low_threshold > 0:
             high_threshold = min(255, low_threshold * 3)
-        elif high_threshold is None and low_threshold is None:
+        elif high_threshold < 0 and low_threshold < 0:
             if is_noisy:
                 low_threshold = 85
                 high_threshold = 225
@@ -99,15 +98,15 @@ class CannyEdgeDetection:
                 low_threshold = 35
                 high_threshold = 115
             else:
-                low_threshold = 35
-                high_threshold = 115
+                low_threshold = 100
+                high_threshold = 200
         return low_threshold, high_threshold
 
     def __call__(
         self, 
         img, 
-        low_threshold: int = None,
-        high_threshold: int = None, 
+        low_threshold: int = -1,
+        high_threshold: int = -1, 
             is_noisy: bool = False,
             structure: str = "normal",
             contrast: str = "normal",
@@ -192,8 +191,10 @@ class LineAnimeDetection:
             remote_model_path = CTRL_ANNOT_REMOTE_MODELS[self.model_name]
             load_file_from_url(remote_url=remote_model_path, 
                                 local_file=local_model_path)
+        from torch import nn
+        from functools import partial
 
-        norm = functools.partial(nn.InstanceNorm2d, affine=False, track_running_stats=False)
+        norm = partial(nn.InstanceNorm2d, affine=False, track_running_stats=False)
         net = LineAnimeGenerator(3, 1, 8, 64, norm_layer=norm, use_dropout=False)
         ckpt = torch.load(local_model_path)
         for key in list(ckpt.keys()):
@@ -327,7 +328,7 @@ class MobileLSDetection:
         if self.model is not None:
             self.model.cpu()
 
-    def __call__(self, input_image, thresh_v, thresh_d):
+    def __call__(self, input_image, score_thresh: float = 0.1, dist_thresh: float = 20.):
         if self.model is None:
             self.load_model()
 
@@ -341,8 +342,8 @@ class MobileLSDetection:
 
         with torch.no_grad():
             lines = mlsd_prediction(img, self.model, [H, W], 
-                                    score_thresh=thresh_v, 
-                                    dist_thresh=thresh_d, 
+                                    score_thresh=score_thresh, 
+                                    dist_thresh=dist_thresh, 
                                     device=self.device)
         for line in lines:
             x_start, y_start, x_end, y_end = [int(val) for val in line]
@@ -374,12 +375,12 @@ class PiDiNetDetection:
                                 local_file=local_model_path)
 
         net = load_pidinet()
-        ckpt = torch.load(local_model_path)
+        ckpt = torch.load(local_model_path)["state_dict"]
         for key in list(ckpt.keys()):
             if 'module.' in key:
                 ckpt[key.replace('module.', '')] = ckpt[key]
                 del ckpt[key]
-        net.load_state_dict(ckpt)
+        net.load_state_dict(ckpt, strict=False)
         net.eval()
         self.model = net.to(self.device)
 
@@ -387,7 +388,7 @@ class PiDiNetDetection:
         if self.model is not None:
             self.model.cpu()
 
-    def __call__(self, input_image, is_safe=False, apply_fliter=False):
+    def __call__(self, input_image, is_safe=False, threshold: float = -1):
         if self.model is None:
             self.load_model()
 
@@ -403,8 +404,8 @@ class PiDiNetDetection:
             edge = self.model(image)[-1]
             edge = edge.cpu().numpy()
 
-        if apply_fliter:
-            edge = edge > 0.5 
+        if threshold > 1e-5:
+            edge = edge > threshold
         if is_safe:
             edge = safe_step(edge)
         edge = (edge * 255.0).clip(0, 255).astype(np.uint8)
@@ -446,7 +447,7 @@ class TEEDetection:
         if self.model is not None:
             self.model.cpu()
 
-    def __call__(self, image: np.ndarray, safe_steps: int = 2) -> np.ndarray:
+    def __call__(self, input_image: np.ndarray, safe_steps: int = -1) -> np.ndarray:
 
         if self.model is None:
             self.load_model()
@@ -465,8 +466,9 @@ class TEEDetection:
         edges = [cv2.resize(e, (W, H), interpolation=cv2.INTER_LINEAR) for e in edges]
         edges = np.stack(edges, axis=2)
         edge = 1 / (1 + np.exp(-np.mean(edges, axis=2).astype(np.float64)))
-        if safe_steps != 0:
-            edge = safe_step(edge, safe_steps)
+        if safe_steps > 0:
+            for step in safe_steps:
+                edge = safe_step(edge)
         edge = (edge * 255.0).clip(0, 255).astype(np.uint8)
         return edge
 
@@ -483,7 +485,7 @@ all_options_edge = [
     "teed", "mteed",
 ]
 
-def apply_edge(input_image, model: str = "canny", *, **kwargs):
+def apply_edge(input_image, model: str = "canny", **kwargs):
 
     if model == "canny":
         detector = CannyEdgeDetection()
@@ -491,19 +493,19 @@ def apply_edge(input_image, model: str = "canny", *, **kwargs):
 
     elif model == "hed":
         detector = HolyEdgeDetection()
-        return detector(input_image, **kwargs)
+        return detector(input_image)
 
     elif model == "pidinet":
         detector = PiDiNetDetection()
         return detector(input_image, **kwargs)
 
     elif model in ["mlsd_large", "mlsd_tiny"]:
-        detector = MobileLSDetection(variant=model.split('_'[1]))
+        detector = MobileLSDetection(variant=model.split('_')[1])
         return detector(input_image, **kwargs)
 
     elif model in ["teed", "mteed"]:
         detector = TEEDetection(use_mteed = model == "mteed")
-        return detector(input_image, **kwargs)
+        return detector(input_image)
 
     elif model == "lineart":
         detector = LineArtDetection(coarse=False)

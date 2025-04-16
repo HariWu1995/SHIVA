@@ -85,13 +85,13 @@ class AnimeFaceSegment:
 #############################
 #       Universal           #
 #############################
-all_options_edge = ["aniface"]
+all_options_segment = ["aniface"]
 
-def apply_segment(input_image, model: str = "aniface", *, **kwargs):
+def apply_segment(input_image, model: str = "aniface", **kwargs):
 
     if model == "aniface":
         segmentor = AnimeFaceSegment()
-    return segmentor(input_image)
+        return segmentor(input_image)
 
     else:
         raise ValueError(f"model = {model} is not supported!")

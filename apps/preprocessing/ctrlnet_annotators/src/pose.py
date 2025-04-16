@@ -1,7 +1,8 @@
 import os
 import cv2
-import numpy as np
+from PIL import Image
 
+import numpy as np
 import torch
 import torchvision as tv
 from einops import rearrange
@@ -47,16 +48,15 @@ class DensePoseEstimate:
         if self.model is None:
             self.load_model()
 
-        if isinstance(input_image, np.ndarray):
-            input_image = Image.fromarray(input_image)
-        
+        if isinstance(input_image, Image.Image):
+            input_image = np.array(input_image)
         H, W  = input_image.shape[:2]
 
-        hint_image = np.zeros([H, W], dtype=np.uint8)
-        hint_image = np.tile(hint_image[:, :, np.newaxis], [1, 1, 3])
+        hint_canvas = np.zeros([H, W], dtype=np.uint8)
+        hint_canvas = np.tile(hint_canvas[:, :, np.newaxis], [1, 1, 3])
+
         input_image = rearrange(
             torch.from_numpy(input_image).to(device=self.device), 'h w c -> c h w')
-
         pred_boxes, corase_segm, refine_segm, u, v = self.model(input_image)
 
         densepose_results = [
@@ -65,11 +65,11 @@ class DensePoseEstimate:
                 corase_segm[i:i+1], 
                 refine_segm[i:i+1], 
                           u[i:i+1], 
-                          v[i:i+1]
-            ) for i in range(len(pred_boxes))
+                          v[i:i+1]) for i in range(len(pred_boxes))
         ]
 
-        hint_image = densepose_visualize(densepose_results, num_parts=self.N_PART_LABELS, cmap=cmap)
+        hint_image = densepose_visualize(hint_canvas, densepose_results, 
+                                        num_parts=self.N_PART_LABELS, cmap=cmap)
         return hint_image
 
 
@@ -280,7 +280,7 @@ class OpenposeEstimate:
 
         poses = detect_human_pose(input_image, self.body_model, self.face_model, self.hand_model, self.device)
         poses = draw_human_poses(poses, H, W, self.include_body, self.include_face, self.include_hand)
-        return poses_image
+        return poses
 
 
 class AnimalPoseEstimate:
@@ -308,7 +308,7 @@ class AnimalPoseEstimate:
         from .models.openpose import AnimalPose
         self.model = AnimalPose(det_model_local, kpt_model_local)
 
-    def __call__(self, image,):
+    def __call__(self, input_image):
 
         if  self.model is None:
             self.load_model()
@@ -317,7 +317,7 @@ class AnimalPoseEstimate:
             input_image = np.array(input_image)
         H, W, _ = input_image.shape
 
-        poses = detect_animal_pose(image, self.model)
+        poses = detect_animal_pose(input_image, self.model)
         poses = draw_animal_poses(poses, H, W)
         return poses
 
@@ -329,7 +329,7 @@ all_options_pose = ["densepose", "dwpose", "openpose", "animal_pose"]
 if IS_MMPOSE_INSTALLED:
     all_options_pose.append("mmpose")
 
-def apply_pose(input_image, model: str = "openpose", *, **kwargs):
+def apply_pose(input_image, model: str = "openpose", **kwargs):
 
     if model == "densepose":
         estimator = DensePoseEstimate()

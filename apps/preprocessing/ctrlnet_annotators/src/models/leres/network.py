@@ -89,9 +89,9 @@ class DepthNet(nn.Module):
                 raise KeyError("Unsupported depth:", self.depth)
             self.encoder = DepthNet.__factory[depth](pretrained=self.pretrained)
         elif self.backbone == 'resnext101_32x8d':
-            self.encoder = Resnext_torch.resnext101_32x8d(pretrained=self.pretrained)
+            self.encoder = Resnext.resnext101_32x8d(pretrained=self.pretrained)
         else:
-            self.encoder = Resnext_torch.resnext101(pretrained=self.pretrained)
+            self.encoder = Resnext.resnext101(pretrained=self.pretrained)
 
     def forward(self, x):
         x = self.encoder(x)  # 1/32, 1/16, 1/8, 1/4

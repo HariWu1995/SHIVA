@@ -9,6 +9,8 @@ import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 from typing import Tuple, List, Callable, Union, Optional
+import torch
+import numpy as np
 
 from . import util
 from .wholebody import Wholebody  # DW Pose

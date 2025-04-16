@@ -1,5 +1,3 @@
-from .models.NNET import NNET as NormalNet
-
 from types import SimpleNamespace
 
 NormalConfig = SimpleNamespace()
@@ -9,51 +7,4 @@ NormalConfig.pretrained = 'scannet'
 NormalConfig.sampling_ratio = 0.4
 NormalConfig.importance_ratio = 0.7
 
-
-
-class NormalBaeDetector:
-    model_dir = os.path.join(models_path, "normal_bae")
-
-    def __init__(self):
-        self.model = None
-        self.device = devices.get_device_for("controlnet")
-
-    def load_model(self):
-        remote_model_path = "https://huggingface.co/lllyasviel/Annotators/resolve/main/scannet.pt"
-        modelpath = os.path.join(self.model_dir, "scannet.pt")
-        if not os.path.exists(modelpath):
-            from scripts.utils import load_file_from_url
-            load_file_from_url(remote_model_path, model_dir=self.model_dir)
-        
-        model = load_checkpoint(modelpath, model)
-        model.eval()
-        self.model = model.to(self.device)
-
-    def unload_model(self):
-        if self.model is not None:
-            self.model.cpu()
-
-    def __call__(self, input_image):
-        if self.model is None:
-            self.load_model()
-
-        self.model.to(self.device)
-        assert input_image.ndim == 3
-        image_normal = input_image
-        with torch.no_grad():
-            image_normal = torch.from_numpy(image_normal).float().to(self.device)
-            image_normal = image_normal / 255.0
-            image_normal = rearrange(image_normal, 'h w c -> 1 c h w')
-            image_normal = self.norm(image_normal)
-
-            normal = self.model(image_normal)
-            normal = normal[0][-1][:, :3]
-            # d = torch.sum(normal ** 2.0, dim=1, keepdim=True) ** 0.5
-            # d = torch.maximum(d, torch.ones_like(d) * 1e-5)
-            # normal /= d
-            normal = ((normal + 1) * 0.5).clip(0, 1)
-
-            normal = rearrange(normal[0], 'c h w -> h w c').cpu().numpy()
-            normal_image = (normal * 255.0).clip(0, 255).astype(np.uint8)
-
-            return normal_image
+from .NNET import NNET as NormalNet

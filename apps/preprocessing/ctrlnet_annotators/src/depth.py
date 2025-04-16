@@ -2,12 +2,15 @@ import os
 from types import SimpleNamespace
 
 import cv2
+from PIL import Image
+
 import numpy as np
 import torch
 from torchvision import transforms
 from einops import rearrange
 
-from .utils import DEVICE, CTRL_ANNOT_LOCAL_MODELS, CTRL_ANNOT_REMOTE_MODELS, load_file_from_url
+from .utils import DEVICE, CTRL_ANNOT_LOCAL_MODELS, CTRL_ANNOT_REMOTE_MODELS
+from .utils import load_file_from_url, resize_to_divisible_by
 
 
 #########################################################################
@@ -44,7 +47,7 @@ class LeResEstimate:
         checkpoint = normalize_moduledict(checkpoint['depth_model'], prefix="module.")  # remove multi-GPU prefix
         model = RelDepthModel(backbone='resnext101')
         model.load_state_dict(checkpoint, strict=True)
-        self.model = model.to(device=device).eval()
+        self.model = model.to(device=self.device).eval()
 
         if not self.boost:
             return
@@ -55,11 +58,12 @@ class LeResEstimate:
             remote_model_path = CTRL_ANNOT_REMOTE_MODELS[self.p2p_name]
             load_file_from_url(remote_url=remote_model_path, 
                                 local_file=local_model_path)
+        
         p2p_opts = Pix2PixOptions().parse()
         if not torch.cuda.is_available():
             p2p_opts.gpu_ids = []
-        p2p_model = Pix2Pix4DepthModel(p2p_opts, model_path=local_model_path, device=device)
-        p2p_model.load_networks('pix2pix')
+        p2p_model = Pix2Pix4DepthModel(p2p_opts)
+        p2p_model.load_networks(model_path=local_model_path)
         p2p_model.eval()
         self.p2p_model = p2p_model
 
@@ -78,14 +82,16 @@ class LeResEstimate:
         if isinstance(input_image, Image.Image):
             input_image = np.array(input_image)
         assert input_image.ndim == 3
-
-        height, width, dim = input_image.shape
+        H, W, _ = input_image.shape
+        input_image = resize_to_divisible_by(input_image, div=64)
+        h, w, _ = input_image.shape
 
         with torch.no_grad():
-            if boost:
-                depth = estimate_boost(input_image, self.model, self.model_type, self.p2p_model, max(width, height))
+            if self.boost:
+                depth = estimate_boost(input_image, self.model, self.model_type, self.p2p_model, max(w, h), device=self.device)
             else:
-                depth = estimate_leres(input_image, self.model, width, height)
+                depth = estimate_leres(input_image, self.model, w=w, h=h, device=self.device)
+        depth = cv2.resize(depth, (W, H), interpolation=cv2.INTER_NEAREST)
 
         num_bytes = 2
         depth_min = depth.min()
@@ -106,16 +112,16 @@ class LeResEstimate:
         depth_image = cv2.convertScaleAbs(depth_image, alpha=alpha)
 
         # remove near
-        if thresh_a != 0:
-            thresh_a = (thresh_a / 100) * 255
+        if thresh_a > 0:
+            assert 0 <= thresh_a <= 255
             depth_image = cv2.threshold(depth_image, thresh_a, 255, cv2.THRESH_TOZERO)[1]
 
         # invert image
         depth_image = cv2.bitwise_not(depth_image)
 
         # remove bg
-        if thresh_b != 0:
-            thresh_b = (thresh_b / 100) * 255
+        if thresh_b > 0:
+            assert 0 <= thresh_b <= 255
             depth_image = cv2.threshold(depth_image, thresh_b, 255, cv2.THRESH_TOZERO)[1]
 
         return depth_image
@@ -167,7 +173,7 @@ class MiDaSEstimate:
             )
         
         model.eval()
-        self.model = model.to(self.device)
+        self.model = model.to(device=self.device)
         self.transform = midas_transform(self.model_name)
 
     def offload_model(self):
@@ -186,20 +192,25 @@ class MiDaSEstimate:
         if isinstance(input_image, Image.Image):
             input_image = np.array(input_image)
         assert input_image.ndim == 3
+        H, W, _ = input_image.shape
+        input_image = resize_to_divisible_by(input_image, div=64)
+        h, w, _ = input_image.shape
 
         with torch.no_grad():
             image = torch.from_numpy(input_image).float()
             image = image.to(self.device)
             image = image / 127.5 - 1.0
             image = rearrange(image, 'h w c -> 1 c h w')
-            depth = model(image)[0]
+            depth = self.model(image)[0]
 
             depth_pt = depth.clone()
             depth_pt -= torch.min(depth_pt)
             depth_pt /= torch.max(depth_pt)
             depth_pt = depth_pt.cpu().numpy()
         
-        depth_image = (depth_pt * 255.0).clip(0, 255).astype(np.uint8)
+        depth_image = cv2.resize(depth_pt, (W, H), interpolation=cv2.INTER_NEAREST)
+        depth_image = (depth_image * 255.0).clip(0, 255).astype(np.uint8)
+
         if not use_normmap:
             return depth_image
         
@@ -216,6 +227,7 @@ class MiDaSEstimate:
         normal = np.stack([x, y, z], axis=2)
         normal /= np.sum(normal ** 2.0, axis=2, keepdims=True) ** 0.5
         normal_image = (normal * 127.5 + 127.5).clip(0, 255).astype(np.uint8)[:, :, ::-1]
+        normal_image = cv2.resize(normal_image, (W, H), interpolation=cv2.INTER_NEAREST)
 
         return normal_image
 
@@ -254,7 +266,7 @@ class NormalBaeEstimate:
                 state_dict[k] = v
         model.load_state_dict(state_dict)
         model.eval()
-        self.model = model.to(self.device)
+        self.model = model.to(device=self.device)
         self.transform = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
     def offload_model(self):
@@ -308,11 +320,18 @@ class ZoeDepthEstimate:
             load_file_from_url(remote_url=remote_model_path, 
                                 local_file=local_model_path)
 
+        state_dict = torch.load(local_model_path, map_location='cpu')['model']
+        # for k, v in ckpt.items():
+        #     if k.startswith('module.'):
+        #         k_ = k.replace('module.', '')
+        #         state_dict[k_] = v
+        #         del state_dict[k]
+
         conf = get_zoe_config("zoedepth", "infer")
         model = ZoeDepth.build_from_config(conf)
-        model.load_state_dict(torch.load(local_model_path, map_location=self.device)['model'])
+        model.load_state_dict(state_dict, strict=False)
         model.eval()
-        self.model = model.to(self.device)
+        self.model = model.to(device=self.device)
 
     def offload_model(self):
         if self.model is not None:
@@ -347,7 +366,12 @@ class ZoeDepthEstimate:
 #                   DSINE                   #
 #   https://github.com/baegwangbin/DSINE    #
 #############################################
-from .models.dsine import DSINE, utils as dsine_utils, resize_image_with_pad
+try:
+    from .models.dsine import DSINE, utils as dsine_utils, resize_image_with_pad
+    IS_DSINE_INSTALLED = True
+except (ModuleNotFoundError, ValueError) as e:
+    IS_DSINE_INSTALLED = False
+
 
 class DsineEstimate:
 
@@ -369,7 +393,7 @@ class DsineEstimate:
         model.pixel_coords = model.pixel_coords.to(self.device)
         model = dsine_utils.load_checkpoint(modelpath, model)
         model.eval()
-        self.model = model.to(self.device)
+        self.model = model.to(device=self.device)
         self.transform = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
     def offload_model(self):
@@ -414,12 +438,18 @@ class DsineEstimate:
 #############################
 all_options_depth = [
     "leres", "leres++",
-    "dpt_large", "dpt_hybrid", "midas_v21", "midas_v21s",
-    "normalbae", "dsine",
-    "zoedepth"
+    "zoedepth",
+    "dpt_large", "dpt_hybrid", "midas_v21",
 ]
+try:
+    from geffnet import efficientnet_b0
+    all_options_depth.extend(["midas_v21s", "normalbae"])
+except (ImportError, ModuleNotFoundError, ValueError) as e:
+    pass
+if IS_DSINE_INSTALLED:
+    all_options_depth.append("dsine")
 
-def apply_depth(input_image, model: str = "normal", *, **kwargs):
+def apply_depth(input_image, model: str = "normalbae", **kwargs):
 
     if model == "leres":
         estimator = LeResEstimate(boost=False)

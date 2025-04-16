@@ -35,7 +35,7 @@ class DWposeDetector:
         resolution: int = 512,
         output_type: str = "pil",
         bboxes = None,
-        # return_mmpose: bool = False,
+        return_mmpose: bool = False,
         draw_pose: bool = True,
         **drawkwargs,
     ) -> Union[PIL.Image.Image, np.ndarray, Dict]:

@@ -16,7 +16,7 @@ class TestOptions(BaseOptions):
         parser.add_argument('--num_test', type=int, default=50, help='how many test images to run')
         
         # rewrite devalue values
-        parser.set_defaults(model='pix2pix4depth')
+        parser.set_defaults(model='pix2pix4_depth')
         
         # To avoid cropping, the load_size should be the same as crop_size
         parser.set_defaults(load_size=parser.get_default('crop_size'))

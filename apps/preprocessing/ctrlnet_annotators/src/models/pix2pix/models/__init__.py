@@ -1,4 +1,5 @@
-"""This package contains modules related to objective functions, optimizations, and network architectures.
+"""
+This package contains modules related to objective functions, optimizations, and network architectures.
 
 To add a custom model class called 'dummy', you need to add a file called 'dummy_model.py' and define a subclass DummyModel inherited from BaseModel.
 You need to implement the following five functions:
@@ -18,7 +19,24 @@ Now you can use the model class by specifying flag '--model dummy'.
 See our template model class 'template_model.py' for more details.
 """
 import importlib
+from pathlib import Path
+from types import ModuleType
+
 from .base_model import BaseModel
+
+
+def import_module_from_file(filepath):
+    # Get absolute path and module name
+    abs_path = os.path.abspath(filepath)
+    module_name = os.path.splitext(os.path.basename(filepath))[0]
+
+    spec = importlib.util.spec_from_file_location(module_name, abs_path)
+    if spec and spec.loader:
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+    else:
+        raise ImportError(f"Could not import module from {filepath}")
 
 
 def find_model_using_name(model_name):
@@ -28,22 +46,28 @@ def find_model_using_name(model_name):
     In the file, the class called DatasetNameModel() will be instantiated. 
     It has to be a subclass of BaseModel, and it is case-insensitive.
     """
-    # model_dir = "annotator.leres.pix2pix.models."
-    model_dir = "apps.preprocessing.ctrlnet_annotators.src.models.pix2pix.models."
-    model_filename = model_dir + model_name + "_model"
-    modellib = importlib.import_module(model_filename)
-    model = None
+    try:
+        # model_dir = "annotator.leres.pix2pix.models."
+        model_dir = "apps.preprocessing.ctrlnet_annotators.src.models.pix2pix.models."
+        model_filename = model_dir + model_name
+        model_lib = importlib.import_module(model_filename)
 
+    except ModuleNotFoundError:
+        model_dir = Path(__file__).resolve().parents[0]
+        model_filename = str(model_dir / f"{model_name}.py")
+        model_lib = import_module_from_file(model_filename)
+    
+    target_model = None
     target_model_name = model_name.replace('_', '') + 'model'
-    for name, cls in modellib.__dict__.items():
+    for name, clss in model_lib.__dict__.items():
         if name.lower() == target_model_name.lower() \
-        and issubclass(cls, BaseModel):
-            model = cls
-    assert model is not None, \
-        f"In {model_filename}.py, there should be a subclass of BaseModel "
+        and issubclass(clss, BaseModel):
+            target_model = clss
+    assert target_model is not None, \
+        f"In {model_filename}.py, there should be a subclass of BaseModel "\
         f"with class name that matches {target_model_name} in lowercase."
         
-    return model
+    return target_model
 
 
 def get_option_setter(model_name):

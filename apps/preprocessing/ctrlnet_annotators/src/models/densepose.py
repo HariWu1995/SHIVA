@@ -341,7 +341,7 @@ def resample_uv_tensors_to_bbox(
     return uv
 
 
-def visualize(results, num_parts: int, cmap: str = "viridis"):
+def visualize(hint_canvas, results, num_parts: int, cmap: str = "viridis"):
     visualizer = DensePoseMaskedColormapResultsVisualizer(
         data_extractor=_extract_i_from_iuvarr,
         segm_extractor=_extract_i_from_iuvarr,
@@ -349,15 +349,17 @@ def visualize(results, num_parts: int, cmap: str = "viridis"):
         val_scale=255.0/num_parts,
     )
     if cmap == "viridis":
+        # https://docs.opencv.org/4.x/d3/d50/group__imgproc__colormap.html#gga9a805d8262bcbe273f16be9ea2055a65afdb81862da35ea4912a75f0e8f274aeb
         visualizer.mask_visualizer.cmap = cv2.COLORMAP_VIRIDIS
-        hint_image = visualizer.visualize(hint_image, results)
-        hint_image = cv2.cvtColor(hint_image, cv2.COLOR_BGR2RGB)
-        hint_image[:, :, 0][hint_image[:, :, 0] == 0] = 68
-        hint_image[:, :, 1][hint_image[:, :, 1] == 0] = 1
-        hint_image[:, :, 2][hint_image[:, :, 2] == 0] = 84
+        hint_canvas = visualizer.visualize(hint_canvas, results)
+        hint_canvas = cv2.cvtColor(hint_canvas, cv2.COLOR_BGR2RGB)
+        hint_canvas[:, :, 0][hint_canvas[:, :, 0] == 0] = 68
+        hint_canvas[:, :, 1][hint_canvas[:, :, 1] == 0] = 1
+        hint_canvas[:, :, 2][hint_canvas[:, :, 2] == 0] = 84
     else:
+        # https://docs.opencv.org/4.x/d3/d50/group__imgproc__colormap.html#gga9a805d8262bcbe273f16be9ea2055a65a48cbda63f52a232eea096a54f2a7572d
         visualizer.mask_visualizer.cmap = cv2.COLORMAP_PARULA
-        hint_image = visualizer.visualize(hint_image, results)
-        hint_image = cv2.cvtColor(hint_image, cv2.COLOR_BGR2RGB)
-    return hint_image
+        hint_canvas = visualizer.visualize(hint_canvas, results)
+        hint_canvas = cv2.cvtColor(hint_canvas, cv2.COLOR_BGR2RGB)
+    return hint_canvas
 

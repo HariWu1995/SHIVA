@@ -28,7 +28,7 @@ class Wholebody:
         if not model_det:
             self.session_det = None
         else:
-            self.session_det = Session( path_or_bytes=model_det, **provider_config)
+            self.session_det = Session(path_or_bytes=model_det, **provider_config)
         self.session_pose = Session(path_or_bytes=model_pose, **provider_config)
 
     def __call__(self, oriImg, bboxes=None, return_mmpose: bool = False):
@@ -51,7 +51,8 @@ class Wholebody:
         #############################
         #   Format to OpenPose      #
         #############################
-
+        print(keypoints.shape)
+        print(scores.shape)
         keypoints_info = np.concatenate((keypoints, scores[..., None]), axis=-1)
 
         # compute neck joint

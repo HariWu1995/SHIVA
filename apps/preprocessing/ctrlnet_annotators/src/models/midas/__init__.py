@@ -3,6 +3,7 @@ from .midas_net import MidasNet
 from .midas_net_custom import MidasNet_small
 from .transforms import Resize, NormalizeImage, PrepareForNet
 
+import cv2
 from torchvision.transforms import Compose
 
 

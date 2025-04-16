@@ -11,7 +11,7 @@ torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu124
 onnxruntime==1.15.1
 # onnxruntime-gpu==1.17.1
 onnxoptimizer==0.3.13
-timm
+timm==0.1.12
 einops
 # flash_attn
 roma # 3D rotation

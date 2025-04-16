@@ -36,7 +36,7 @@ def scale_torch(img):
     return img
     
     
-def estimate_leres(img, model, w, h):
+def estimate_leres(img, model, w, h, device=None):
 
     # leres transform input
     rgb_c = img[:, :, ::-1].copy()
@@ -45,7 +45,8 @@ def estimate_leres(img, model, w, h):
     
     # compute
     with torch.no_grad():
-        img_torch = img_torch.to(device=model.device)
+        if device is not None:
+            img_torch = img_torch.to(device=device)
         prediction = model.depth_model(img_torch)
 
     prediction = prediction.squeeze().cpu().numpy()
@@ -142,16 +143,16 @@ def calculate_processing_res(img, base_size, confidence=0.1, scale_threshold=3, 
 
 
 # Generate a double-input depth estimation
-def double_estimate(img, size1, size2, pix2pix_size, model, net_type, pix2pix_model):
+def double_estimate(img, size1, size2, pix2pix_size, model, net_type, pix2pix_model, device=None):
 
     # Generate the low resolution estimation
-    estimate1 = single_estimate(img, size1, model, net_type)
+    estimate1 = single_estimate(img, size1, model, net_type, device)
 
     # Resize to the inference size of merge network.
     estimate1 = cv2.resize(estimate1, (pix2pix_size, pix2pix_size), interpolation=cv2.INTER_CUBIC)
 
     # Generate the high resolution estimation
-    estimate2 = single_estimate(img, size2, model, net_type)
+    estimate2 = single_estimate(img, size2, model, net_type, device)
 
     # Resize to the inference size of merge network.
     estimate2 = cv2.resize(estimate2, (pix2pix_size, pix2pix_size), interpolation=cv2.INTER_CUBIC)
@@ -170,8 +171,8 @@ def double_estimate(img, size1, size2, pix2pix_size, model, net_type, pix2pix_mo
 
 
 # Generate a single-input depth estimation
-def single_estimate(img, msize, model, net_type):
-    return estimate_leres(img, model, msize, msize)
+def single_estimate(img, msize, model, net_type, device=None):
+    return estimate_leres(img, model, msize, msize, device)
     # if net_type == 0:
     #     return estimate_leres(img, model, msize, msize)
     # else:
@@ -420,12 +421,14 @@ class ImageAndPatches:
 
 
 def estimate_boost(img, model, model_type, pix2pix_model, max_res=512, **kwargs):
-    global whole_size_threshold
     
     # get settings
+    global whole_size_threshold
     if 'depthmap_script_boost_rmax' in kwargs:
         whole_size_threshold = kwargs['depthmap_script_boost_rmax']
         
+    device = kwargs.get("device", None)
+
     # leres
     if model_type == 0:
         net_receptive_field_size = 448
@@ -463,7 +466,7 @@ def estimate_boost(img, model, model_type, pix2pix_model, max_res=512, **kwargs)
 
     # Generate the base estimate using the double estimation.
     whole_estimate = double_estimate(img, net_receptive_field_size, whole_image_optimal_size, pix2pix_size, 
-                                    model, model_type, pix2pix_model)
+                                    model, model_type, pix2pix_model, device)
 
     # Compute the multiplier described in section 6 of the main paper 
     # to make sure our initial patch can select small high-density regions of the image.
@@ -545,7 +548,7 @@ def estimate_boost(img, model, model_type, pix2pix_model, max_res=512, **kwargs)
 
         # We apply double estimation for patches. The high resolution value is fixed to twice the receptive
         # field size of the network for patches to accelerate the process.
-        patch_estimation = double_estimate(patch_rgb, net_receptive_field_size, patch_netsize, pix2pix_size, model, model_type, pix2pix_model)
+        patch_estimation = double_estimate(patch_rgb, net_receptive_field_size, patch_netsize, pix2pix_size, model, model_type, pix2pix_model, device)
         patch_estimation = cv2.resize(patch_estimation, (pix2pix_size, pix2pix_size), interpolation=cv2.INTER_CUBIC)
         patch_whole_estimate_base = cv2.resize(patch_whole_estimate_base, (pix2pix_size, pix2pix_size), interpolation=cv2.INTER_CUBIC)
 

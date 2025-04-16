@@ -6,6 +6,8 @@ import os
 from pathlib import Path
 
 import torch
+import numpy as np
+import cv2
 
 
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -24,6 +26,20 @@ def safe_step(x, step=2):
     y = x.astype(np.float32) * float(step + 1)
     y = y.astype(np.int32).astype(np.float32) / float(step)
     return y
+
+
+def resize_to_divisible_by(image: np.ndarray, div: int = 8) -> np.ndarray:
+    """
+    Resize the input image so that both height and width are divisible by `div`.
+    """
+    H, W = image.shape[:2]
+
+    # Round up to next divisible
+    new_H = H // div * div
+    new_W = W // div * div
+
+    resized_image = cv2.resize(image, (new_W, new_H), interpolation=cv2.INTER_AREA)
+    return resized_image
 
 
 def load_file_from_url(
@@ -122,8 +138,7 @@ CTRL_ANNOT_REMOTE_MODELS = {
         "midas_v21s": "https://github.com/AlexeyAB/MiDaS/releases/download/midas_dpt/midas_v21_small-70d6b9c8.pt",
 }
 
-# if os.environ.get('SHIVA_CKPT_PRELOAD', False):
-if True:
+if os.environ.get('SHIVA_CKPT_PRELOAD', False):
     for model_name, model_path in CTRL_ANNOT_LOCAL_MODELS.items():
         if os.path.isfile(model_path):
             continue
