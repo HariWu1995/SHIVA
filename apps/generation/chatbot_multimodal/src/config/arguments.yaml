@@ -1,0 +1,26 @@
+# Basic
+character: SHIVA      # The name of the character to load in chat mode by default.
+verbose: true         # Print the prompts to the terminal
+idle_timeout: -1      # Unload model after this minutes of inactivity. It will be automatically reloaded if needed.
+
+# Generation
+cpu: false            # Use the CPU to generate text
+
+# Cache
+cache_type: fp16      # KV cache type; valid options: llama.cpp - fp16, q8_0, q4_0 / ExLlamaV2 - fp16, fp8, q8, q6, q4.
+low_cpu_mem: true     # Low CPU memory usage
+disk_cache_dir: "./cache"   # Directory to save the disk cache to
+
+# Multimodal
+multimodal_pipeline: Null   # The multimodal pipeline to use. Examples: llava-7b, llava-13b.
+
+# Deprecated
+cache_4bit: false
+cache_8bit: false
+triton: false
+inject_fused_mlp: true
+use_cuda_fp16: true
+disable_exllama: false
+disable_exllamav2: false
+wbits: 0
+groupsize: -1

@@ -69,7 +69,7 @@
 
 ### Uni-modal Generation
 
-- [ ] Text Generation ([WebUI](https://github.com/oobabooga/text-generation-webui))
+- [ ] Text Generation ([WebUI](https://github.com/oobabooga/text-generation-webui) | [Multi-Modal Extension](https://github.com/oobabooga/text-generation-webui/blob/main/extensions/multimodal/README.md))
 
 - [ ] Image Generation ([AUTOMATIC-1111](https://github.com/AUTOMATIC1111/stable-diffusion-webui))
 

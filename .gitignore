@@ -1,6 +1,7 @@
 # Local folder
 venv/
 temp/
+logs/
 result/
 output/
 checkpoints/

@@ -21,6 +21,7 @@ splines
 pandas==2.2.3
 pydantic==2.11.3
 supervision==0.25.1
+datasets==3.5.0
 
 # Data Processing
 opencv-python==4.7.0.72
@@ -30,8 +31,11 @@ scikit-learn==1.4.1.post1
 scipy==1.12.0
 
 # AI Models
-accelerate==0.33.0
+accelerate==1.5.*
+# accelerate==0.33.0
+bitsandbytes==0.45.*
 transformers==4.39.1
+safetensors==0.5.*
 pytorch-lightning==2.2.1
 git+https://github.com/facebookresearch/segment-anything.git
 # SAM-2 @ git+https://github.com/facebookresearch/segment-anything-2.git
@@ -41,10 +45,18 @@ mediapipe
 facexlib
 geffnet==0.9.0
 segmentation-models-pytorch
+peft==0.15.*
+
+# API
+# SpeechRecognition==3.10.0
+# flask_cloudflared==0.0.14
+# sse-starlette==1.6.5
+# tiktoken
 
 # Others
 numba==0.57.0
 pooch==1.8.1
+markdown
 jsonschema==4.21.1
 # av==8.0.3
 # https://pyav.org/docs/develop/overview/installation.html#build-on-windows
