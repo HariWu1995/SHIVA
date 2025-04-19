@@ -44,13 +44,13 @@ def get_device_memory(device_id: int = 0, device_type: str = 'cuda'):
     return math.floor(dev_mem / (1024 * 1024)) 
 
 
-def get_all_device_memory(device_id, device_type: str = 'cuda'):
+def get_all_device_memory():
 
     total_mem = []
-    if is_torch_xpu_available():
+    if is_xpu_available():
         for i in range(torch.xpu.device_count()):
             total_mem.append(get_device_memory(i, 'xpu'))
-    elif is_torch_npu_available():
+    elif is_npu_available():
         for i in range(torch.npu.device_count()):
             total_mem.append(get_device_memory(i, 'npu'))
     else:

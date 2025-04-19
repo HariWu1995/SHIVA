@@ -3,6 +3,7 @@ Reference:
     https://github.com/oobabooga/text-generation-webui
     https://github.com/oobabooga/text-generation-webui/blob/main/extensions/multimodal/README.md
 """
+import os
 from copy import deepcopy
 
 
@@ -46,7 +47,7 @@ def add_extension(name, last=False):
 
 # UI defaults
 settings = {
-    'character': 'SHIVA',
+    'character': 'Assistant',
     'show_controls': True,
     'start_with': '',
     'mode': 'chat-instruct',
@@ -57,7 +58,7 @@ settings = {
     'prompt-notebook': 'QA',
     'name1': 'You',
     'user_bio': '',
-    'preset': 'min_p',
+    'preset': 'Deterministic',  # Deterministic / Creative / Contrastive Search / Instruct
     'max_new_tokens': 512,
     'max_new_tokens_min': 1,
     'max_new_tokens_max': 4096,
@@ -98,6 +99,11 @@ element_description = dict(
     llamacpp_hf_creation = "This will move your gguf file into a subfolder of `models` along with the necessary tokenizer files.",
     extension_menu = 'Note that some of these extensions may require manually installing Python requirements through the command: pip install -r extensions/extension_name/requirements.txt',
     extension_install = 'Enter the GitHub URL below and press Enter. For a list of extensions, see: https://github.com/oobabooga/text-generation-webui-extensions ⚠️  WARNING ⚠️ : extensions can execute arbitrary code. Make sure to inspect their source code before activating them.',
+    params_xtc_threshold = 'If 2 or more tokens have probability above this threshold, consider removing all but the last one.',
+    params_xtc_probability = 'Probability that the removal will actually happen. 0 disables the sampler. 1 makes it always happen.',
+    params_temperature_last = 'Moves temperature/dynamic temperature/quadratic sampling to the end of the sampler stack, igoring their positions in "Sampler priority".',
+    params_dry_seq_breakers = 'Tokens across which sequence matching is not continued. Specified as a comma-separated list of quoted strings.',
+    params_custom_token_bans = 'Token IDs to ban, separated by commas. The IDs can be found in the Default or Notebook tab.',
 )
 
 
@@ -134,7 +140,7 @@ JS_FILES = [
 
 js = dict()
 for fp in JS_FILES:
-    fn = os.path.splitext()[0]
+    fn = os.path.splitext(fp)[0]
     with open(ROOT_DIR / 'js' / fp, 'r') as f:
         js[fn] = f.read()
 

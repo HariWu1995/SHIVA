@@ -9,7 +9,7 @@ import functools
 from PIL import Image, ImageOps
 
 from ..src import shared
-from ..utils import get_available_chat_styles
+from ..src.utils import get_available_chat_styles
 
 from .markdown import SaneListExtension
 
@@ -45,7 +45,7 @@ CSS_DIR = Path(__file__).resolve().parent / "css"
 with open(CSS_DIR / 'html_readable_style.css', 'r') as f:
     readable_css = f.read()
 
-with open(PCSS_DIR / 'html_instruct_style.css', 'r') as f:
+with open(CSS_DIR / 'html_instruct_style.css', 'r') as f:
     instruct_css = f.read()
 
 # Custom chat styles

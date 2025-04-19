@@ -17,7 +17,6 @@ from ..generation import generate_reply, get_encoded_length, get_max_prompt_leng
 from ..utils import save_file, delete_file
 
 from .utils import jinja_env, yaml, get_generation_prompt, replace_character_names
-from .
 
 
 def generate_chat_prompt(user_input, state, **kwargs):

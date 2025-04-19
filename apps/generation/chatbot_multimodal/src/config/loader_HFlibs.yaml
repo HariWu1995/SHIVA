@@ -3,8 +3,8 @@ cpu: false            # Use the CPU to generate text
 auto_devices: false   # Automatically split the model across the available GPU(s) and CPU.
 gpu_memory:   # Max GPU memory in GB to be allocated per GPU (or --gpu-memory 3500MiB for MB)
   - 5         # Example: --gpu-memory 10 for a 1 GPU, --gpu-memory 10 5 for 2 GPUs.
-cpu_memory:   # Max CPU memory in GB to allocate for offloaded weights
-  - 10        # Example: --cpu-memory 10 for GB or --cpu-memory 3500MiB for MB
+cpu_memory: 10    # Max CPU memory in GB to allocate for offloaded weights
+                  # Example: --cpu-memory 10 for GB or --cpu-memory 3500MiB for MB
 disk: true                  # If model is too large for all GPU(s) and CPU combined, send the remaining layers to disk.
 disk_cache_dir: "./cache"   # Directory to save the disk cache to
 no_cache: false       # Don't use cache in generation. This reduces VRAM usage slightly with a performance cost.

@@ -42,7 +42,7 @@ def huggingface_loader(model_name, low_cpu_mem_usage: bool = True):
         low_cpu_mem_usage = low_cpu_mem_usage,
         use_safetensors = config_loader.use_safetensors,
         trust_remote_code = config_loader.trust_remote_code,
-        attn_implementation = config_loader.attn_implementation,,
+        attn_implementation = config_loader.attn_implementation,
         use_flash_attention_2 = config_loader.use_flash_attention_2,
     )
 

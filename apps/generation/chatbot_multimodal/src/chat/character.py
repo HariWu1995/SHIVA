@@ -1,4 +1,5 @@
 import json
+import shutil
 from pathlib import Path
 from PIL import Image
 
@@ -9,13 +10,14 @@ from ..logging import logger
 from ..utils import get_available_characters
 
 from .utils import yaml
-from .history import HISTORY_CHARACTER_DIR
 
 
 CHARACTER_DIR = Path(__file__).resolve().parents[5] / "logs/chat/characters"
 if CHARACTER_DIR.exists() is False:
     CHARACTER_DIR.mkdir()
 
+default_character_dir = Path(__file__).resolve().parents[1] / "characters"
+shutil.copytree(str(default_character_dir), str(CHARACTER_DIR), dirs_exist_ok=True)
 
 cache_folder = Path(shared.args.disk_cache_dir)
 if cache_folder.exists() is False:
@@ -24,7 +26,7 @@ if cache_folder.exists() is False:
 
 def generate_pfp_cache(character):
 
-    for path in [HISTORY_CHARACTER_DIR / f"{character}.{ext}" for ext in ['png', 'jpg', 'jpeg']]:
+    for path in [CHARACTER_DIR / f"{character}.{ext}" for ext in ['png', 'jpg', 'jpeg']]:
         if path.exists() is False:
             continue
 
@@ -47,7 +49,7 @@ def load_character(character, name1, name2):
 
     filepath = None
     for ext in ["yml", "yaml", "json"]:
-        filepath = HISTORY_CHARACTER_DIR / f"{character}.{ext}"
+        filepath = CHARACTER_DIR / f"{character}.{ext}"
         if filepath.exists():
             break
 

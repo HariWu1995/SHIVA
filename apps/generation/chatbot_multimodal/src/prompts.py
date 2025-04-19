@@ -3,7 +3,7 @@ from pathlib import Path
 from .generation import get_encoded_length
 
 
-prompt_dir = path(__file__).resolve().parent / "prompts"
+prompt_dir = Path(__file__).resolve().parent / "prompts"
 
 
 def load_prompt(fname: str = ''):

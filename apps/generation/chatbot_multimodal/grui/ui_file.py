@@ -2,9 +2,12 @@ import traceback
 import gradio as gr
 
 from . import shared as ui
+from .utils import gradget, gather_interface_values
 
-from ..src import utils, chat
+from ..src import chat
 from ..src.preset import generate_preset_yaml
+
+from ..src import utils
 from ..src.utils.default import PRESET_DIR, GRAMMAR_DIR
 
 
@@ -56,77 +59,77 @@ def create_ui():
 def create_event_handlers():
 
     ui.gradio['save_preset'].click(
-        ui.gather_interface_values, 
-        utils.gradget(shared.input_elements), 
-        utils.gradget('interface_state')
+        gather_interface_values, 
+        gradget(ui.input_elements), 
+        gradget('interface_state')
     ).then(
         handle_save_preset_click, 
-        utils.gradget('interface_state'), 
-        utils.gradget('save_preset_contents', 'save_preset_filename', 'preset_saver'), 
+        gradget('interface_state'), 
+        gradget('save_preset_contents', 'save_preset_filename', 'preset_saver'), 
         show_progress=False
     )
 
     ui.gradio['delete_preset'].click(
         handle_delete_preset_click, 
-        utils.gradget('preset_menu'), 
-        utils.gradget('delete_filename', 'delete_root', 'file_deleter'), 
+        gradget('preset_menu'), 
+        gradget('delete_filename', 'delete_root', 'file_deleter'), 
         show_progress=False
     )
 
     ui.gradio['save_grammar'].click(
         handle_save_grammar_click, 
-        utils.gradget('grammar_string'), 
-        utils.gradget('save_contents', 'save_filename', 'save_root', 'file_saver'), 
+        gradget('grammar_string'), 
+        gradget('save_contents', 'save_filename', 'save_root', 'file_saver'), 
         show_progress=False
     )
 
     ui.gradio['delete_grammar'].click(
         handle_delete_grammar_click, 
-        utils.gradget('grammar_file'), 
-        utils.gradget('delete_filename', 'delete_root', 'file_deleter'), s
-        how_progress=False
+        gradget('grammar_file'), 
+        gradget('delete_filename', 'delete_root', 'file_deleter'),
+        show_progress=False
     )
 
     ui.gradio['save_preset_confirm'].click(
         handle_save_preset_confirm_click, 
-        utils.gradget('save_preset_filename', 'save_preset_contents'), 
-        utils.gradget('preset_menu', 'preset_saver'), 
+        gradget('save_preset_filename', 'save_preset_contents'), 
+        gradget('preset_menu', 'preset_saver'), 
         show_progress=False
     )
 
     ui.gradio['save_confirm'].click(
         handle_save_confirm_click, 
-        utils.gradget('save_root', 'save_filename', 'save_contents'), 
-        utils.gradget('file_saver'), 
+        gradget('save_root', 'save_filename', 'save_contents'), 
+        gradget('file_saver'), 
         show_progress=False
     )
 
     ui.gradio['delete_confirm'].click(
         handle_delete_confirm_click, 
-        utils.gradget('delete_root', 'delete_filename'), 
-        utils.gradget('file_deleter'), 
+        gradget('delete_root', 'delete_filename'), 
+        gradget('file_deleter'), 
         show_progress=False
     )
 
     ui.gradio['save_character_confirm'].click(
         handle_save_character_confirm_click, 
-        utils.gradget('name2', 'greeting', 'context', 'character_picture', 'save_character_filename'), 
-        utils.gradget('character_menu', 'character_saver'), 
+        gradget('name2', 'greeting', 'context', 'character_picture', 'save_character_filename'), 
+        gradget('character_menu', 'character_saver'), 
         show_progress=False
     )
 
     ui.gradio['delete_character_confirm'].click(
         handle_delete_character_confirm_click, 
-        utils.gradget('character_menu'), 
-        utils.gradget('character_menu', 'character_deleter'), 
+        gradget('character_menu'), 
+        gradget('character_menu', 'character_deleter'), 
         show_progress=False
     )
 
-    ui.gradio['save_preset_cancel'      ].click(lambda: gr.update(visible=False), None, utils.gradget('preset_saver'), show_progress=False)
-    ui.gradio['save_cancel'             ].click(lambda: gr.update(visible=False), None, utils.gradget('file_saver'))
-    ui.gradio['delete_cancel'           ].click(lambda: gr.update(visible=False), None, utils.gradget('file_deleter'))
-    ui.gradio['save_character_cancel'   ].click(lambda: gr.update(visible=False), None, utils.gradget('character_saver'), show_progress=False)
-    ui.gradio['delete_character_cancel' ].click(lambda: gr.update(visible=False), None, utils.gradget('character_deleter'), show_progress=False)
+    ui.gradio['save_preset_cancel'      ].click(lambda: gr.update(visible=False), None, gradget('preset_saver'), show_progress=False)
+    ui.gradio['save_cancel'             ].click(lambda: gr.update(visible=False), None, gradget('file_saver'))
+    ui.gradio['delete_cancel'           ].click(lambda: gr.update(visible=False), None, gradget('file_deleter'))
+    ui.gradio['save_character_cancel'   ].click(lambda: gr.update(visible=False), None, gradget('character_saver'), show_progress=False)
+    ui.gradio['delete_character_cancel' ].click(lambda: gr.update(visible=False), None, gradget('character_deleter'), show_progress=False)
 
 
 def handle_save_preset_confirm_click(filename, contents):

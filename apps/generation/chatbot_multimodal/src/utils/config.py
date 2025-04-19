@@ -11,6 +11,7 @@ def load_config(config_path: str | PurePath, return_type: str = "namespace"):
         config = yaml.safe_load(open(config_path, 'r').read())
     else:
         config = {}
+        
     return_type = return_type.lower()
     if return_type == "namespace":
         return Namespace(**config)

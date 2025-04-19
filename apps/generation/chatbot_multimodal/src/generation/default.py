@@ -7,7 +7,7 @@ from .. import shared
 from ..logging import logger, pprinter
 from ..models import clear_model_cache
 from ..callbacks import Iteratorize, Stream, _StopEverythingStoppingCriteria
-from ..grammar.utils import initialize_grammar
+from ..grammar import initialize_grammar
 from ..grammar.logits import GrammarConstrainedLogitsProcessor
 
 from .utils import set_manual_seed, print_prompt

@@ -11,9 +11,19 @@ from transformers import is_torch_npu_available, is_torch_xpu_available
 
 import gradio as gr
 
-from .logging import logger
 from . import shared as ui
-from . import utils
+from .logging import logger
+from .utils import (
+    gradget, 
+    create_refresh_button,
+    update_model_parameters, 
+    list_interface_input_elements, 
+    apply_interface_values, 
+    gather_interface_values, 
+    apply_model_settings_to_state, 
+    save_model_settings, 
+    save_instruction_template,
+)
 
 from ..src import shared
 from ..src.path import MLM_LOCAL_MODELS, LORA_LOCAL_MODELS
@@ -28,10 +38,10 @@ def get_gpu_memory_keys():
 
 def get_all_params_wrapper():
     all_params = get_all_params()
-    if 'gpu_memory' in all_params:
-        all_params.remove('gpu_memory')
-        for k in get_gpu_memory_keys():
-            all_params.add(k)
+    # if 'gpu_memory' in all_params:
+    #     all_params.remove('gpu_memory')
+    #     for k in get_gpu_memory_keys():
+    #         all_params.add(k)
     return sorted(all_params)
 
 
@@ -50,23 +60,28 @@ def make_loader_params_visible(loader):
 
 
 def get_default_gpu_mem():
+    default_gpu_mem = []
     if shared.args.gpu_memory is not None and \
     len(shared.args.gpu_memory) > 0:
-        for i in shared.args.gpu_memory:
-            if 'mib' in i.lower():
-                default_gpu_mem.append(int(re.sub('[a-zA-Z ]', '', i)))
+        for m in shared.args.gpu_memory:
+            if isinstance(m, int):
+                default_gpu_mem.append(m)
+            elif 'mib' in m.lower():
+                default_gpu_mem.append(int(re.sub('[a-zA-Z ]', '', m)))
             else:
-                default_gpu_mem.append(int(re.sub('[a-zA-Z ]', '', i)) * 1000)
+                default_gpu_mem.append(int(re.sub('[a-zA-Z ]', '', m)) * 1000)
     return default_gpu_mem
 
 
 def get_default_cpu_mem():
     total_cpu_mem = math.floor(psutil.virtual_memory().total / (1024 * 1024))
-    if shared.args.cpu_memory is not None:
-        default_cpu_mem = re.sub('[a-zA-Z ]', '', shared.args.cpu_memory)
-    else:
-        default_cpu_mem = 0
-    return default_cpu_mem
+    m = shared.args.cpu_memory
+    if m is None:
+        return 0
+    if isinstance(m, int):
+        return m
+    elif isinstance(m, str):
+        return re.sub('[a-zA-Z ]', '', m)
 
 
 def create_ui():
@@ -95,7 +110,7 @@ def create_ui():
                 with gr.Row():
                     ui.gradio['model_menu'] = gr.Dropdown(choices=all_models, value=lambda: shared.model_name, 
                                                                     label='Model', elem_classes='slim-dropdown', interactive=is_single_user)
-                    ui.create_refresh_button(
+                    create_refresh_button(
                         ui.gradio['model_menu'], lambda: None, 
                                                  lambda: {'choices': all_models}, elem_classes='refresh-button', interactive=is_single_user)
 
@@ -109,7 +124,7 @@ def create_ui():
                                                             choices=all_loras, 
                                                             value=shared.lora_names, 
                                                                     label='LoRA(s)', elem_classes='slim-dropdown', interactive=is_single_user)
-                    ui.create_refresh_button(
+                    create_refresh_button(
                         ui.gradio['lora_menu'], lambda: None, 
                                                 lambda: {'choices': all_loras, 
                                                         'value': shared.lora_names}, elem_classes='refresh-button', interactive=is_single_user)
@@ -137,8 +152,8 @@ def create_ui():
 
                 with gr.Tab("llamacpp_HF creator"):
                     with gr.Row():
-                        ui.gradio['gguf_menu'] = gr.Dropdown(choices=utils.get_available_ggufs(), value=lambda: shared.model_name, label='Choose your GGUF', elem_classes='slim-dropdown', interactive=is_single_user)
-                        ui.create_refresh_button(ui.gradio['gguf_menu'], lambda: None, lambda: {'choices': get_available_ggufs()}, 'refresh-button', interactive=is_single_user)
+                        ui.gradio['gguf_menu'] = gr.Dropdown(choices=['None'], value=lambda: shared.model_name, label='Choose your GGUF', elem_classes='slim-dropdown', interactive=is_single_user)
+                        create_refresh_button(ui.gradio['gguf_menu'], lambda: None, lambda: {'choices': ["None"]}, 'refresh-button', interactive=is_single_user)
 
                     ui.gradio['unquantized_url'] = gr.Textbox(label="Enter the URL for the original (unquantized) model", info="Example: https://huggingface.co/lmsys/vicuna-13b-v1.5", max_lines=1)
                     ui.gradio['create_llamacpp_hf_button'] = gr.Button("Submit", variant="primary", interactive=is_single_user)
@@ -153,7 +168,7 @@ def create_ui():
                             label='Select the desired instruction template', 
                             elem_classes='slim-dropdown',
                         )
-                        ui.create_refresh_button(
+                        create_refresh_button(
                             ui.gradio['customized_template'], 
                             lambda: None, 
                             lambda: {'choices': all_instructions}, 
@@ -171,8 +186,8 @@ def create_ui():
 def create_event_handlers():
     ui.gradio['loader'].change(
         make_loader_params_visible, 
-        utils.gradget('loader'), 
-        utils.gradget(get_all_params_wrapper()), 
+        gradget('loader'), 
+        gradget(get_all_params_wrapper()), 
         show_progress=False
     )
 
@@ -180,99 +195,99 @@ def create_event_handlers():
     # with the model defaults (if any), and then the model is loaded
     # unless "autoload_model" is unchecked
     ui.gradio['model_menu'].change(
-        utils.gather_interface_values, 
-        utils.gradget(shared.input_elements), 
-        utils.gradget('interface_state')
+        gather_interface_values, 
+        gradget(ui.input_elements), 
+        gradget('interface_state')
     ).then(
         handle_load_model_event_initial, 
-        utils.gradget('model_menu', 'interface_state'), 
-        utils.gradget(utils.list_interface_input_elements()) + utils.gradget('interface_state'), 
+        gradget('model_menu', 'interface_state'), 
+        gradget(list_interface_input_elements()) + gradget('interface_state'), 
         show_progress=False
     ).then(
         load_model_wrapper, 
-        utils.gradget('model_menu', 'loader', 'autoload_model'), 
-        utils.gradget('model_status'), 
+        gradget('model_menu', 'loader', 'autoload_model'), 
+        gradget('model_status'), 
         show_progress=True
     ).success(
         handle_load_model_event_final, 
-        utils.gradget('truncation_length', 'loader', 'interface_state'), 
-        utils.gradget('truncation_length', 'filter_by_loader'), 
+        gradget('truncation_length', 'loader', 'interface_state'), 
+        gradget('truncation_length', 'filter_by_loader'), 
         show_progress=False
     )
 
     ui.gradio['load_model'].click(
-        utils.gather_interface_values, 
-        utils.gradget(shared.input_elements), 
-        utils.gradget('interface_state')
+        gather_interface_values, 
+        gradget(ui.input_elements), 
+        gradget('interface_state')
     ).then(
-        utils.update_model_parameters, 
-        utils.gradget('interface_state'), 
+        update_model_parameters, 
+        gradget('interface_state'), 
         None
     ).then(
         partial(load_model_wrapper, autoload=True), 
-        utils.gradget('model_menu', 'loader'), 
-        utils.gradget('model_status'), 
+        gradget('model_menu', 'loader'), 
+        gradget('model_status'), 
         show_progress=True
     ).success(
         handle_load_model_event_final, 
-        utils.gradget('truncation_length', 'loader', 'interface_state'), 
-        utils.gradget('truncation_length', 'filter_by_loader'), 
+        gradget('truncation_length', 'loader', 'interface_state'), 
+        gradget('truncation_length', 'filter_by_loader'), 
         show_progress=False
     )
 
     ui.gradio['unload_model'].click(
         handle_unload_model_click, 
         None, 
-        utils.gradget('model_status'), 
+        gradget('model_status'), 
         show_progress=False
     )
 
     ui.gradio['save_model_settings'].click(
-        utils.gather_interface_values, 
-        utils.gradget(shared.input_elements), 
-        utils.gradget('interface_state')
+        gather_interface_values, 
+        gradget(ui.input_elements), 
+        gradget('interface_state')
     ).then(
-        utils.save_model_settings, 
-        utils.gradget('model_menu', 'interface_state'), 
-        utils.gradget('model_status'), 
+        save_model_settings, 
+        gradget('model_menu', 'interface_state'), 
+        gradget('model_status'), 
         show_progress=False
     )
 
     ui.gradio['lora_menu_apply'].click(
         load_lora_wrapper, 
-        utils.gradget('lora_menu'), 
-        utils.gradget('model_status'), 
+        gradget('lora_menu'), 
+        gradget('model_status'), 
         show_progress=False
     )
 
     ui.gradio['download_model_button'].click(
         download_model_wrapper, 
-        utils.gradget('custom_model_menu', 'download_specific_file'), 
-        utils.gradget('model_status'), 
+        gradget('custom_model_menu', 'download_specific_file'), 
+        gradget('model_status'), 
         show_progress=True)
 
     ui.gradio['get_file_list'].click(
         partial(download_model_wrapper, return_links=True), 
-        utils.gradget('custom_model_menu', 'download_specific_file'), 
-        utils.gradget('model_status'), 
+        gradget('custom_model_menu', 'download_specific_file'), 
+        gradget('model_status'), 
         show_progress=True)
 
     ui.gradio['autoload_model'].change(
         lambda x: gr.update(visible=not x), 
-        utils.gradget('autoload_model'), 
-        utils.gradget('load_model')
+        gradget('autoload_model'), 
+        gradget('load_model')
     )
 
     ui.gradio['create_llamacpp_hf_button'].click(
         create_llamacpp_hf, 
-        utils.gradget('gguf_menu', 'unquantized_url'), 
-        utils.gradget('model_status'), 
+        gradget('gguf_menu', 'unquantized_url'), 
+        gradget('model_status'), 
         show_progress=True)
 
     ui.gradio['customized_template_submit'].click(
-        utils.save_instruction_template, 
-        utils.gradget('model_menu', 'customized_template'), 
-        utils.gradget('model_status'), 
+        save_instruction_template, 
+        gradget('model_menu', 'customized_template'), 
+        gradget('model_status'), 
         show_progress=True)
 
 
@@ -301,6 +316,13 @@ def load_model_wrapper(selected_model, loader, autoload=False):
             logger.error('Failed to load the model.')
             print(exc)
             yield exc.replace('\n', '\n\n')
+
+
+def load_lora_wrapper(selected_loras):
+    yield ("Applying the following LoRAs to {}:\n\n{}".format(shared.model_name, '\n'.join(selected_loras)))
+    from ..src.LoRA import add_lora_to_model
+    add_lora_to_model(selected_loras)
+    yield ("Successfuly applied the LoRAs")
 
 
 def download_model_wrapper(repo_id, specific_file, progress=gr.Progress(), return_links=False, check=False):
@@ -395,9 +417,9 @@ def update_truncation_length(current_length, state):
 
 
 def handle_load_model_event_initial(model, state):
-    state = utils.apply_model_settings_to_state(model, state)
-    output = utils.apply_interface_values(state)
-    _none = utils.update_model_parameters(state)
+    state = apply_model_settings_to_state(model, state)
+    output = apply_interface_values(state)
+    _none = update_model_parameters(state)
     return output + [state]
 
 

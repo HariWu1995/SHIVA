@@ -2,6 +2,7 @@
 #########################################
 #               Wrapper                 #
 #########################################
+import yaml
 
 from jinja2.ext import loopcontrols
 from jinja2.sandbox import ImmutableSandboxedEnvironment as SandboxEnv

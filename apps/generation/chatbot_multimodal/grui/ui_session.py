@@ -2,7 +2,7 @@ import gradio as gr
 from pathlib import Path
 
 from . import shared as ui
-from .utils import list_model_elements, get_available_extensions
+from .utils import gradget, list_model_elements, get_available_extensions, gather_interface_values
 
 from ..src import shared
 
@@ -37,7 +37,7 @@ def create_ui():
                 extension_name = gr.Textbox(lines=1, label='Install or update', interactive=is_single_user, info=ui.element_description['extension_install'])
                 extension_status = gr.Markdown()
 
-        ui.gradio['theme_state'] = gr.Textbox(visible=False, value='dark' if shared.settings['dark_theme'] else 'light')
+        ui.gradio['theme_state'] = gr.Textbox(visible=False, value='dark' if ui.settings['dark_theme'] else 'light')
 
 
 def create_event_handlers():
@@ -49,25 +49,25 @@ def create_event_handlers():
     # Reset interface event
     ui.gradio['reset_interface'].click(
         set_interface_arguments, 
-        gradio('extensions_menu', 'bool_menu'), 
+        gradget('extensions_menu', 'bool_menu'), 
         None
     ).then(None, None, None, js=reload_js)
 
     ui.gradio['toggle_dark_mode'].click(
         lambda x: 'dark' if x == 'light' else 'light', 
-        gradio('theme_state'), 
-        gradio('theme_state')
+        gradget('theme_state'), 
+        gradget('theme_state')
     ).then(
         None, None, None, js=dark_theme)
 
     ui.gradio['save_settings'].click(
-        ui.gather_interface_values, 
-        gradio(shared.input_elements), 
-        gradio('interface_state')
+        gather_interface_values, 
+        gradget(ui.input_elements), 
+        gradget('interface_state')
     ).then(
         handle_save_settings, 
-        gradio('interface_state', 'preset_menu', 'extensions_menu', 'show_controls', 'theme_state'), 
-        gradio('save_contents', 'save_filename', 'save_root', 'file_saver'), 
+        gradget('interface_state', 'preset_menu', 'extensions_menu', 'show_controls', 'theme_state'), 
+        gradget('save_contents', 'save_filename', 'save_root', 'file_saver'), 
         show_progress=False
     )
 

@@ -1,17 +1,18 @@
 from copy import deepcopy
+import gradio as gr
 import html
 
-from ..html import convert_to_markdown
+from .html import convert_to_markdown
 
 from ..src import shared
 from ..src.instruct import template_dir, generate_instruction_template
 from ..src.generation import generate_reply
 
 from ..src.chat.main import generate_chat_prompt
-from ..src.chat.utils import get_stopping_strings, character_is_loaded, redraw_html as redraw, upload_profile_picture
+from ..src.chat.utils import get_stopping_strings, character_is_loaded, redraw_html as redraw
 from ..src.chat.message import remove_last_message, send_dummy_message, send_dummy_reply
-from ..src.chat.history import find_all_histories_with_first_prompts
-from ..src.chat.character import load_character
+from ..src.chat.history import find_all_histories_with_first_prompts, start_new_chat, load_latest_history
+from ..src.chat.character import load_character, upload_profile_picture
 
 
 #########################################################

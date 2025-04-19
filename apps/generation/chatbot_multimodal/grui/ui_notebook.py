@@ -1,15 +1,13 @@
 import gradio as gr
 
 from . import shared as ui
-from .utils import gradget, gather_interface_values
+from .utils import gradget, gather_interface_values, create_refresh_button
 from .ui_default import handle_delete_prompt, handle_save_prompt
 
 from ..src.utils import get_available_prompts
+from ..src.logits import get_next_logits
 from ..src.prompts import count_tokens, load_prompt
 from ..src.generation import get_token_ids, generate_reply_wrapper, stop_everything_event
-
-
-from modules import logits, shared, ui, utils
 
 
 inputs = ('textbox-notebook', 'interface_state')
@@ -65,7 +63,7 @@ def create_ui():
                 gr.HTML('<div style="padding-bottom: 13px"></div>')
                 with gr.Row():
                     ui.gradio['prompt_menu-notebook'] = gr.Dropdown(choices=get_available_prompts(), value='None', label='Prompt', elem_classes='slim-dropdown')
-                    ui.create_refresh_button(
+                    create_refresh_button(
                         ui.gradio['prompt_menu-notebook'], 
                         lambda: None, 
                         lambda: {'choices': get_available_prompts()}, elem_classes=['refresh-button', 'refresh-button-small'], interactive=is_single_user)
@@ -84,7 +82,7 @@ def create_event_handlers():
                                     outputs=gradget('last_input-notebook')
                                 ).then(
                                         fn=gather_interface_values, 
-                                    inputs=gradget(shared.input_elements), 
+                                    inputs=gradget(ui.input_elements), 
                                     outputs=gradget('interface_state')
                                 ).then(
                                         fn=lambda: [gr.update(visible=True), gr.update(visible=False)], 
@@ -111,7 +109,7 @@ def create_event_handlers():
                                     outputs=gradget('last_input-notebook')
                                 ).then(
                                         fn=gather_interface_values, 
-                                    inputs=gradget(shared.input_elements), 
+                                    inputs=gradget(ui.input_elements), 
                                     outputs=gradget('interface_state')
                                 ).then(
                                         fn=lambda: [gr.update(visible=True), gr.update(visible=False)],
@@ -139,7 +137,7 @@ def create_event_handlers():
                                         show_progress=False
                                     ).then(
                                             fn=gather_interface_values, 
-                                        inputs=gradget(shared.input_elements), 
+                                        inputs=gradget(ui.input_elements), 
                                         outputs=gradget('interface_state')
                                     ).then(
                                             fn=lambda: [gr.update(visible=True), gr.update(visible=False)], 
@@ -210,10 +208,10 @@ def create_event_handlers():
 
     ui.gradio['get_logits-notebook'].click(
                                             fn=gather_interface_values, 
-                                        inputs=gradget(shared.input_elements), 
+                                        inputs=gradget(ui.input_elements), 
                                         outputs=gradget('interface_state')
                                     ).then(
-                                            fn=logits.get_next_logits, 
+                                            fn=get_next_logits, 
                                         inputs=gradget('textbox-notebook', 'interface_state', 'use_samplers-notebook', 'logits-notebook'), 
                                         outputs=gradget('logits-notebook', 'logits-notebook-previous'), 
                                         show_progress=False)

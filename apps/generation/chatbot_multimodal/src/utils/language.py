@@ -1,4 +1,6 @@
 
+import re
+
 
 # Convert string to integer
 def atoi(text: str):

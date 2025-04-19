@@ -1,4 +1,5 @@
 import os
+import re
 import html
 import json
 from datetime import datetime
@@ -7,7 +8,7 @@ from pathlib import Path
 from ...grui import shared as ui
 from ..logging import logger
 from ..utils import save_file, delete_file
-from .utils import replace_character_names
+from .utils import replace_character_names, redraw_html
 
 
 HISTORY_DIR = Path(__file__).resolve().parents[5] / "logs/chat/history"
@@ -229,11 +230,13 @@ def load_history_json(file, history):
 def handle_upload_chat_history(load_chat_history, state):
     history = start_new_chat(state)
     history = load_history_json(load_chat_history, history)
+
     save_history(history, state['unique_id'], state['character_menu'], state['mode'])
     histories = find_all_histories_with_first_prompts(state)
 
     html = redraw_html(history, state['name1'], state['name2'], state['mode'], state['chat_style'], state['character_menu'])
 
+    from ..grui.html import convert_to_markdown
     convert_to_markdown.cache_clear()
 
     if len(histories) > 0:

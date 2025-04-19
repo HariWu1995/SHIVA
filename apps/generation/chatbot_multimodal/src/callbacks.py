@@ -5,7 +5,7 @@ from threading import Thread
 import torch
 import transformers
 
-import .shared as shared
+from . import shared
 
 
 class StopNowException(Exception):

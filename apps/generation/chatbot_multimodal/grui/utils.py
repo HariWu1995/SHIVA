@@ -1,11 +1,16 @@
+import re
 import gradio as gr
 
 from copy import deepcopy
+from pathlib import Path
 from datetime import datetime
+
+import torch
 from transformers import is_torch_xpu_available
 
 from . import shared as ui
 from ..src import shared
+from ..src.utils import natural_keys
 from ..src.loaders import get_model_metadata
 from ..src.sampler import loaders_and_params
 
@@ -25,7 +30,7 @@ symbols = dict(
 def gradget(*keys):
     if len(keys) == 1 and type(keys[0]) in [list, tuple]:
         keys = keys[0]
-    return [ui.gradio[k] for k in keys]
+    return [ui.gradio[k] for k in keys if k in ui.gradio.keys()]
 
 
 def get_fallback_settings():
@@ -90,7 +95,7 @@ def save_settings(state, preset, extensions_list, show_controls, theme_state,
     return yaml.dump(output, sort_keys=False, width=float("inf"), allow_unicode=True)
 
 
-def create_refresh_button(refresh_component, refresh_method, refreshed_args, elem_class, interactive=True):
+def create_refresh_button(refresh_component, refresh_method, refreshed_args, elem_classes, interactive=True):
     """
     Copied from https://github.com/AUTOMATIC1111/stable-diffusion-webui
     """
@@ -99,7 +104,7 @@ def create_refresh_button(refresh_component, refresh_method, refreshed_args, ele
         args = refreshed_args() if callable(refreshed_args) else refreshed_args
         return gr.update(**(args or {}))
 
-    refresh_button = gr.Button(value=symbols["refresh"], elem_classes=elem_class, interactive=interactive)
+    refresh_button = gr.Button(value=symbols["refresh"], elem_classes=elem_classes, interactive=interactive)
     refresh_button.click(
         fn=lambda: {k: tuple(v) if type(k) is list else v for k, v in refresh().items()},
         inputs=[],
@@ -112,60 +117,14 @@ def list_model_elements():
     elements = [
         'filter_by_loader',
         'loader',
-        'cpu_memory',
-        'n_gpu_layers',
-        'n_threads',
-        'n_threads_batch',
-        'n_batch',
-        'n_ctx',
-        'max_seq_len',
-        'cache_type',
-        'tensor_split',
-        'gpu_split',
-        'alpha_value',
-        'rope_freq_base',
-        'compress_pos_emb',
-        'compute_dtype',
-        'quant_type',
-        'attention_sink_size',
-        'num_experts_per_token',
-        'tensorcores',
-        'load_in_8bit',
-        'load_in_4bit',
-        'torch_compile',
-        'flash_attn',
-        'use_flash_attention_2',
-        'streaming_llm',
-        'auto_devices',
-        'cpu',
-        'disk',
-        'split_mode',
-        'offload_kqv',
-        'mul_mat_q',
-        'use_mmap',
-        'use_mlock',
-        'numa',
-        'use_double_quant',
-        'attn_implementation',
-        'use_bf16',
-        'autosplit',
-        'enable_parallel',
-        'no_flash_attn',
-        'no_xformers',
-        'no_sdpa',
-        'cfg_cache',
-        'cpp_runner',
-        'logits_all',
-        'trust_remote_code',
-        'use_fast_tokenizer',
     ]
 
-    if is_torch_xpu_available():
-        for i in range(torch.xpu.device_count()):
-            elements.append(f'gpu_memory_{i}')
-    else:
-        for i in range(torch.cuda.device_count()):
-            elements.append(f'gpu_memory_{i}')
+    # if is_torch_xpu_available():
+    #     for i in range(torch.xpu.device_count()):
+    #         elements.append(f'gpu_memory_{i}')
+    # else:
+    #     for i in range(torch.cuda.device_count()):
+    #         elements.append(f'gpu_memory_{i}')
     return elements
 
 
@@ -421,8 +380,4 @@ def get_available_extensions():
         set(map(lambda x: x.parts[1], extension_dir.glob('*/script.py'))), key=natural_keys)
     # extensions = [v for v in extensions if v not in github.new_extensions]
     return extensions
-
-
-def natural_keys(text):
-    return [atoi(c) for c in re.split(r'(\d+)', text)]
 

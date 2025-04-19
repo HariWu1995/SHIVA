@@ -5,17 +5,21 @@ from functools import partial
 from pathlib import Path
 from PIL import Image
 
-from ..src import chat, shared, utils
+from ..src import chat, shared
+from ..src.chat import send_last_reply_to_input, handle_upload_chat_history
+from ..src.utils import get_available_chat_styles, get_available_characters, get_available_instructions
 from ..src.generation import stop_everything_event
 
 from . import wrapper
 from . import shared as ui
 from .html import chat_html_wrapper
-from .utils import gradget, create_refresh_button
+from .utils import gradget, create_refresh_button, gather_interface_values
 
 
 def create_ui():
+    
     is_single_user = not ui.multi_user
+    all_chat_styles = get_available_chat_styles()
 
     ui.gradio['Chat input'] = gr.State()
     ui.gradio['history'] = gr.JSON(visible=False)
@@ -110,7 +114,7 @@ def create_ui():
 
                 with gr.Row():
                     ui.gradio['chat_style'] = gr.Dropdown(
-                        choices=utils.get_available_chat_styles(), 
+                        choices=all_chat_styles, 
                           value=ui.settings['chat_style'], 
                         visible=ui.settings['mode'] != 'instruct', 
                           label='Chat style'
@@ -129,6 +133,8 @@ def create_ui():
 def create_chat_settings_ui():
 
     is_single_user = not ui.multi_user
+    all_characters = get_available_characters()
+    all_instructions = get_available_instructions()
 
     with gr.Tab('Chat'):
 
@@ -138,8 +144,8 @@ def create_chat_settings_ui():
     
                 with gr.Tab("Character"):
                     with gr.Row():
-                        ui.gradio['character_menu'] = gr.Dropdown(value=None, choices=utils.get_available_characters(), label='Character', elem_id='character-menu', info='Used in chat and chat-instruct modes.', elem_classes='slim-dropdown')
-                        create_refresh_button(ui.gradio['character_menu'], lambda: None, lambda: {'choices': utils.get_available_characters()}, 'refresh-button', interactive=is_single_user)
+                        ui.gradio['character_menu'] = gr.Dropdown(label='Character', value=None, choices=all_characters, elem_id='character-menu', elem_classes='slim-dropdown', info='Used in chat and chat-instruct modes.')
+                        create_refresh_button(ui.gradio['character_menu'], lambda: None, lambda: {'choices': all_characters}, 'refresh-button', interactive=is_single_user)
                         ui.gradio['save_character'] = gr.Button('💾', elem_classes='refresh-button', elem_id="save-character", interactive=is_single_user)
                         ui.gradio['delete_character'] = gr.Button('🗑️', elem_classes='refresh-button', interactive=is_single_user)
 
@@ -193,9 +199,9 @@ def create_chat_settings_ui():
         
             with gr.Column():
                 with gr.Row():
-                    ui.gradio['instruction_template'] = gr.Dropdown(choices=utils.get_available_instructions(), label='Saved instruction templates', 
-                                                                       info="After selecting the template, click on \"Load\" to load and apply it.", value='None', elem_classes='slim-dropdown')
-                    create_refresh_button(ui.gradio['instruction_template'], lambda: None, lambda: {'choices': utils.get_available_instructions()}, 'refresh-button', interactive=is_single_user)
+                    ui.gradio['instruction_template'] = gr.Dropdown(choices=all_instructions, label='Saved instruction templates', 
+                                                                    info="After selecting the template, click on \"Load\" to load and apply it.", value='None', elem_classes='slim-dropdown')
+                    create_refresh_button(ui.gradio['instruction_template'], lambda: None, lambda: {'choices': all_instructions}, 'refresh-button', interactive=is_single_user)
                     ui.gradio['load_template'] = gr.Button("Load", elem_classes='refresh-button')
                     ui.gradio['save_template'] = gr.Button('💾', elem_classes='refresh-button', interactive=is_single_user)
                     ui.gradio['delete_template'] = gr.Button('🗑️ ', elem_classes='refresh-button', interactive=is_single_user)
@@ -250,7 +256,7 @@ def create_event_handlers():
     ui.gradio['display'].change(None, gradget('display'), None, js=html_updates_only)
 
     ui.gradio['Generate'].click(
-                                fn=ui.gather_interface_values, 
+                                fn=gather_interface_values, 
                             inputs=gradget(ui.input_elements), 
                             outputs=gradget('interface_state')
                         ).then( 
@@ -268,7 +274,7 @@ def create_event_handlers():
                         ).then(None, None, None, js=audio_noti_ring)
 
     ui.gradio['textbox'].submit(
-                                fn=ui.gather_interface_values, 
+                                fn=gather_interface_values, 
                             inputs=gradget(ui.input_elements), 
                             outputs=gradget('interface_state')
                         ).then(
@@ -286,7 +292,7 @@ def create_event_handlers():
                         ).then(None, None, None, js=audio_noti_ring)
 
     ui.gradio['Regenerate'].click(
-                                fn=ui.gather_interface_values, 
+                                fn=gather_interface_values, 
                             inputs=gradget(ui.input_elements), 
                             outputs=gradget('interface_state')
                         ).then(lambda: None, None, None, js=chat_updates_add
@@ -299,7 +305,7 @@ def create_event_handlers():
                         ).then(None, None, None, js=audio_noti_ring)
 
     ui.gradio['Continue'].click(
-                                fn=ui.gather_interface_values, 
+                                fn=gather_interface_values, 
                             inputs=gradget(ui.input_elements), 
                             outputs=gradget('interface_state')
                         ).then(lambda: None, None, None, js=chat_updates_add
@@ -312,7 +318,7 @@ def create_event_handlers():
                         ).then(None, None, None, js=audio_noti_ring)
 
     ui.gradio['Impersonate'].click(
-                                    fn=ui.gather_interface_values, 
+                                    fn=gather_interface_values, 
                                 inputs=gradget(ui.input_elements), 
                                 outputs=gradget('interface_state')
                             ).then(
@@ -330,7 +336,7 @@ def create_event_handlers():
                             ).then(None, None, None, js=audio_noti_ring)
 
     ui.gradio['Replace last'].click(
-                                    fn=ui.gather_interface_values, 
+                                    fn=gather_interface_values, 
                                 inputs=gradget(ui.input_elements), 
                                 outputs=gradget('interface_state')
                             ).then(
@@ -340,7 +346,7 @@ def create_event_handlers():
                                 show_progress=False)
 
     ui.gradio['Remove last'].click(
-                                    fn=ui.gather_interface_values, 
+                                    fn=gather_interface_values, 
                                 inputs=gradget(ui.input_elements), 
                                 outputs=gradget('interface_state')
                             ).then(
@@ -349,13 +355,13 @@ def create_event_handlers():
                                 outputs=gradget('history', 'display', 'textbox'), 
                                 show_progress=False)
 
-    ui.gradio['Copy last'].click(fn=wrapper.send_last_reply_to_input, 
+    ui.gradio['Copy last'].click(fn=send_last_reply_to_input, 
                                 inputs=gradget('history'), 
                                 outputs=gradget('textbox'), 
                                 show_progress=False)
 
     ui.gradio['Send dummy message'].click(
-                                            fn=ui.gather_interface_values, 
+                                            fn=gather_interface_values, 
                                         inputs=gradget(ui.input_elements), 
                                         outputs=gradget('interface_state')
                                     ).then(
@@ -365,7 +371,7 @@ def create_event_handlers():
                                         show_progress=False)
 
     ui.gradio['Send dummy reply'].click(
-                                        fn=ui.gather_interface_values, 
+                                        fn=gather_interface_values, 
                                     inputs=gradget(ui.input_elements), 
                                     outputs=gradget('interface_state')
                                 ).then(
@@ -376,13 +382,13 @@ def create_event_handlers():
 
     ui.gradio['Stop'].click(stop_everything_event, None, None, queue=False)\
                       .then(fn=chat.redraw_html, 
-                            inputs=gradget(reload_arr), 
+                            inputs=gradget(reload_inputs), 
                             outputs=gradget('display'), 
                             show_progress=False)
 
     if not ui.multi_user:
         ui.gradio['unique_id'].select(
-                                        fn=ui.gather_interface_values, 
+                                        fn=gather_interface_values, 
                                     inputs=gradget(ui.input_elements), 
                                     outputs=gradget('interface_state')
                                 ).then(
@@ -391,20 +397,20 @@ def create_event_handlers():
                                     outputs=gradget('history', 'display'), 
                                     show_progress=False)
 
-    ui.gradio['Start new chat'].click(
-                                        fn=ui.gather_interface_values, 
-                                    inputs=gradget(ui.input_elements), 
-                                    outputs=gradget('interface_state')
-                                ).then(
-                                        fn=wrapper.handle_start_new_chat_click, 
-                                    inputs=gradget('interface_state'), 
-                                    outputs=gradget('history', 'display', 'unique_id'), 
-                                    show_progress=False)
+    ui.gradio['start_chat'].click(
+                                    fn=gather_interface_values, 
+                                inputs=gradget(ui.input_elements), 
+                                outputs=gradget('interface_state')
+                            ).then(
+                                    fn=wrapper.handle_start_new_chat_click, 
+                                inputs=gradget('interface_state'), 
+                                outputs=gradget('history', 'display', 'unique_id'), 
+                                show_progress=False)
 
     ui.gradio['delete_chat'       ].click(lambda: gr.update(visible=True), None, gradget('delete-chat-row'))
     ui.gradio['delete_chat-cancel'].click(lambda: gr.update(visible=False), None, gradget('delete-chat-row'))
     ui.gradio['delete_chat-confirm'].click(
-                                            fn=ui.gather_interface_values, 
+                                            fn=gather_interface_values, 
                                         inputs=gradget(ui.input_elements), 
                                         outputs=gradget('interface_state')
                                     ).then(
@@ -414,7 +420,7 @@ def create_event_handlers():
                                         show_progress=False)
 
     ui.gradio['branch_chat'].click(
-                                    fn=ui.gather_interface_values, 
+                                    fn=gather_interface_values, 
                                 inputs=gradget(ui.input_elements), 
                                 outputs=gradget('interface_state')
                             ).then(
@@ -426,7 +432,7 @@ def create_event_handlers():
     ui.gradio['rename_chat'].click(wrapper.handle_rename_chat_click, None, gradget('rename_to', 'rename-row'), show_progress=False)
     ui.gradio['rename_to-cancel'].click(lambda: gr.update(visible=False), None, gradget('rename-row'), show_progress=False)
     ui.gradio['rename_to-confirm'].click(
-                                            fn=ui.gather_interface_values, 
+                                            fn=gather_interface_values, 
                                         inputs=gradget(ui.input_elements), 
                                         outputs=gradget('interface_state')
                                     ).then(
@@ -435,7 +441,7 @@ def create_event_handlers():
                                         outputs=gradget('unique_id', 'rename-row'))
 
     ui.gradio['rename_to'].submit(
-                                    fn=ui.gather_interface_values, 
+                                    fn=gather_interface_values, 
                                 inputs=gradget(ui.input_elements), 
                                 outputs=gradget('interface_state')
                             ).then(
@@ -445,7 +451,7 @@ def create_event_handlers():
                                 show_progress=False)
 
     ui.gradio['search_chat'].change(
-                                    fn=ui.gather_interface_values, 
+                                    fn=gather_interface_values, 
                                 inputs=gradget(ui.input_elements),
                                 outputs=gradget('interface_state')
                             ).then(
@@ -455,18 +461,18 @@ def create_event_handlers():
                                 show_progress=False)
 
     ui.gradio['load_chat_history'].upload(
-                                        fn=ui.gather_interface_values, 
+                                        fn=gather_interface_values, 
                                     inputs=gradget(ui.input_elements), 
                                     outputs=gradget('interface_state')
                                 ).then(
-                                        fn=wrapper.handle_upload_chat_history, 
+                                        fn=handle_upload_chat_history, 
                                     inputs=gradget('load_chat_history', 'interface_state'), 
                                     outputs=gradget('history', 'display', 'unique_id'), 
                                     show_progress=False
                                 ).then(None, None, None, js=switch_tab_2_chat)
 
     ui.gradio['character_menu'].change(
-                                        fn=ui.gather_interface_values, 
+                                        fn=gather_interface_values, 
                                     inputs=gradget(ui.input_elements), 
                                     outputs=gradget('interface_state')
                                 ).then(
@@ -477,7 +483,7 @@ def create_event_handlers():
                                 ).then(None, None, None, js=update_bigpicture)
 
     ui.gradio['mode'].change(
-                                fn=ui.gather_interface_values, 
+                                fn=gather_interface_values, 
                             inputs=gradget(ui.input_elements), 
                             outputs=gradget('interface_state')
                         ).then(
@@ -488,7 +494,7 @@ def create_event_handlers():
                         ).then(None, gradget('mode'), None, js=change_char_menu)
 
     ui.gradio['chat_style'].change(fn=chat.redraw_html, 
-                                inputs=gradget(reload_arr), 
+                                inputs=gradget(reload_inputs), 
                                 outputs=gradget('display'), 
                                 show_progress=False)
 
@@ -512,7 +518,7 @@ def create_event_handlers():
                                 show_progress=False)
 
     ui.gradio['save_template'].click(
-                                    fn=ui.gather_interface_values, 
+                                    fn=gather_interface_values, 
                                 inputs=gradget(ui.input_elements), 
                                 outputs=gradget('interface_state')
                             ).then(
@@ -562,17 +568,17 @@ def create_event_handlers():
                                         show_progress=False)
 
     ui.gradio['personal_picture'].change(
-                                        fn=ui.gather_interface_values, 
+                                        fn=gather_interface_values, 
                                     inputs=gradget(ui.input_elements), 
                                     outputs=gradget('interface_state')
                                 ).then(
-                                        fn=wrapper.handle_your_picture_change, 
+                                        fn=wrapper.handle_profile_change, 
                                     inputs=gradget('personal_picture', 'interface_state'), 
                                     outputs=gradget('display'), 
                                     show_progress=False)
 
     ui.gradio['send_instruction_to_default'].click(
-                                                    fn=ui.gather_interface_values, 
+                                                    fn=gather_interface_values, 
                                                 inputs=gradget(ui.input_elements), 
                                                 outputs=gradget('interface_state')
                                             ).then(
@@ -583,7 +589,7 @@ def create_event_handlers():
                                             ).then(None, None, None, js=switch_tab_2_auto)
 
     ui.gradio['send_instruction_to_notebook'].click(
-                                                    fn=ui.gather_interface_values, 
+                                                    fn=gather_interface_values, 
                                                 inputs=gradget(ui.input_elements), 
                                                 outputs=gradget('interface_state')
                                             ).then(
@@ -594,7 +600,7 @@ def create_event_handlers():
                                             ).then(None, None, None, js=switch_tab_2_nobo)
 
     ui.gradio['send_instruction_to_negative_prompt'].click(
-                                                            fn=ui.gather_interface_values, 
+                                                            fn=gather_interface_values, 
                                                         inputs=gradget(ui.input_elements), 
                                                         outputs=gradget('interface_state')
                                                     ).then(
@@ -605,7 +611,7 @@ def create_event_handlers():
                                                     ).then(None, None, None, js=switch_tab_2_para)
 
     ui.gradio['send-chat-to-default'].click(
-                                            fn=ui.gather_interface_values, 
+                                            fn=gather_interface_values, 
                                         inputs=gradget(ui.input_elements), 
                                         outputs=gradget('interface_state')
                                     ).then(
@@ -616,7 +622,7 @@ def create_event_handlers():
                                     ).then(None, None, None, js=switch_tab_2_auto)
 
     ui.gradio['send-chat-to-notebook'].click(
-                                            fn=ui.gather_interface_values, 
+                                            fn=gather_interface_values, 
                                         inputs=gradget(ui.input_elements), 
                                         outputs=gradget('interface_state')
                                     ).then(

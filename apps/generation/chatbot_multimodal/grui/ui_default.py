@@ -1,9 +1,10 @@
 import gradio as gr
 
 from . import shared as ui
-from .utils import gradget
+from .utils import gradget, create_refresh_button, gather_interface_values, current_time
 
-from ..src import logits, utils
+from ..src import logits
+from ..src.utils import get_available_prompts
 from ..src.prompts import count_tokens, load_prompt, prompt_dir
 from ..src.generation import generate_reply_wrapper, get_token_ids, stop_everything_event
 
@@ -15,7 +16,7 @@ outputs = ('output_textbox', 'html-default')
 def create_ui():
 
     is_single_user = not ui.multi_user
-    all_prompts = utils.get_available_prompts()
+    all_prompts = get_available_prompts()
 
     with gr.Tab('Default', elem_id='default-tab'):
     
@@ -34,7 +35,7 @@ def create_ui():
 
                 with gr.Row():
                     ui.gradio['prompt_menu-default'] = gr.Dropdown(choices=all_prompts, value='None', label='Prompt', elem_classes='slim-dropdown')
-                    utils.create_refresh_button(
+                    create_refresh_button(
                         ui.gradio['prompt_menu-default'], 
                         lambda: None, lambda: {'choices': all_prompts}, 
                         'refresh-button', 
@@ -79,7 +80,7 @@ def create_event_handlers():
 
     # Gradio functions
     ui.gradio['Generate-default'].click(
-                                    ui.gather_interface_values, 
+                                    gather_interface_values, 
                                     gradget(ui.input_elements), 
                                     gradget('interface_state')
                                 ).then(
@@ -102,7 +103,7 @@ def create_event_handlers():
                                 ).then(None, None, None, js=audio_noti_ring)
 
     ui.gradio['textbox-default'].submit(
-                                    ui.gather_interface_values, 
+                                    gather_interface_values, 
                                     gradget(ui.input_elements), 
                                     gradget('interface_state')
                                 ).then(
@@ -125,7 +126,7 @@ def create_event_handlers():
                                 ).then(None, None, None, js=audio_noti_ring)
 
     ui.gradio['Continue-default'].click(
-                                    ui.gather_interface_values, 
+                                    gather_interface_values, 
                                     gradget(ui.input_elements), 
                                     gradget('interface_state')
                                 ).then(
@@ -185,7 +186,7 @@ def create_event_handlers():
     )
 
     ui.gradio['get_logits-default'].click(
-        ui.gather_interface_values, 
+        gather_interface_values, 
         gradget(ui.input_elements), 
         gradget('interface_state')
     ).then(
@@ -204,7 +205,7 @@ def create_event_handlers():
 
 
 def handle_save_prompt(text):
-    return [text, f"{utils.current_time()}.txt", str(prompt_dir), gr.update(visible=True)]
+    return [text, f"{current_time()}.txt", str(prompt_dir), gr.update(visible=True)]
 
 
 def handle_delete_prompt(prompt):

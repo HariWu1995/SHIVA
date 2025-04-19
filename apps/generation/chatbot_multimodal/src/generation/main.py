@@ -8,7 +8,8 @@ import traceback
 import numpy as np
 import torch
 
-from .. import shared, logger, pprinter
+from .. import shared
+from ..logging import logger, pprinter
 from ..cache import process_llamacpp_cache
 from ..callbacks import Stream
 
