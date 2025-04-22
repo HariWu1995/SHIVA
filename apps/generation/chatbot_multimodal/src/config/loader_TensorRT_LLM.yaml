@@ -1,2 +1,0 @@
-cpp_runner: false   # Use the ModelRunnerCpp runner, which is faster than the default ModelRunner but doesn\'t support streaming yet
-max_seq_len: 8192   # Maximum sequence length
