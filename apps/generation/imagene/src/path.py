@@ -6,16 +6,15 @@ import numpy as np
 import cv2
 
 from .utils import get_device_memory
-from .default import INSTRUCTION_DIR, CHARACTER_DIR, GRAMMAR_DIR, PROMPT_DIR, PRESET_DIR
 
 
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 CHECKPOINT_ROOT = os.environ.get('SHIVA_CKPT_ROOT', None)
 if CHECKPOINT_ROOT is not None:
-    MULTIMODAL_LM_DIR = Path(CHECKPOINT_ROOT)
+    MULTIMODAL_LM_DIR = Path(CHECKPOINT_ROOT) / 'chatbot'
 else:
-    MULTIMODAL_LM_DIR = Path(__file__).parents[4] / 'checkpoints'
+    MULTIMODAL_LM_DIR = Path(__file__).parents[4] / 'checkpoints/chatbot'
 
 if os.path.isdir(MULTIMODAL_LM_DIR) is False:
     os.makedirs(MULTIMODAL_LM_DIR)
@@ -32,12 +31,12 @@ MLM_REMOTE_MODELS = {
 
 
 MLM_LOCAL_MODELS = {
-      "deepseek-r1-1b5-qwen": str(MULTIMODAL_LM_DIR /  "lm/deepseek-r1-1b5-qwen"),      # 3.6Gb
-      "deepseek-7b-chat"    : str(MULTIMODAL_LM_DIR /  "lm/deepseek-7b-chat"),          # 14Gb
-      "qwen-2.5-7b-instruct": str(MULTIMODAL_LM_DIR /  "lm/qwen-2.5-7b-instruct"),      # 16Gb
-    "qwen-2.5VL-7b-instruct": str(MULTIMODAL_LM_DIR / "lvm/qwen-2.5vl-7b-instruct"),    # 17Gb
-     "llama-3.2-1b-instruct": str(MULTIMODAL_LM_DIR /  "lm/llama-3.2-1b-q8-instruct"),
-        "moondream-v2"      : str(MULTIMODAL_LM_DIR / "lvm/moondream_v2"),
+      "deepseek-r1-1b5-qwen": str(MULTIMODAL_LM_DIR / "deepseek-r1-1b5-qwen"),      # 3.6Gb
+      "deepseek-7b-chat"    : str(MULTIMODAL_LM_DIR / "deepseek-7b-chat"),          # 14Gb
+      "qwen-2.5-7b-instruct": str(MULTIMODAL_LM_DIR / "qwen-2.5-7b-instruct"),      # 16Gb
+    "qwen-2.5VL-7b-instruct": str(MULTIMODAL_LM_DIR / "qwen-2.5vl-7b-instruct"),    # 17Gb
+     "llama-3.2-1b-instruct": str(MULTIMODAL_LM_DIR / "llama-3.2-1b-q8-instruct"),
+        "moondream-v2"      : str(MULTIMODAL_LM_DIR / "moondream_v2"),
 }
 
 

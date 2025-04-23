@@ -18,13 +18,13 @@ DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 CHECKPOINT_ROOT = os.environ.get('SHIVA_CKPT_ROOT', None)
 if CHECKPOINT_ROOT is not None:
     SAM_DIR = Path(CHECKPOINT_ROOT) / 'sam'
-    OWL_DIR = Path(CHECKPOINT_ROOT) / 'owlvit-base-patch32'
-    FLR_DIR = Path(CHECKPOINT_ROOT) / 'Florence-2-base'
+    OWL_DIR = Path(CHECKPOINT_ROOT) / 'lvm/owlvit-base-patch32'
+    FLR_DIR = Path(CHECKPOINT_ROOT) / 'lvm/Florence-2-base'
     YLW_DIR = Path(CHECKPOINT_ROOT) / 'yolo'
 else:
     SAM_DIR = Path(__file__).parents[4] / 'checkpoints/sam'
-    OWL_DIR = Path(__file__).parents[4] / 'checkpoints/owlvit-base-patch32'
-    FLR_DIR = Path(__file__).parents[4] / 'checkpoints/Florence-2-base'
+    OWL_DIR = Path(__file__).parents[4] / 'checkpoints/lvm/owlvit-base-patch32'
+    FLR_DIR = Path(__file__).parents[4] / 'checkpoints/lvm/Florence-2-base'
     YLW_DIR = Path(__file__).parents[4] / 'checkpoints/yolo'
 
 OWL_DIR = str(OWL_DIR)

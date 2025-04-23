@@ -22,7 +22,7 @@ ROOT_DIR = Path(__file__).resolve().parents[4]
 SAVE_DIR = ROOT_DIR / "temp"
 SAMPLE_DIR = ROOT_DIR / "_samples" / "camera"
 MODEL_DIR = ROOT_DIR / "checkpoints"
-DUST3R_PATH = MODEL_DIR / "DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth"
+DUST3R_PATH = MODEL_DIR / "3d/DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth"
 
 SERVERS = {}
 ABORT_EVENTS = {}
