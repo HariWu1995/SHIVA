@@ -1,23 +1,12 @@
-import re
-import yaml
-import html
-
 from types import SimpleNamespace as Namespace
 from pathlib import Path, PurePath
 from collections import OrderedDict
 
+import yaml
 import random
+
 import torch
 from transformers import is_torch_npu_available, is_torch_xpu_available
-
-
-def natural_keys(text):
-    return [atoi(c) for c in re.split(r'(\d+)', text)]
-
-
-# Convert string to integer
-def atoi(text: str):
-    return int(text) if text.isdigit() else text.lower()
 
 
 def load_config(config_path: str | PurePath, return_type: str = "namespace"):

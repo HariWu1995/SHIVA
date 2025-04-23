@@ -1,0 +1,54 @@
+category,article,version,description,trigger_words,weight,url
+architecture,booth_concept,v10,,"theme,realistic,3d,c4d rendering,spotlight,shining,shadows,booth",0.7-1,https://civitai.com/models/201687/sdxlbooths-for-e-commerce-or-dataset
+art,papercut,v10,,papercut,,https://civitai.com/models/122567/papercut-sdxl
+art,paper_quillinh,v40,,"yanzhi,paper quilling",,https://civitai.com/models/121009/papercut-sdxl-paper-quilling
+artist,salvador_dali,v10,,d4lixl,0.75-1.4,https://civitai.com/models/118992/salvador-dali-sdxl-10-art-style-lora
+artist,tang_bohu,v10,"Tang Yin (from March 6, 1470 to January 7, 1524), known as Bohu, later changed to Ziwei, and was also known as Liuru Jushi, Taohua Anzhu, Tang Sheng of the State of Lu, and Escaping Zen Immortal Officer. He was born in Wu County, Suzhou Prefecture, Southern Zhili. Famous painter, calligrapher and poet of the Ming Dynasty.","tangbohu style",,https://civitai.com/models/122748/tang-bohus-painting-style-lora-sdxl-xl
+artist,makoto_shinkai,v10,"It works primarily for generating landscapes, and does not work well with people. The model was trained on images from Your Name and Weathering With You.","by Makoto Shinkai",,https://civitai.com/models/120855/makoto-shinkai-style-sdxl-10-lora
+artist,fajyobore,v10,,,,https://civitai.com/models/118881/fajyoborestylesdxl
+artist,eduardo_rodriguezcalzado,v10,,,,https://civitai.com/models/99489?modelVersionId=128695
+background,vn_BacSon_valley,v10,,bacsonvietnam,1.0-1.1,https://civitai.com/models/158496/bac-son-valley-in-vietnam
+asset,china_dish,v20,,,,https://civitai.com/models/255392/old-china-style-food
+background,white_background,v10,,"with a white background",,https://civitai.com/models/119388/white-background
+background,golden_wind_and_palace_chinese,v10,,"jinsixiangyun/traditional",0.8-1.0,https://civitai.com/models/116614?modelVersionId=126288
+background,dragon_ball_landscapes,,,"Land/Desert/Snow/Montains/Namek/Kayoshin/Kami/Karin/Kamehouse/Kaito/Caos/Tournament/Gokuhouse/Gohanhouse/Cellgame/Ship/Time/Capsule/City/Forest/Caramel/Snake",,https://civitai.com/models/329546?modelVersionId=369274
+character,genshin_impact_yae_miko,v10,,"yae miko/hair ornament/japanese clothes/sideboob/bare shoulders/detached sleeves/wide sleeves/jewelry/earrings/pink hair/purple eyes",1.0,https://civitai.com/models/120108?modelVersionId=130596
+character,marvel_gamora,v10,,skswoman,0.8-1.3,https://civitai.com/models/122537/gamora-guardians-of-the-galaxy-lora-sdxl-10
+character,starwars_princess_leia,v10,,skswoman,0.8-1.3,https://civitai.com/models/122027/princess-leia-from-star-wars-lora-sdxl-10
+clothes,hanfu_tang,v41M,,"hanfu/tang style",,https://civitai.com/models/120283?modelVersionId=130786
+clothes,vn_nguyen_dynasty_male_clothing,v10,,"aonguthan / ao tac / Vietnamese / holding a fan / headband / official clothe / dragon robe",1.0,https://civitai.com/models/814166/vietnam-nguyen-dynasty-male-clothing-sdxl
+clothes,vn_nhat_binh_aha,v10,,"ahanhatbinh clothing/nhat binh clothing/clothes/hat/pants/wide sleeves/long sleeves",0.8,https://civitai.com/models/120226/aha-nhat-binh-vietnamese-traditional-costume-ao-nhat-binh-nhatbinh-clothing-sdxl-lora
+design,poster_illustration,v10,,,0.6,https://civitai.com/models/305273/illustrations-activity-event-poster-style
+design,mascot_sports,v10,,"sport-mascot",1.0,https://civitai.com/models/479363/sports-mascots
+design,logo_by_redmond,v10,,LogoRedAF,,https://civitai.com/models/124609/logoredmond-logo-lora-for-sd-xl-10
+design,wooden_model,v10,,woodenmodel,,https://civitai.com/models/121042/woodenmodel-for-sdxl
+design,futuristic_house,v08,,,,https://civitai.com/models/120237/yqxlcrvarchitecture
+design,futuristic_building,v02,,,,https://civitai.com/models/119873/v02
+design,glass_building,v10,,,,https://civitai.com/models/120439/xsarchisdxl001glass-material-architecture-xl
+effect,under_water,v10,,"under the water/under water/underwater",,https://civitai.com/models/122740/underwater
+effect,textured_glass,v10,,"textured glass/fluted glass/curved glass",,https://civitai.com/models/119158/test-textured-glass
+effect,only_white,v10,"This LoRA makes everything as white as possible.",white,,https://civitai.com/models/123643/only-white-sdxl
+effect,transparent_shadow,v10,,ladyshadow,0.6-1.0,https://civitai.com/models/125006/sd-xl10-lora-star-shadow-concept
+effect,advanced_enhancer,,"An ideological continuation of Advanced Enhancer. It does the same thing, but the main focus is not on detail (because SDXL is fine with that), but on composition, color, perspective, etc.","movie still/film still/cinematic/cinematic shot/cinematic lighting/macro shot/35mm film/close up/{color} eyes",,https://civitai.com/models/124993/advanced-enhancer-xl-lora
+skin,dragon_alike,v10,,DTstyle,,https://civitai.com/models/119157/sdxl-dragon-style
+skin,ahegao,v10,,"ahegao/tongue out/drool",,https://civitai.com/models/120774/ahegao-tongue-out-cross-eyed-sdxl-1k
+skin,perfect_eyes,v10,,"perfecteyes/close up/{color} eyes/heterchromia",,https://civitai.com/models/118427/perfect-eyes-xl
+skin,flaming_object,v10,,flmngprsn,,https://civitai.com/models/119389/concept-flaming-objects
+style,caricature_art,v20,,caricature,0.8,https://civitai.com/models/181092/caricature-xl
+style,pixel_art,v11,,,0.9-1.0,https://civitai.com/models/120096/pixel-art-xl
+style,glowing_body_painting,v10,,bl4ckl1ghtxl,~0.5,https://civitai.com/models/118681/blacklight-uv-sdxl-10-art-style-lora
+style,3d_render,v10,,"3d style/3d render/3d",0.7-1.0,https://civitai.com/models/119328/3d-render-style-xl-or-goofy-ai
+style,3d_niji,v20,,"<lora:niji3D_test_v2:1>",,https://civitai.com/models/118567?modelVersionId=130777
+style,photorealistic_adjustment,v10,,"(more realistic), (less realistic, cartoon, painting:-1.0)",0.0-5.0,https://civitai.com/models/117060/photorealistic-slider-sdxl-lora
+style,claymation_dd,v20,,made-of-clay,,https://civitai.com/models/181962/doctor-diffusions-claymation-style-lora
+style,claymation,v20,,claymation,,https://civitai.com/models/181962/doctor-diffusions-claymation-style-lora
+style,illustration_chinese,,,"guofeng/chinese style",,https://civitai.com/models/120206/sdxlchinese-style-illustration
+style,illustration_storybook,v10,,"flower, star, magical",,https://civitai.com/models/119288/picture-story-book-for-children-xl-xl
+style,watercolor,v10,,,,https://civitai.com/models/121538/watercolor-style-sdxl-and-15
+style,isometric_niji,v10,,"zavy-ctsmtrc/isometric",0.8,https://civitai.com/models/340599/zavys-cute-isometric-tiles-sdxl
+texture,wood_carving,v10,,"wood carving style",,https://civitai.com/models/122446/sdxl-or-wood-carving-style
+texture,lego,v20,,"LEGO BrickHeadz/LEGO MiniFig/LEGO Creator",0.6-1.0,https://civitai.com/models/92444/lelo-lego-lora-for-xl-and-sd15
+texture,cloud_text,v10,,cloud5,,https://civitai.com/models/143300/cloudtextsdxl
+texture,cloud_look,v10,,cloud,,https://civitai.com/models/141029/aether-cloud-lora-for-sdxl
+texture,sewing_doll,v20,,BJ_Sewing_doll,0.6-0.7,https://civitai.com/models/138619?modelVersionId=158964
+texture,green_jade_cabbage,v10,,"jade/jade sculpture",0.7-0.9,https://civitai.com/models/148809/sdxl-or-jadeite-cabbage-or-chinese-treasure
