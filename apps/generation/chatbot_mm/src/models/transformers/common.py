@@ -29,15 +29,21 @@ def load_model(model_name: str):
     return tokenizer, generator
 
 
-build_prompt = None
+def build_prompt(chat_history: list = []):
+    return dict(chat_history=chat_history)
 
 
 def generate_response(
     generator,
     tokenizer,
-    prompt,
+    prompt: str | None = None,
+    chat_history: list | None = None,
     **kwargs
 ):
+    # Preprocessing: https://huggingface.co/docs/transformers/main/en/chat_templating
+    if prompt is None:
+        prompt = tokenizer.apply_chat_template(chat_history, tokenize=False, add_generation_prompt=True)
+
     with torch.no_grad():
         tokens = tokenizer(prompt, return_tensors="pt").input_ids
         tokens = tokens.to(device=shared.device, non_blocking=True)

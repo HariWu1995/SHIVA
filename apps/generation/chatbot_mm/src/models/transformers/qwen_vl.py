@@ -5,11 +5,11 @@ from qwen_vl_utils import process_vision_info
 
 from ... import shared
 from ...path import MLM_LOCAL_MODELS
+from ...utils import get_file_type
+from ...logging import logger
 
 
 generation_config = dict(max_new_tokens=512)
-
-image_extensions = ['.jpg', '.jpeg', '.png']
 
 
 def load_model(model_name: str):
@@ -28,13 +28,39 @@ def load_model(model_name: str):
     return processor, generator
 
 
-def build_prompt(
-    content: str, 
-    role: str = 'user', 
-    chat_history: list = [],
-):
-    chat_history.append({"role": role, "content": content})
-    return chat_history
+def build_prompt(chat_history: list = []):
+    """
+    Message Format:
+        +   text: {'role': 'user', 'content':  text  , 'metadata': None, 'options': None}
+        + others: {'role': 'user', 'content': (path,), 'metadata': None, 'options': None}
+    """
+    prompted_history = []
+
+    for m in chat_history:
+        mc = m['content']
+
+        if isinstance(mc, str):
+            mtype = 'text'
+            mcontent = mc
+
+        elif isinstance(mc, (list, tuple)):
+            mtype = get_file_type(mc[0])
+            if mtype in ['image','video']:
+                mcontent = mc[0]
+            else:
+                logger.warn(f"{mc[0]} (with type = {mtype}) will be ignored!")
+                continue
+        else:
+            logger.warn(f"{mc} cannot be parsed and will be ignored!")
+            continue
+
+        prompted_history.append({
+                "role": m['role'], 
+             "content": [{"type": mtype, mtype: mcontent}]
+        })
+        del mcontent, mtype
+
+    return dict(chat_history=prompted_history)
 
 
 def generate_response(
@@ -44,7 +70,7 @@ def generate_response(
     chat_history: list | None = None,
     **kwargs
 ):
-    # Preprocessing
+    # Preprocessing: https://huggingface.co/docs/transformers/main/en/chat_templating_multimodal
     if text_prompt is None:
         text_prompt = processor.apply_chat_template(chat_history, tokenize=False, add_generation_prompt=True)
     image_inputs, \
@@ -63,6 +89,10 @@ def generate_response(
     return output
 
 
+def parse_response(output, role: str = 'assistant')
+    return {'role': role, 'content': output}
+
+
 if __name__ == "__main__":
 
     processor, generator = load_model("qwen-2.5VL-7b-instruct")
@@ -73,7 +103,7 @@ if __name__ == "__main__":
             "content": [
                 {"type": "image", "image": "https://storage.googleapis.com/digital-platform/hinh_anh_review_khac_san_landmark_81_tien_ich_and_gia_phong_moi_nhat_so_2_ce2f8922a5/hinh_anh_review_khac_san_landmark_81_tien_ich_and_gia_phong_moi_nhat_so_2_ce2f8922a5.jpg"},
                 {"type": "image", "image": "https://static.vinwonders.com/production/2025/02/thong-tin-ve-landmark-81.jpg"},
-                {"type": "text", "text": "Describe the similarities and differences between these images."},
+                {"type":  "text",  "text": "Describe the similarities and differences between these images."},
             ],
         }
     ]

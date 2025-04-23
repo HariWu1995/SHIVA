@@ -23,7 +23,9 @@ def load_model(model_name: str):
     return tokenizer, generator
 
 
-build_prompt = None
+def build_prompt(chat_history: list = []):
+    return dict(chat_history=chat_history)
+
 
 def _build_prompt(
     content: str, 
@@ -41,7 +43,7 @@ def generate_response(
     chat_history: list | None = None,
     **kwargs
 ):
-    # Preprocessing
+    # Preprocessing: https://huggingface.co/docs/transformers/main/en/chat_templating
     if prompt is None:
         prompt = tokenizer.apply_chat_template(chat_history, tokenize=False, add_generation_prompt=True)
 
@@ -64,7 +66,7 @@ def generate_response(
     return output
 
 
-def parse_response(output, role: str = 'assistant')
+def parse_response(output, role: str = 'assistant'):
     # TODO: remove thinking pattern (i.e., "<think>\n\n</think>") 
     return {'role': role, 'content': output}
 

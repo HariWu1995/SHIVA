@@ -1,32 +1,33 @@
 """
 Emojis: 🗣️🗪🗫🗯💭
 """
+from glob import glob
 import gradio as gr
 
 from . import shared as ui
 from .utils import gradget, symbols
 
 from ..src import shared
-from ..src.path import MLM_LOCAL_MODELS, LORA_LOCAL_MODELS
+from ..src.path import MLM_LOCAL_MODELS, LORA_LOCAL_MODELS, MULTIMODAL_ALLOWED
 from ..src.models import MODELLIB_LOADERS, load_model, reload_model, unload_model, unload_model_if_idle
-from ..src.utils import get_default_cpu_mem, get_default_gpu_mem, get_all_device_memory
-from ..src.sampler import loaders_and_params, loaders_samplers, list_all_samplers
 from ..src.default import get_available_presets, default_preset, get_available_grammars
+from ..src.utils import get_all_device_memory
 
 
-# FIXME: delete
-LORA_LOCAL_MODELS = ["test-1","test-2","test-3"]
+def _load_model(model_name, model_type='auto'):
+    shared.tokenizer, \
+    shared.generator = load_model(model_name, model_type)
+    return shared.model_name, shared.model_type, True
 
-
-def _load_model(model_name, loader):
-    shared.model, \
-    shared.tokenizer = load_model(model_name, loader)
-    return shared.model_name, shared.loader, True
 
 def _unload_model():
-    unload_model()
-    shared.loader = None
-    return shared.model_name, shared.loader, False
+    unload_model(keep_model_info=True)
+    return shared.model_name, shared.model_type, False
+
+
+def _reload_model():
+    reload_model()
+    return shared.model_name, shared.model_type, True
 
 
 #############################################
@@ -35,19 +36,12 @@ def _unload_model():
 
 def create_ui(min_width: int = 25):
 
-    available_models = list(MLM_LOCAL_MODELS.keys())
-    default_model = available_models[0]
-
-    # Default values for the GPU and CPU memories
-    total_gpu_mem = get_all_device_memory()
-    default_gpu_mem = get_default_gpu_mem()
-    default_cpu_mem = get_default_cpu_mem()
-
-    while len(default_gpu_mem) < len(total_gpu_mem):
-        default_gpu_mem.append(0)
+    all_models = list(MLM_LOCAL_MODELS.keys())
+    all_loaders = MODELLIB_LOADERS + ['auto']
+    # all_loras = LORA_LOCAL_MODELS
+    all_loras = ["test-1","test-2","test-3"]
 
     # Generation parameters
-    all_loaders = MODELLIB_LOADERS
     all_grammars = get_available_grammars()
     all_presets = get_available_presets()
     all_generams = list(default_preset().keys())
@@ -58,12 +52,10 @@ def create_ui(min_width: int = 25):
     
     with gr.Blocks(css=None, analytics_enabled=False) as gui:
 
-        gr.Markdown("## 🗫 Multi-Modal Dialogue")
-
         with gr.Accordion(label="Model Loader", open=True):
             with gr.Row(variant="panel"):
                 with gr.Column(min_width=50):
-                    ui.gradio["model_name"] = gr.Dropdown(label="Model", choices=available_models, value=default_model, interactive=True)
+                    ui.gradio["model_name"] = gr.Dropdown(label="Model", choices=all_models, interactive=True, value=None)
                     with gr.Row(variant="panel"):
                         ui.gradio["model_status"] = gr.Checkbox(label="Model is loaded", interactive=False)
                     with gr.Row():
@@ -74,9 +66,9 @@ def create_ui(min_width: int = 25):
                         with gr.Column(min_width=3):
                             ui.gradio["model_load_release"] = gr.Button(value=symbols["release"], variant="secondary")
                 with gr.Column(min_width=50):
-                    ui.gradio["model_loader"] = gr.Dropdown(label="Loader", choices=MODELLIB_LOADERS, interactive=True, value=None)
+                    ui.gradio["model_type"] = gr.Dropdown(label="Loader", choices=all_loaders, interactive=True, value='auto')
                 with gr.Column(min_width=50):
-                    ui.gradio["lora_names"] = gr.Dropdown(label="LoRAs", choices=LORA_LOCAL_MODELS, interactive=True, multiselect=True)
+                    ui.gradio["lora_names"] = gr.Dropdown(label="LoRAs", choices=all_loras, interactive=True, multiselect=True)
 
         with gr.Accordion(label="Generation Parameters", open=False):
 
@@ -174,18 +166,33 @@ def create_ui(min_width: int = 25):
                         ui.gradio['mirostat_tau' ] = gr.Slider(0, 10, step=.1, value=default_generams['mirostat_tau'], label='mirostat_tau', interactive=True)
                         ui.gradio['mirostat_eta' ] = gr.Slider(0,  1, step=.1, value=default_generams['mirostat_eta'], label='mirostat_eta', interactive=True)
 
+        # Recap for later gathering
+        ui.generation_params = [
+            'temperature','temperature_last','tfs',
+            'top_k','top_p','min_p','typical_p','do_sample',
+            'top_a','top_n_sigma','eps_cutoff','eta_cutoff',
+            'dynatemp_low','dynatemp_high','dynatemp_exponent','dynamic_temperature',
+            'truncation_length','negative_prompt','seed','stream','static_cache',
+            'max_new_tokens','max_tokens_second','max_updates_second','prompt_lookup_num_tokens',
+            'auto_max_new_tokens','skip_special_tokens','ban_eos_token','add_bos_token',
+            'dry_length','dry_base','dry_multiplier','dry_sequence_breakers',
+            'xtc_threshold','xtc_probability','guidance_scale','smoothing_curve','smoothing_factor',
+            'mirostat_mode','mirostat_tau','mirostat_eta',
+            'penalty_alpha','encoder_repetition_penalty','repetition_penalty_range','no_repeat_ngram_size',
+            'repetition_penalty','frequency_penalty','presence_penalty',
+        ]
+
         ## Event handlers
-        m_inputs = gradget("model_name", "model_loader")
-        m_output = gradget("model_name", "model_loader", "model_status")
-        # l_arguments = gradget(all_generams)
+        m_inputs = gradget("model_name", "model_type")
+        m_output = gradget("model_name", "model_type", "model_status")
 
         ui.gradio["model_load_trigger"].click(fn=_load_model, inputs=m_inputs, outputs=m_output)
         ui.gradio["model_load_release"].click(fn=_unload_model, inputs=None, outputs=m_output)
-        # ui.gradio["model_load_refresh"].click()
+        ui.gradio["model_load_refresh"].click(fn=_reload_model, inputs=None, outputs=m_output)
 
         # Schedule
         timer = gr.Timer(value=1.0)
-        timer.tick(fn=lambda: shared.model is not None, outputs=gradget("model_status"))
+        timer.tick(fn=lambda: shared.generator is not None, outputs=gradget("model_status"))
 
     return gui
 

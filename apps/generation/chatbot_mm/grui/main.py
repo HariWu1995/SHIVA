@@ -26,6 +26,16 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 
+from ..src import shared
+from threading import Lock, Thread
+
+shared.generation_lock = Lock()
+if shared.model_args.idle_timeout > 0:
+    timer_thread = Thread(target=unload_model_if_idle)
+    timer_thread.daemon = True
+    timer_thread.start()
+
+
 #############################################
 #           UI settings & layout            #
 #############################################

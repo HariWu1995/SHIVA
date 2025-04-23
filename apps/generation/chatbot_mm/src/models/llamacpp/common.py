@@ -37,7 +37,9 @@ def load_model(
     return None, model
 
 
-build_prompt = None
+def build_prompt(chat_history: list = []):
+    return dict(chat_history=chat_history)
+
 
 def _build_prompt(
     content: str, 

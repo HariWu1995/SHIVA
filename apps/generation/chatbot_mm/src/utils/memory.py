@@ -64,7 +64,7 @@ def get_default_cpu_mem():
     return total_cpu_mem
 
 
-def clear_model_cache():
+def clear_torch_cache():
     gc.collect()
     if torch.cuda.is_available():
         torch.cuda.empty_cache()

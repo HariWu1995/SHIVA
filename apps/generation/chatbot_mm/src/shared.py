@@ -5,7 +5,7 @@ import time
 from .path import MLM_LOCAL_MODELS, LORA_LOCAL_MODELS
 
 # Model variables
-model_type = None   # transformers / llama
+model_type = None   # transformers / llamacpp
 model_name = None
 generator = None
 tokenizer = None    # tokenizer / processor (VL model)

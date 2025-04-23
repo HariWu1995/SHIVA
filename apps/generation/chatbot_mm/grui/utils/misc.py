@@ -11,9 +11,11 @@ from .. import shared as ui
 symbols = dict(
     trigger = '🚀',
     refresh = '🔄',
+    reset = '🔄',
     release = '🗑️',
     delete = '🗑️',
     save = '💾',
+    undo = '🔙',
 )
 
 

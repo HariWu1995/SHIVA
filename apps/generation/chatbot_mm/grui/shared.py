@@ -9,6 +9,7 @@ from pathlib import Path
 allowed_paths = [Path(__file__).resolve().parents[4] / "_samples"]
 need_restart = False
 auto_launch = True
+streaming = False
 share = False
 listen = False
 host = "localhost"
@@ -20,10 +21,8 @@ gradio = {}
 states = {}
 
 wip_message = '*{user} is typing ...*'      # WIP: work in progress
-input_elements = []
-reload_inputs = []
-default_inputs = []
 
+generation_params = []
 extensions = [
     "multimodal",
     "long_replies",
@@ -33,6 +32,18 @@ extensions = [
     # "character_gallery",
 ]
 
+
+# UI Chatbox
+chatbox_settings = dict(
+    sources = ["microphone", "upload"],
+    file_count = "multiple",
+    placeholder = "Enter message or upload file...",
+    show_label = False,
+    submit_btn = True,
+    stop_btn = streaming,
+    lines = 5,
+    max_plain_text_length = 1024,
+)
 
 # UI defaults
 settings = {

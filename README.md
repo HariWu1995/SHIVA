@@ -69,9 +69,9 @@
 
 ### Uni-modal Generation
 
-- [ ] Text Generation ([WebUI](https://github.com/oobabooga/text-generation-webui) | [Multi-Modal Extension](https://github.com/oobabooga/text-generation-webui/blob/main/extensions/multimodal/README.md))
+- [x] Text Generation ([WebUI](https://github.com/oobabooga/text-generation-webui) | [Multi-Modal Extension](https://github.com/oobabooga/text-generation-webui/blob/main/extensions/multimodal/README.md))
 
-- [ ] Image Generation ([AUTOMATIC-1111](https://github.com/AUTOMATIC1111/stable-diffusion-webui))
+- [ ] Image Generation ([WebUI-A1111](https://github.com/AUTOMATIC1111/stable-diffusion-webui))
 
 - [ ] Audio Generation ([Make-An-Audio](https://github.com/Text-to-Audio/Make-An-Audio) | [AudioLDM](https://github.com/haoheliu/AudioLDM) | [Amphion](https://github.com/open-mmlab/Amphion) | [AudioCraft](https://github.com/facebookresearch/audiocraft) | [Suno|Bark](https://github.com/suno-ai/bark))
 
