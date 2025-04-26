@@ -4,7 +4,6 @@ fastapi==0.115.12
 viser
 
 # Computation
-numpy==1.23.5
 torch==2.5.1 --index-url https://download.pytorch.org/whl/cu124
 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu124
 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu124
@@ -47,7 +46,9 @@ mediapipe
 facexlib
 geffnet==0.9.0
 segmentation-models-pytorch
-peft==0.15.*
+peft==0.10.0
+huggingface-hub==0.25.2
+git+https://github.com/huggingface/diffusers.git
 
 # API
 # SpeechRecognition==3.10.0
@@ -67,3 +68,6 @@ pyliblzfse
 plyfile
 yourdfpy
 robot_descriptions
+
+# Version control
+numpy==1.23.5

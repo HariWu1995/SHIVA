@@ -1,0 +1,222 @@
+id,category,article,version,description,trigger_words,weight,download_url,url
+sd15_0001,asset,game_tree,v10,,"game icon institute, game icon",0.4-0.8,https://civitai.com/api/download/models/104627?type=Model&format=SafeTensor,https://civitai.com/models/97857/game-icon-research-institute-lora-tree
+sd15_0002,asset,chinese_couplets,v10,,"ruanyi0140, text focus, Chinese character, red theme",1,https://civitai.com/api/download/models/315643?type=Model&format=SafeTensor,https://civitai.com/models/280290/chinese-couplets
+sd15_0003,asset,food_dish,v10,,"game icon institute, game icon, food",0.5-0.8,https://civitai.com/api/download/models/113950?type=Model&format=SafeTensor,https://civitai.com/models/106112/game-iconfood
+sd15_0004,asset,egypt_assets,v10,,"Egyptian_Icons, no humans, still life, gold, sparkle",,https://civitai.com/api/download/models/1481372?type=Model&format=SafeTensor,https://civitai.com/models/230019/egyptian-icons-fantasy-game-asset
+sd15_0005,architecture,booth_concept,v10,,arwboothconcept,,https://civitai.com/api/download/models/138452?type=Model&format=SafeTensor,https://civitai.com/models/126595/kiosk-booth-concept
+sd15_0006,architecture,gmic_building,v10,,"Game Icon Institute, Game Icon",0.4-0.8,https://civitai.com/api/download/models/102892?type=Model&format=SafeTensor,https://civitai.com/models/96325/gameiconresearchgfjzlora
+sd15_0007,architecture,modern_apartment,v10,,mabuilding,,https://civitai.com/api/download/models/72398?type=Model&format=SafeTensor,https://civitai.com/models/67729/modern-apartment-buildinglora
+sd15_0008,architecture,brusArch_apartment,v10,,"brus, apartment building",,https://civitai.com/api/download/models/92175?type=Model&format=SafeTensor,https://civitai.com/models/86666/brusarch-modern-architecture-model
+sd15_0009,architecture,colorplane_design,v20,,,0.5-1.3,https://civitai.com/api/download/models/67228?type=Model&format=SafeTensor,https://civitai.com/models/52997/xsarchi110colorplane
+sd15_0010,architecture,masterplane_render,v10,"a plan of a city with lots of buildings and a lot of trees in it, and a lot of parking lots",aargsitemap/aargdetailmap,,https://civitai.com/api/download/models/102951?type=Model&format=SafeTensor,https://civitai.com/models/96386/aargmasterplan-render
+sd15_0011,architecture,ancient_chinese_gugong,v10,,,,https://civitai.com/api/download/models/22164?type=Model&format=SafeTensor&size=full&fp=fp16,https://civitai.com/models/18679
+sd15_0012,architecture,ancient_chinese_chengqiang,v10,,chengqiang,,https://civitai.com/api/download/models/22612?type=Model&format=SafeTensor&size=full&fp=fp16,https://civitai.com/models/18679?modelVersionId=22612
+sd15_0013,architecture,town_house,v10,,townhouse,,https://civitai.com/api/download/models/144623?type=Model&format=SafeTensor,https://civitai.com/models/131561
+sd15_0014,architecture,tropical_house,,,,,https://drive.google.com/file/d/1hzy51ep86PXtrXAdAgCFwdHKkMFBweyH/view,
+sd15_0015,architecture,toilette_modern,,,,,https://drive.google.com/drive/folders/1m2vhdj9IVw5y98R88QixYLgwuRqtf1cN,
+sd15_0016,architecture,interior_design_mim,,,,,https://drive.google.com/file/d/1N5b6w8OlO_UlFZmjrrtECIFP2nRdYgaP/view,
+sd15_0017,architecture,interior_design_minimalism,v10,,archminimalist,,https://civitai.com/api/download/models/130059?type=Model&format=SafeTensor,https://civitai.com/models/119687/minimalist-interior
+sd15_0018,architecture,interior_design_neoclassic_wood,v10,,neoclassic_wood_{kitchen/bedroom},,https://civitai.com/api/download/models/145254?type=Model&format=SafeTensor,https://civitai.com/models/132084
+sd15_0019,architecture,interior_design_neoclassic,v10,,neoclassic {bedroom/living room},,https://civitai.com/api/download/models/104424?type=Model&format=SafeTensor,https://civitai.com/models/97680/neoclassic-interior
+sd15_0020,architecture,interior_design_scandinavian,v10,,scandinavian_{living_room/bedroom/kitchen},,https://civitai.com/api/download/models/99385?type=Model&format=SafeTensor,https://civitai.com/models/93208/eliai-scandinavian-interior
+sd15_0021,architecture,interior_design_indochine,v10,,indochine_{living_room/bedroom/kitchen},,https://civitai.com/api/download/models/104236?type=Model&format=SafeTensor,https://civitai.com/models/97517/eliai-indochine-interior
+sd15_0022,architecture,bathroom_modern,v10,,"bathroom, toilet",,https://civitai.com/api/download/models/107951?type=Model&format=SafeTensor,https://civitai.com/models/100863/rfc-ai-toliet
+sd15_0023,artist,guongbihua,v10,,,,https://civitai.com/api/download/models/120031?type=Model&format=SafeTensor,https://civitai.com/models/111268/niji-cgongbi
+sd15_0024,artist,eduardo_rodriguezcalzado,v10,,,,https://civitai.com/api/download/models/106471?type=Model&format=SafeTensor,https://civitai.com/models/99489?modelVersionId=106471
+sd15_0025,background,ancient_chinese_jiangnan,v11+,,Jiangnan/csal_landscape,,https://civitai.com/api/download/models/128766?type=Model&format=SafeTensor,https://civitai.com/models/118559?modelVersionId=128766
+sd15_0026,background,ancient_chinese_jiangnan,v13+,,Jiangnan/CS_Jiangnan/Huangshan/canal town,,https://civitai.com/api/download/models/131890?type=Model&format=SafeTensor,https://civitai.com/models/118559?modelVersionId=131890
+sd15_0027,background,ancient_chinese_indoors,v10,,ancient_chinese_indoors,,https://civitai.com/api/download/models/105142?type=Model&format=SafeTensor,https://civitai.com/models/98323?modelVersionId=105142
+sd15_0028,background,gemstone_scene,v10,,"diamond, ruby, sapphire, Tanzanite, yellow diamond, green diamond, crystal",0.6-0.8,https://civitai.com/api/download/models/313669?type=Model&format=SafeTensor,https://civitai.com/models/278451/e-commerce-photographyjewelry-scene-colored-gemstone-booth
+sd15_0029,background,aurora_gradient,,,Auroral,,https://civitai.com/api/download/models/156828?type=Model&format=SafeTensor,https://civitai.com/models/85026
+sd15_0030,background,aurora_lightning,,,"aurora,lightning",,https://civitai.com/api/download/models/101414?type=Model&format=SafeTensor,https://civitai.com/models/85026?modelVersionId=101414
+sd15_0031,background,aurora_glacier,,,aurora,,https://civitai.com/api/download/models/95843?type=Model&format=SafeTensor,https://civitai.com/models/85026?modelVersionId=95843
+sd15_0032,background,aurora_feather,,,,,https://civitai.com/api/download/models/92242?type=Model&format=SafeTensor,https://civitai.com/models/85026?modelVersionId=92242
+sd15_0033,background,aurora_starcloud,,,,,https://civitai.com/api/download/models/96211?type=Model&format=SafeTensor,https://civitai.com/models/85026?modelVersionId=96211
+sd15_0034,background,cloud_tunnel,v10,,cloudtunnel,,https://civitai.com/api/download/models/104420?type=Model&format=SafeTensor,https://civitai.com/models/97677/cloudtunnel
+sd15_0035,background,cloud_tornado,v10,,cloud,,https://civitai.com/api/download/models/98563?type=Model&format=SafeTensor,https://civitai.com/models/92452/tornado-cloud
+sd15_0036,background,cherry_blossom,v10,,cherry blossom,,https://civitai.com/api/download/models/346007?type=Model&format=SafeTensor,https://civitai.com/models/308289/cherry-blossom
+sd15_0037,background,ripples_wave,v10,,ripples/wave/water drop,0.2-0.3,https://civitai.com/api/download/models/121674?type=Model&format=SafeTensor,https://civitai.com/models/112671/ripples
+sd15_0038,background,vn_DaLat_stairs,v10,,docdalat/stair/from above,,https://civitai.com/api/download/models/127038?type=Model&format=SafeTensor,https://civitai.com/models/117247/tq-da-lat-vietnam-or-dja-lat-va-nhung-con-doc-or-background-lora
+sd15_0039,background,vn_SaiGon_old,v10,,saigon,,https://civitai.com/api/download/models/114659?type=Model&format=SafeTensor,https://civitai.com/models/106750/tq-old-saigon-or-sai-gon-xua-or-background-lora
+sd15_0040,background,vn_cave_SonDoong,v10,,"Cave, SonDoong",0.6-0.8,https://civitai.com/api/download/models/117528?type=Model&format=SafeTensor,https://civitai.com/models/109097/tq-son-doong-cave-in-vietnam-or-the-worlds-largest-natural-caves-or-background-lora
+sd15_0041,background,vn_lotus_pond,v10,,"dongthapmuoi, lotus, river",,https://civitai.com/api/download/models/119045?type=Model&format=SafeTensor,https://civitai.com/models/110425/tq-dong-thap-in-vietnam-or-djong-thap-muoi-or-background-lora
+sd15_0042,background,vn_Hue_house,v05,,"exterior, vietnamese heritage house",,https://civitai.com/api/download/models/365257?type=Model&format=SafeTensor,https://civitai.com/models/325843/aidvnarchitecturevietnamese-heritage-ruong-house-nha-ruong
+sd15_0043,background,magical_forest_daylight,v10,,forest/sky,,,https://civitai.com/models/96283?modelVersionId=102845
+sd15_0044,background,portal,v10,,"portal, gateway, magical entrance",,,https://civitai.com/models/497453/portals-and-gateways
+sd15_0045,background,fairy_forest,v11,,FeyFa,,,https://civitai.com/models/285736/fey-and-fairies
+sd15_0046,background,swamp,v11,,FanSwa,,,https://civitai.com/models/270960/fantasy-swamps
+sd15_0047,background,flower_gate,v10,,,,,https://civitai.com/models/603359/jay-flower-gate-lover
+sd15_0048,background,magical_forest_nightcore,v10,,night sky,,,https://civitai.com/models/96283?modelVersionId=125356
+sd15_0049,background,library_bookshelves,v16,,lib_bg,1,,https://civitai.com/models/113488/library-bookshelf
+sd15_0050,background,visual_novel_niji,,,niji_vn_bg/no humans,,,https://civitai.com/models/104592/niji-visual-novel-background
+sd15_0051,background,ghibli,v50,,,,,https://civitai.com/models/54233
+sd15_0052,background,visual_novel_trainstation,v10,,vntrainstation,,,https://civitai.com/models/113942/visual-novel-game-assets
+sd15_0053,background,visual_novel_cornerstreet,v10,,animecity,,,https://civitai.com/models/113942?modelVersionId=123136
+sd15_0054,background,visual_novel_library,v10,,vnschoollibrary,,,https://civitai.com/models/113942?modelVersionId=123871
+sd15_0055,background,jp_apartment_hallway,v10,,"rouka, hallway, scenery, door, ceiling light",,,https://civitai.com/models/203276/apartment-hallway-sd15
+sd15_0056,background,new_english_loft,v10,,"{wide/portrait}, loft, apartment, bed, window",0.5,,https://civitai.com/models/641138/a-small-loft-new-english-style-sd-15
+sd15_0057,background,medieval_bridge,v10,,bridge,1,,https://civitai.com/models/1071930/bridges
+sd15_0058,background,game_scene_realistic,v10,,"game icon institute, game icon",0.4-0.8,,https://civitai.com/models/97862/game-icon-research-institute-lora-scene-cutting
+sd15_0059,background,game_scene_cartoon,v10,,"game icon institute, game icon",0.4-0.8,,https://civitai.com/models/114780/game-icon-institute
+sd15_0060,background,game_scene_suimo,v10,,"game icon institute, game icon, sui_mo",0.4-0.8,,https://civitai.com/models/129947/game-icon-institutesuimov1
+sd15_0061,background,game_scene_territory,v10,,"game icon institute, game icon",0.4-0.8,,https://civitai.com/models/97079/gameiconresearchcj2lora
+sd15_0062,background,game_scene_hostel,v20,,game icon institute,0.4-0.8,,https://civitai.com/models/102883?modelVersionId=110568
+sd15_0063,clothes,flower_blindfold,v10,,Flower Blindfold,0.7-1.0,https://civitai.com/api/download/models/155539?type=Model&format=SafeTensor,https://civitai.com/models/140356?modelVersionId=155539
+sd15_0064,clothes,arabian_clothes_anime,v10,,arabian clothes,0.7,https://civitai.com/api/download/models/298830?type=Model&format=SafeTensor,https://civitai.com/models/265018/arabian-clothes
+sd15_0065,clothes,chinese_opera_costume,v10,,"Chinese costume, large headpiece",,https://civitai.com/api/download/models/39682?type=Model&format=SafeTensor,https://civitai.com/models/33351/chinese-drama-costume
+sd15_0066,clothes,china_opera_costume,v10,,guofeng,,https://civitai.com/api/download/models/83819?type=Model&format=SafeTensor,https://civitai.com/models/79016/china-opera-yuan-style
+sd15_0067,clothes,beijing_opera_costume,v10,,beijing opera,,https://civitai.com/api/download/models/198061?type=Model&format=SafeTensor,https://civitai.com/models/176405/china-chic-or-beijing-opera-or
+sd15_0068,clothes,hanfu,v30,,hanfu/ming style/tang style/song style/jin style/han style,,https://civitai.com/api/download/models/54777?type=Model&format=SafeTensor,https://civitai.com/models/15365?modelVersionId=54777
+sd15_0069,clothes,hanfu_underdress,v03,,hanfu,0.7-chilloutmix/0.4-animation,,https://civitai.com/models/15961
+sd15_0070,clothes,hanfu_winter,v10,,hanfu/winter hanfu/Cloak,0.5-0.65,https://civitai.com/api/download/models/117204?type=Model&format=SafeTensor,https://civitai.com/models/108815
+sd15_0072,clothes,hanfu_niji,v10,,,,https://civitai.com/api/download/models/120119?type=Model&format=SafeTensor,https://civitai.com/models/111353/niji-chanfu
+sd15_0073,clothes,hanfu_cyber,v10,,cyberhanfu/cheongsam/chinese_clothes,,https://civitai.com/api/download/models/99173?type=Model&format=SafeTensor,https://civitai.com/models/93030/cyberhanfu-cyber-chinese-style?modelVersionId=99173
+sd15_0074,clothes,jyojifuku_china,v10,,"jyojifuku, hair ornament, skirt, see-through",0.4-0.7,,https://civitai.com/models/386991/china-dress
+sd15_0075,clothes,jyojifuku_china_sleeveless,v20,,"jyojifuku, china dress, skirt",0.7,,https://civitai.com/models/393055/china-dress
+sd15_0076,clothes,serafuku,,,"1girl, japanese school shirt, sailor collar, neckerchief, {long/short} sleeves, skirt, socks, black shoes",,,https://civitai.com/models/106552/realistic-and-anime-serafuku-sailor-uniform
+sd15_0077,clothes,samurai_armor,v10,,"samurai, armor",,,https://civitai.com/models/83476/samurai-armor-japan-traditional-dress-series
+sd15_0078,clothes,vn_nguyen_dynasty_empiror,,,"Vietnam dragon robe, emperor crown",0.6,,https://civitai.com/models/488092/vietnam-nguyen-dynasty-dragon-robe
+sd15_0079,clothes,vn_nguyen_dynasty_officer,,,"Vietnamese court official, clothing",0.8,,https://civitai.com/models/494122/vietnam-nguyen-dynasty-court-official-clothing
+sd15_0080,clothes,vn_ao_yem,v10,,<lora:AoYem_V4_Locon:1>,,,https://civitai.com/models/30692/ao-yem-vietnamese-dress-2
+sd15_0081,clothes,vn_ao_ba_ba,v10,,,0.6-0.8,,https://civitai.com/models/107977/tq-vietnamese-dress-or-ao-ba-ba-or-clothing-lora
+sd15_0082,clothes,vn_long_dress_white,v10,,,0.6,,https://civitai.com/models/16766/ao-dai-vietnamese-long-dress
+sd15_0083,clothes,vn_long_dress_renovated,v10,,aodai,1,,https://civitai.com/models/103256
+sd15_0084,clothes,vn_long_dress_cyber,v10,,futureaodai/Mechanical part/Mecha,0.5-0.75,,https://civitai.com/models/127025?modelVersionId=138946
+sd15_0085,clothes,vn_wedding_dress,v10,,aodaicuoi/{color},0.6-0.8,,https://civitai.com/models/117092
+sd15_0086,clothes,vn_nhat_binh_lah,v20,,Nhat Binh/nhat binh clothes/headwear/hat,,,https://civitai.com/models/89220
+sd15_0087,clothes,vn_nhat_binh_tq,v10,,nhatbinh,,,https://civitai.com/models/117260
+sd15_0088,clothes,vn_nhat_binh_portrait,v10,,nhatbinh/round hat/short hair,,,https://civitai.com/models/87252
+sd15_0089,clothes,vn_suon_xam,v40,,suonxam,,,https://civitai.com/models/114147
+sd15_0090,clothes,vn_4_piece_dress,v10,,tu_than/wearing tu_than,0.7-0.8,,https://civitai.com/models/91094/vietnamesetuthan-four-piece-dress
+sd15_0091,clothes,vn_5_piece_dress,v10,,ao_tac/wearing ao_tac,0.6-0.7,,https://civitai.com/models/88836/vietnameseaotac-five-piece-dress
+sd15_0092,clothes,vn_modern_dress,v20,,girl02,,,https://civitai.com/models/144295?modelVersionId=160342
+sd15_0093,clothes,rococo_francais,v10,,rococo costume/rococo style,0.3,,https://civitai.com/models/130399/rococo2m
+sd15_0094,clothes,diamond_dress,v20,,diamondv2,0.65,,https://civitai.com/models/103665/lah-diamond-dress-or-asian-woman-dress
+sd15_0095,design,logo_with_suzumehachi,v10,,logoarchive/black and white logo,,,https://civitai.com/models/34739
+sd15_0096,design,logo_with_dreamshaper,v10,,coloredic0n icon,0.6-0.9,,https://civitai.com/models/60132
+sd15_0097,design,mascot_2d,v10,,,0.6-0.8,,https://civitai.com/models/69353
+sd15_0098,design,mascot_yuruchara,v10,,yuruchara,0.8-1.0,,https://civitai.com/models/158121?modelVersionId=177681
+sd15_0099,design,illustration,v10,,icon,,,https://civitai.com/models/43622/icon01
+sd15_0100,design,game_icon,v10,,icon,0.4-1.0,,https://civitai.com/models/159412/game-icon-institute2d
+sd15_0101,effect,add_details,v10,,,0.5-1.0,,https://civitai.com/models/82098/add-more-details-detail-enhancer-tweaker-lora
+sd15_0102,effect,detail_tweaker,v10,"positive prompt to add details, negative prompt to remove / reduce details",,-2.0-2.0,,https://civitai.com/models/58390/detail-tweaker-lora-lora
+sd15_0103,effect,disintegration_by_thanos,v10,,DisintegrationEffect,0.7-1.3,,https://civitai.com/models/96285
+sd15_0104,effect,motion_trail,v10,,"motiontrail, motion trail/running",0.6-1.0,,https://civitai.com/models/95680?modelVersionId=102161
+sd15_0105,effect,landscape_in_glass_ring,v10,,Ring,0.7-0.9,,https://civitai.com/models/124398?modelVersionId=135832
+sd15_0106,effect,landscape_in_wine_glass,v10,,Wine glass,0.7-0.9,,https://civitai.com/models/127252/wine-glass-art-or-concept-glass
+sd15_0107,effect,laser_glow,v10,,"game icon institute, game icon",0.4-1.0,,https://civitai.com/models/90636/gameiconresearchlaserlora
+sd15_0108,skin,smoke_or_cloud,v10,,Smoky,"0.3-0.7(landscape),0.6-0.9(realistic characters),0.9-1.3(anime characters)",,https://civitai.com/models/113371?modelVersionId=122466
+sd15_0109,skin,aura_skill_buff,v10,,"guangquan\(skill icon\),aura,glowing",0.7-1.0,,https://civitai.com/models/86741/game-iconskillbuff
+sd15_0110,skin,magical_circle,v11,,Circle/magical circle/mantra/glowing,0.6-1.1,,https://civitai.com/models/105512
+sd15_0111,skin,dragon_hug,v10,,DragonCute/dragon hug/dragon/animal hug,0.7-0.8,,https://civitai.com/models/109804/dragoncute
+sd15_0112,skin,dragon_scales_and_spikes,v20,,Dr490nSc4leAI,,,https://civitai.com/models/55543
+sd15_0113,skin,dragon_ball_super_saiyan_hair,v10,,"SuperSaiyan/blonde hair, super saiyan, spiked hair, aura, electricity/long hair",0.3-1.0,,https://civitai.com/models/80196/dragon-ball-super-saiyan-1-and-3-or-hairstyle-concept-lora
+sd15_0114,skin,dragon_ball_turtle_uniform,v10,,"TurtleSchoolUniform/dougi, belt, orange pants, blue footwear",,,https://civitai.com/models/79775?modelVersionId=84601
+sd15_0115,skin,dragon_ball_ki_charge,v20,,Ki Charge/aura/fighting stance/({color} aura),,,https://civitai.com/models/79197/dragon-ball-ki-charge-aura-or-concept-lora
+sd15_0116,skin,dragon_ball_kamehameha,v10,,"kamehameha/{charging,shoot,beam}/casual wear, look at viewer, energy ball, electricity, aura, {dougi, spike hair, wristband:-1}",0.3-0.5,,https://civitai.com/models/94553
+sd15_0117,skin,diamond_suit,,,DiamonAI,,,https://civitai.com/models/62984
+sd15_0118,skin,barbiecore,v10,,BarbieCore/shiny pink plastic/pastel/pink and white,0.4-1.3,,https://civitai.com/models/129667/barbiecore-barbify-anything
+sd15_0119,skin,salt_bae_fi,v10,,"SaltBaeMeme/salt, sunglases",0.8-1.0,,https://civitai.com/models/106212
+sd15_0120,skin,salt_bae_ui,v10,,saltbae,0.8-1.0,,https://civitai.com/models/73116
+sd15_0121,skin,reaction_surprise,v20,,hands on head/myhonest reaction,0.9-1.0,,https://civitai.com/models/90291
+sd15_0122,skin,sunglasses_deal_with_it,v10,,DealWithIt,0.5-1.0,,https://civitai.com/models/86447
+sd15_0123,skin,glowing_eyes,v10,,"Glowing Eyes Meme/glowing eyes, glowing, epic",0.6-1.0,,https://civitai.com/models/78921?modelVersionId=83724
+sd15_0124,skin,insane_eyes,v10,,GoingInsane/close-up,0.7-1.0,,https://civitai.com/models/93263/going-insane-or-concept-lora
+sd15_0125,skin,googly_eyes,v10,,googlyeyes,,,https://civitai.com/models/85366?modelVersionId=90744
+sd15_0126,skin,orgasming_face,v20,,"edgOrgasm,face focus/woman with edgOrgasm_face",,,https://civitai.com/models/106844/orgasming-face-by-edg
+sd15_0127,skin,skin_tone,v10,,,,,https://civitai.com/models/112594/skin-tone-slider-lora
+sd15_0128,skin,nude_front,v14,,,0.3-1.0,,https://civitai.com/models/9025?modelVersionId=23250
+sd15_0129,skin,math_formulas,v10,,"MathLadyMeme/text, english text",0.8-1.0,,https://civitai.com/models/112351?modelVersionId=121283
+sd15_0130,skin,low_poly,v10,,lowpoly style,,,https://civitai.com/models/65215
+sd15_0131,skin,low_poly_animal,v10,,,,,https://civitai.com/models/119699
+sd15_0132,action,anime_kiss,v10,,kiss/tongue kiss,,,https://civitai.com/models/21458/anime-kisses
+sd15_0133,style,anime_figure,v10,,figure,,,https://civitai.com/models/247230?modelVersionId=278930
+sd15_0134,style,pixel_art,v40,,pixel_art,1,,https://civitai.com/models/185743/8bitdiffuser-64x-or-a-perfect-pixel-art-model
+sd15_0135,style,lineart_manga,v30,,"lineart, monochrome",1,,https://civitai.com/models/16014/anime-lineart-manga-like-style
+sd15_0136,style,minimal_anime,v10,,anime minimalist,,,https://civitai.com/models/24833/minimalist-anime-style
+sd15_0137,style,game_3d_jianzhu,v10,,gmic_\(iconjianzhu\),,,https://civitai.com/models/395240/gmic-icon3djianzhu
+sd15_0138,style,game_2d_scene,v10,,gmic icon_\(sence\),,,https://civitai.com/models/372956/gmic-icongui
+sd15_0139,style,chinese_brushwork,v10,,,,,https://civitai.com/models/116545/niji-cfreehandbrushwork
+sd15_0140,style,watercolor_niji,v10,,,,,https://civitai.com/models/104707/niji-watercolor
+sd15_0141,style,vector_art_niji,v10,,,,,https://civitai.com/models/107734/niji-vectorillustration
+sd15_0142,style,line_art_niji,v10,,,,,https://civitai.com/models/104597/niji-handdrawminimalistlineart
+sd15_0143,style,flat_art_niji,v10,,,,,https://civitai.com/models/111408/niji-geometricshapes
+sd15_0144,style,kawaii_niji,v10,,,,,https://civitai.com/models/104712
+sd15_0145,style,vector_illustration,v20,,vector illustration,0.6-0.9,,https://civitai.com/models/60132/vector-illustration
+sd15_0146,style,chibi_3d,v10,,,,,https://civitai.com/models/108279/chibi-q-niji
+sd15_0147,style,hologram_neon,,,,,,https://civitai.com/models/108194/niji-hologram
+sd15_0148,style,circle_art,v10,,Circle/Art,0.8-1.0,,https://civitai.com/models/123044/circle-art-or-concept-magic
+sd15_0149,style,ink_art_moxin,v10,,shuimobysim/wuchangshuo/bonian/zhenbanqiao/badashanren,0.7-1.0,,https://civitai.com/models/12597?modelVersionId=14856
+sd15_0150,style,ink_art_shukezouma,v11,,shukezouma,0.7-1.0,,https://civitai.com/models/12597?modelVersionId=20143
+sd15_0151,style,ink_art_scenery,v10,,"white background, scenery, ink, mountains, water, trees",,,https://civitai.com/models/78605?modelVersionId=83390
+sd15_0152,style,papercut_lightbox,v10,,Paper Cut/Light Box,0.7-0.9,,https://civitai.com/models/125517/paper-cut-light-box-art-or-concept-magic
+sd15_0153,style,japanese_rockery_3d,v21,,isojapan style/miniature/japanese/model/garden/with pool/with pond/house/with pagoda/village/river/running through/wooden box/low poly/aerial view/glass box,,,https://civitai.com/models/43744/djz-iso-japan
+sd15_0154,style,gameicon_kuang,v10,,"game icon institute, kuang",0.4-0.8,,https://civitai.com/models/111568/gameiconresearchgfcjloalora
+sd15_0155,texture,lego,v20,,LEGO BrickHeadz/LEGO MiniFig/LEGO Creator,0.6-1.0,,https://civitai.com/models/92444?modelVersionId=150123
+sd15_0156,texture,marble,,,M4rbleSCNEW,,,https://civitai.com/models/70538
+sd15_0157,texture,stained_glass,v10,,stainedglassai,,,https://civitai.com/models/46994?modelVersionId=51581
+sd15_0158,view,falling_bottom,,,"falling, (from below:1.2), falling_blur, depth of field, floating, focused",0.4-0.6,,https://civitai.com/models/94388?modelVersionId=101555
+sd15_0159,view,falling_top,,,falling_above,0.9,,https://civitai.com/models/94388?modelVersionId=100691
+sd15_0160,view,falling_aside,,,falling_side,0.9,,https://civitai.com/models/94388?modelVersionId=100688
+sd15_0161,view,anime_isometric,v10,,Isometric_Setting,,,https://civitai.com/models/118775?modelVersionId=128894
+sd15_0162,view,isometric_projection,v10,,Isometric projection,0.7-1.2,,https://civitai.com/models/349762/update-buildings-easily-isometric-building-upgrader-lora
+sd15_0163,view,axonometric_room_3d,v10,,"(white background:1.5), mid shot, axonometric, axonometric_drawing",,,https://civitai.com/models/104516/oldaxonometricv1
+sd15_0164,character,shrek,v20,,shrex,0.9,,https://civitai.com/models/20683
+sd15_0165,character,shrek_dragoness,v1_locon,,shrekdragon,,,https://civitai.com/models/118156?modelVersionId=128129
+sd15_0166,character,aladdin_jasmine_waifu,v10,,"JasmineWaifu/(arabian clothes, off-shoulder shirt, pants)/(multi-tied hair, long hair)/(jewelry)/(red arabian clothes)",0.5-0.8,,https://civitai.com/models/48875/jasmine-aladdin-disney-princess-by-yeiyeiart
+sd15_0167,character,tangled_rapunzel_waifu,v10,,RapunzelWaifu/dress/blonde,0.5-0.8,,https://civitai.com/models/39104/rapunzel-disney-princess-tangled-by-yeiyeiart
+sd15_0168,character,snow_white_waifu,v10,,SnowPrincessw/dress/puffy sleeves/skirt,0.5-0.8,,https://civitai.com/models/39091/snow-white-disney-princess-by-yeiyeiart
+sd15_0169,character,cinderella_waifu,v10,,"CinderellaWaifu/dress, gloves, jewelry/brown skirt, long skirt, head scarf, apron",0.5-0.8,,https://civitai.com/models/40796/cinderella-disney-princess-by-yeiyeiart
+sd15_0170,character,frozen_elsa_waifu,v10,,ElsaWaifu/blue dress/single braid,0.5-0.8,,https://civitai.com/models/42668/elsa-frozen-disney-princess-by-yeiyeiart
+sd15_0171,character,frozen_anna_waifu,v10,,"AnnaWaifu/dress/gloves, dress, boots, corset, cape",0.5-0.8,,https://civitai.com/models/42675/anna-frozen-disney-princess-by-yeiyeiart
+sd15_0172,character,alice_in_wonderland_waifu,v10,,AliceWonderlandWaifu/dress,0.5-0.8,,https://civitai.com/models/35930/alice-in-wonderland-disney-by-yeiyeiart
+sd15_0173,character,ariel_little_mermaid_waifu,v10,,"ArielWaifu/shell bikini/Mermaid tail/pink dress, tiara/blue dress, corset, hair bow",0.5-0.8,,https://civitai.com/models/46315/ariel-the-little-mermaid-princess-disney-by-yeiyeiart
+sd15_0174,character,aurora_sleeping_beauty_waifu,v10,,"AuroraWaifu/(pink dress, long skirt, tiara)/(purple eyes)/(dress, long skirt, corset, hairband)",0.5-0.8,,https://civitai.com/models/47226/aurora-sleeping-beauty-disney-princess-by-yeiyeiart
+sd15_0175,character,brave_merida_waifu,v10,,MeridaWaifu/dress,0.5-0.8,,https://civitai.com/models/39097/merida-brave-disney-princess-by-yeiyeiart
+sd15_0176,character,pocahontas_waifu,v10,,"PocahontasWaifu/tribal, dress",0.5-0.8,,https://civitai.com/models/41879/pocahontas-disney-princess-by-yeiyeiart
+sd15_0177,character,fa_mulan_waifu,v10,,"MulanWaifu/japanese clothes/kimono/jacket, pants",0.5-0.8,,https://civitai.com/models/41901/fa-mulan-disney-princess-by-yeiyeiart
+sd15_0178,character,princess_and_frog_tiana_waifu,v10,,"TianaWaifu/white dress/green dress/blue dress/yellow dress, apron/tiara/very dark skin/hair bun",0.5-0.8,,https://civitai.com/models/43727/tiana-the-princess-and-the-frog-disney-princess-by-yeiyeiart
+sd15_0179,character,genshin_impact_all,v10,,kukishinobudef/luminedef/doridef/fischldef/keqingdef/lisadef/raidenshogundef/yaemikodef/kujousaradef/beidoudef/dionadef/ganyudef/kamisatoayakadef/shenhedef/euladef/rosariadef/qiqidef/layladef/niloudef/kokomidef/yelandef/monadef/barbaradef/candacedef/colleidef/yaoyaodef/nahidadef/faruzandef/jeanfavonian/sucrosedef/sayudef/xianglingdef/dehyadef/yoimiyadef/kleedef/hutaodef/xinyandef/amber5star/yanfeidef/noelledef/yunjindef/ningguangdef/,,,https://civitai.com/models/108649
+sd15_0180,character,genshin_impact_cosplay_kirara,,,"kirara_genshin, beautiful face, sweet girl,(cowboy shot), hair ornament, cat ears, blonde long hair, green eyes, detached sleeves, kirara's upshirt, stomach cutout, kirara's short skirt, two cat tails, bare legs,(black leg warmers), ((white fur-trimmed cat feet shoe covers))",,,https://civitai.com/models/87320?modelVersionId=135618
+sd15_0181,character,genshin_impact_cosplay_jean,,,"jean_genshin, 1girl, beautiful face,(close-up), (cowboy shot), blonde hair, hair bow,bare shoulders, detached sleeves, jean's upshirt, jean's puffy white shorts, belt, thigh strap, sandals",,,https://civitai.com/models/87320?modelVersionId=134408
+sd15_0182,character,genshin_impact_cosplay_fischl,,,"fischl_genshin, cowboy shot, 1girl, hair over one eye, blonde long hair, tiara,bare shoulders, detached sleeves, fischl's short dress, white thighhighs, black shoes",,,https://civitai.com/models/87320?modelVersionId=133591
+sd15_0183,character,genshin_impact_cosplay_lumine,,,"1girl, close-up, cowboy shot, lumine_genshin, blonde hair, hair flower, hair between eyes, hair ornament, bangs, white dress, detached sleeves, bare shoulders, lumine's thigh boots",,,https://civitai.com/models/87320?modelVersionId=132864
+sd15_0184,character,genshin_impact_cosplay_babara,,,"((1girl)), babara_in_swimsuit, cowboy shot, blonde hair, blue eyes, twintails, sailor hat, sailor collar, babara's swimsuit, detached sleeves, bare legs, thigh strap, babara's strap, babara's sandals",,,https://civitai.com/models/87320?modelVersionId=131978
+sd15_0185,character,genshin_impact_cosplay_yoimiya,,,,,,https://civitai.com/models/87320?modelVersionId=130253
+sd15_0186,character,genshin_impact_cosplay_ganyu,,,,,,https://civitai.com/models/87320?modelVersionId=129385
+sd15_0187,character,genshin_impact_cosplay_rukkhadeva,,,,,,https://civitai.com/models/87320?modelVersionId=128697
+sd15_0188,character,genshin_impact_cosplay_sangonomiya_kokomi,,,,,,https://civitai.com/models/87320?modelVersionId=127348
+sd15_0189,character,genshin_impact_cosplay_miss_hina,,,,,,https://civitai.com/models/87320?modelVersionId=127090
+sd15_0190,character,genshin_impact_cosplay_ning_guang,,,,,,https://civitai.com/models/87320?modelVersionId=125710
+sd15_0191,character,genshin_impact_cosplay_hutao,,,,,,https://civitai.com/models/87320?modelVersionId=124795
+sd15_0192,character,genshin_impact_cosplay_shenhe,,,,,,https://civitai.com/models/87320?modelVersionId=123225
+sd15_0193,character,genshin_impact_cosplay_raiden_shogun,,,,,,https://civitai.com/models/87320?modelVersionId=119542
+sd15_0194,character,genshin_impact_cosplay_yae_miko,,,,,,https://civitai.com/models/87320?modelVersionId=118729
+sd15_0195,character,genshin_impact_cosplay_keqing,,,,,,https://civitai.com/models/87320?modelVersionId=115457
+sd15_0196,character,genshin_impact_cosplay_ayako_keno_uniform,,,"ayaka_KendoUniform, 1 sweet girl, white long hair, ponytail, pink hair ribbon, bangs, white shirt, blue long hakama skirt",,,https://civitai.com/models/87320?modelVersionId=110919
+sd15_0197,character,genshin_impact_cosplay_ayaka,,,"kamisato_ayaka, 1girl, beautiful face, blue hair, blue eyes, braid, hat, blue dress, white pantyhose, brown boots",,,https://civitai.com/models/87320?modelVersionId=105773
+sd15_0198,character,genshin_impact_cosplay_nilou,,,,,,https://civitai.com/models/87320?modelVersionId=92925
+sd15_0199,character,sailor_moon,v10,,"aausagi, double bun, twintails, parted bangs, circlet, jewelry, earrings, choker, red bow, white gloves, elbow gloves, blue skirt",0.7,,https://civitai.com/models/121043/sailor-moon-tsukino-usagi-sailor-moon
+sd15_0200,character,sailor_mercury,v10,,"mer1, tiara, sailor senshi uniform",0.7-0.8,,https://civitai.com/models/55320/sailor-mercury-sailor-moon
+sd15_0201,character,sailor_venus,v20,,"sv1, sailor senshi uniform, orange skirt, elbow gloves, tiara, orange sailor collar, red bow, orange choker, white gloves, jewelry",,,https://civitai.com/models/33470/sailor-venus-sailor-moon
+sd15_0202,character,sailor_mars,v10,,"sama1, tiara, sailor senshi uniform, white gloves, red sailor collar, red skirt",0.7,,https://civitai.com/models/71557/sailor-mars-sailor-moon
+sd15_0203,character,sailor_jupiter,v10,,"hmjupiter, green eyes, ponytail, tiara, jewelry, sailor senshi uniform, green sailor collar, choker, elbow gloves, white gloves, pink bow, brooch, white leotard, green skirt, pleated skirt",0.6-0.7,,https://civitai.com/models/85221/sailor-jupiter-sailor-moon
+sd15_0204,character,sailor_uranus,v10,,"sailor senshi uniform, sailor collar, chest bow, back bow, plead skirt, white elbow gloves",0.5-1.0,,https://civitai.com/models/91752/kizuki-sailor-moon-sailor-uranus-nsfw-support
+sd15_0205,character,sailor_neptune,v10,,"sailor senshi uniform, chest bow, back bow, plead skirt, white elbow gloves, sailor collar",0.5-1.0,,https://civitai.com/models/75992/kizuki-sailor-moon-sailor-neptune-nsfw-support
+sd15_0206,character,sailor_saturn,v10,,sailor saturn/tiara/sailor senshi uniform,1,,https://civitai.com/models/56569/sailor-saturn-or-sailor-moon
+sd15_0207,character,sailor_pluto,v10,,sailor pluto/single hair bun/tiara/sailor senshi uniform/skirt/gloves,1,,https://civitai.com/models/64584/sailor-pluto-or-sailor-moon
+sd15_0208,character,sailor_cosmos,v10,,"1girl, sailor cosmos, standing, fullbody, solo, long hair, skirt, hair ornament, twintails, jewelry, purple eyes, white hair, pleated skirt, earrings, choker, sailor collar, hair bun, cape, double bun, facial mark, white skirt, brooch, white sailor collar, hairpin, forehead mark, white choker, sailor senshi uniform",,,https://civitai.com/models/22618/sailor-cosmos-sailor-moon-lora
+sd15_0209,character,marvel_silk,v10,,cindymoon/mouth mask/short hair/bodysuit/spider web print,0.8-1.0,,https://civitai.com/models/87200/cindy-moon-or-silk
+sd15_0210,character,dragon_quest_nera,v10,,"nera/hair bow, bracelet, choker, earrings, long dress, sash",0.7-0.9,,https://civitai.com/models/104967/nera-briscolettiflora-dragon-quest-v-hand-of-the-heavenly-bride-lora
+sd15_0211,character,dragon_quest_princess_of_moonbrooke,v10,,"dqPOM/red hood, purple hair, robe/purple hood, blonde hair, robe",0.7-0.9,,https://civitai.com/models/113156/princess-of-moonbrooke-dragon-quest-ii-lora
+sd15_0212,character,dragon_ball_android_18,v10,,"android_18, and18, 1girl",0.5-0.6,,https://civitai.com/models/27862/android-18-18-dragon-ball-z
+sd15_0213,character,dragon_ball_son_goku,offset,,son goku,,,https://civitai.com/models/18279/son-goku-dragon-ball-all-series-lora
+sd15_0214,character,dragon_ball_vegeta,v10,,"vegeta/spiked hair/armor, white gloves",0.8-1.0,,https://civitai.com/models/47959/vegeta-or-dragon-ball-z
+sd15_0215,character,dragon_ball_beerus,v10,,beerus,,,https://civitai.com/models/85610/beerus-dragonball
+sd15_0216,character,dnd_doric_the_druid,v10,,thedruid/photo of a woman,,,https://civitai.com/models/112427/doric-the-druid-dungeons-and-dragons-honor-among-thieves
+sd15_0217,character,raya_and_the_last_dragon_sisu,v20,,sisu_rald,0.6-1.0,,https://civitai.com/models/70591/sisu-raya-and-the-last-dragon
+sd15_0218,character,dragon_girl_realistic,v10,,dragon_real/flame,,,https://civitai.com/models/82903/real-dragons
+sd15_0219,character,dragon_oriental_giant,v10,,dragon/long,,,https://civitai.com/models/81125/oriental-giant-dragon
+sd15_0220,character,diablo_4,v10,,(in the style of D14bl0)/Lilith/Diablo/Inarius/Barbarian/Rogue/Necromancer/Druide/Mage,0.65-1.0,,https://civitai.com/models/81463/diablo-4-lora
+sd15_0221,character,samurai_niji,v10,,,,,https://civitai.com/models/89197/niji
+sd15_0222,character,chinese_sorceress,v10,,"weapon,cleavage,(magic circle:1.1),xiuxian",,,https://civitai.com/models/74919/chinese-cultivation-novel
