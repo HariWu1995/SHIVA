@@ -5,15 +5,29 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-from diffusers.utils import BaseOutput, logging
-from diffusers.configuration_utils import ConfigMixin, register_to_config
-from diffusers.models.attention_processor import ADDED_KV_ATTENTION_PROCESSORS, CROSS_ATTENTION_PROCESSORS, \
-                                            AttnProcessor, AttentionProcessor, AttnAddedKVProcessor
-from diffusers.models.embeddings import TextImageProjection, TextImageTimeEmbedding, TextTimeEmbedding, TimestepEmbedding, Timesteps
-from diffusers.models.modeling_utils import ModelMixin
-from diffusers.models.unets.unet_2d_blocks import CrossAttnDownBlock2D, DownBlock2D, UNetMidBlock2DCrossAttn, MidBlock2D, UNetMidBlock2D, \
-                                                    get_down_block, get_mid_block, get_up_block
-from diffusers.models.unets.unet_2d_condition import UNet2DConditionModel
+from ..configuration_utils import ConfigMixin, register_to_config
+from ..utils import BaseOutput, logging
+from .attention_processor import (
+    ADDED_KV_ATTENTION_PROCESSORS,
+    CROSS_ATTENTION_PROCESSORS,
+    AttentionProcessor,
+    AttnAddedKVProcessor,
+    AttnProcessor,
+)
+from .embeddings import TextImageProjection, TextImageTimeEmbedding, TextTimeEmbedding, TimestepEmbedding, Timesteps
+from .modeling_utils import ModelMixin
+from .unets.unet_2d_blocks import (
+    CrossAttnDownBlock2D,
+    DownBlock2D,
+    UNetMidBlock2D,
+    UNetMidBlock2DCrossAttn,
+    get_down_block,
+    get_mid_block,
+    get_up_block,
+    MidBlock2D
+)
+
+from .unets.unet_2d_condition import UNet2DConditionModel
 
 
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
@@ -715,6 +729,8 @@ class BrushNetModel(ModelMixin, ConfigMixin):
                 If `return_dict` is `True`, a [`~models.brushnet.BrushNetOutput`] is returned, otherwise a tuple is
                 returned where the first element is the sample tensor.
         """
+        device = sample.device
+
         # check channel order
         channel_order = self.config.brushnet_conditioning_channel_order
 
@@ -736,14 +752,14 @@ class BrushNetModel(ModelMixin, ConfigMixin):
         if not torch.is_tensor(timesteps):
             # TODO: this requires sync between CPU and GPU. So try to pass timesteps as tensors if you can
             # This would be a good case for the `match` statement (Python 3.10+)
-            is_mps = sample.device.type == "mps"
+            is_mps = device.type == "mps"
             if isinstance(timestep, float):
                 dtype = torch.float32 if is_mps else torch.float64
             else:
                 dtype = torch.int32 if is_mps else torch.int64
-            timesteps = torch.tensor([timesteps], dtype=dtype, device=sample.device)
+            timesteps = torch.tensor([timesteps], dtype=dtype, device=device)
         elif len(timesteps.shape) == 0:
-            timesteps = timesteps[None].to(sample.device)
+            timesteps = timesteps[None].to(device=device)
 
         # broadcast to batch dimension in a way that's compatible with ONNX/Core ML
         timesteps = timesteps.expand(sample.shape[0])
@@ -753,7 +769,7 @@ class BrushNetModel(ModelMixin, ConfigMixin):
         # timesteps does not contain any weights and will always return f32 tensors
         # but time_embedding might actually be running in fp16. so we need to cast here.
         # there might be better ways to encapsulate this.
-        t_emb = t_emb.to(dtype=sample.dtype)
+        t_emb = t_emb.to(dtype=sample.dtype, device=device)
 
         emb = self.time_embedding(t_emb, timestep_cond)
         aug_emb = None
@@ -795,7 +811,6 @@ class BrushNetModel(ModelMixin, ConfigMixin):
         # 2. pre-process
         brushnet_cond=torch.concat([sample,brushnet_cond],1)
         sample = self.conv_in_condition(brushnet_cond)
-
 
         # 3. down
         down_block_res_samples = (sample,)
@@ -880,7 +895,7 @@ class BrushNetModel(ModelMixin, ConfigMixin):
 
         # 6. scaling
         if guess_mode and not self.config.global_pool_conditions:
-            scales = torch.logspace(-1, 0, len(brushnet_down_block_res_samples) + 1 + len(brushnet_up_block_res_samples), device=sample.device)  # 0.1 to 1.0
+            scales = torch.logspace(-1, 0, len(brushnet_down_block_res_samples) + 1 + len(brushnet_up_block_res_samples), device=device)  # 0.1 to 1.0
             scales = scales * conditioning_scale
 
             brushnet_down_block_res_samples = [sample * scale for sample, scale in zip(brushnet_down_block_res_samples, scales[:len(brushnet_down_block_res_samples)])]

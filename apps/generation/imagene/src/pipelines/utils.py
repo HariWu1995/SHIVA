@@ -20,7 +20,7 @@ def find_submodules(pipe):
             "text_encoder", "text_encoder_1", "text_encoder_2",
             "image_encoder", 
             "image_embedder",
-            "unet", "transformer",
+            "unet", "transformer", "brushnet",
             "vae", "vae_1_0",
         ] if hasattr(pipe, m)
     ]
@@ -34,7 +34,7 @@ def enable_lowvram_usage(pipe):
     
     Group Offloading: 
         https://github.com/huggingface/diffusers/pull/10503
-    """ 
+    """
     # Slicing
     pipe.enable_vae_slicing()
     pipe.enable_vae_tiling()
@@ -64,12 +64,40 @@ def enable_lowvram_usage(pipe):
         elif m.startswith(('unet','transformer')):
             offload_config.update(dict(offload_type="leaf_level", use_stream=True, low_cpu_mem_usage=True))
 
-        elif m.startswith('vae'):
+        elif m.startswith(('vae','brushnet')):
             offload_config.update(dict(offload_type="leaf_level"))
 
         apply_group_offloading(module, **offload_config)
 
     return pipe
+
+
+def preprocess_brushnet(
+    image: ImageClass | np.ndarray | str,
+    mask: ImageClass | np.ndarray | str,
+):
+    def check_img(img):
+        if isinstance(img, str):
+            img = cv2.imread(img)
+        elif isinstance(img, ImageClass):
+            img = np.array(img)
+        return img
+    
+    image = check_img(image)
+    mask = check_img(mask)
+    if mask.ndim == 3:
+        mask = mask.sum(-1)
+    assert mask.ndim == 2
+    mask = (mask > 128) * 1.
+    mask = mask[:, :, np.newaxis].repeat(3, axis=2)
+    image = image * (1 - mask)
+
+    image = image.astype(np.uint8)
+    mask = mask.astype(np.uint8) * 255
+
+    image = Image.fromarray(image).convert("RGB")
+    mask = Image.fromarray(mask).convert("RGB")
+    return image, mask
 
 
 def blend_images(

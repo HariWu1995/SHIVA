@@ -14,7 +14,6 @@ from .utils import enable_lowvram_usage
 def load_pipeline(
     model_name: str, 
     model_version: str, 
-    num_in_channels: int = 9,
 ):
     clear_torch_cache()
 
@@ -30,7 +29,7 @@ def load_pipeline(
     config = dict(torch_dtype=shared.dtype, local_files_only=False)
 
     if model_version.startswith('sd'):
-        config['num_in_channels'] = num_in_channels
+        config['num_in_channels'] = 9 if model_name.endswith('inpaint') else 4
 
     if shared.low_vram:
         config['low_cpu_mem_usage'] = True 
@@ -49,25 +48,14 @@ def load_pipeline(
 
 
 def run_pipeline(
-    model_name: str, 
-    model_version: str, 
+    pipe, 
     prompt: str = '', 
     nrompt: str = '', 
     batch_size: int = 1,
     **kwargs
 ):
 
-    n_channels = 9 if model_name.endswith('inpaint') else 4
-    pipe = load_pipeline(model_name, model_version, n_channels)
-
-    if model_version == "sd15":
-        H, W = 512, 512
-    elif model_version == "sdxl":
-        H, W = 1024, 1024
-    elif model_version == "flux":
-        H, W = 1024, 1024
-
-    diffusion_kwargs = dict(height = H, width = W)
+    diffusion_kwargs = dict()
     diffusion_kwargs.update(kwargs)
 
     all_generated = []
@@ -82,18 +70,42 @@ def run_pipeline(
 
 if __name__ == "__main__":
 
-    from ..utils import POSITIVE_PROMPT, NEGATIVE_PROMPT
+    ############################################################
+    #                       Load Pipeline                      #
+    ############################################################
 
     # model_selected = "sd15/dreamshaper_v8"
     model_selected = "sdxl/dreamshaper_light"
     model_version, model_name = model_selected.split('/')
-    model_channels = 9 if model_name.endswith('inpaint') else 4
+
+    pipe = load_pipeline(model_name, model_version)
+
+    if model_version == "sd15":
+        H, W = 512, 512
+    elif model_version == "sdxl":
+        H, W = 1024, 1024
+    elif model_version == "flux":
+        H, W = 1024, 1024
+
+    ###########################################################
+    #                       Run Pipeline                      #
+    ###########################################################
+
+    from ..default import POSITIVE_PROMPT, NEGATIVE_PROMPT
 
     prompt = "car showroom, glossy floor reflecting the soft lighting, daylight, polished surface, large windows, city view, minimalist modern design"
     prompt = POSITIVE_PROMPT + ', ' + prompt
     nrompt = NEGATIVE_PROMPT
 
-    config = dict(strength=0.9, guidance_scale=7.7, num_inference_steps=10, output_type='pil')
-    image = run_pipeline(model_name, model_version, prompt, nrompt, **config)[0]
+    config = dict(
+        height = H, 
+        width = W,
+        strength = 0.9, 
+        guidance_scale = 7.7, 
+        num_inference_steps = 30, 
+        output_type = 'pil',
+    )
+
+    image = run_pipeline(pipe, prompt, nrompt, **config)[0]
     image.save(f'./temp/generated_{model_version}.png')
 

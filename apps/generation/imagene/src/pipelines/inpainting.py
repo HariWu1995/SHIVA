@@ -9,17 +9,18 @@ import numpy as np
 
 from .. import shared
 from ..utils import clear_torch_cache
-from .utils import enable_lowvram_usage, blend_images
+from .utils import enable_lowvram_usage, blend_images, preprocess_brushnet
 
 # Link to BrushNet
+extra_lib = str(Path(__file__).resolve().parents[5] / 'extra')
+
 import sys
-sys.path.append(Path(__file__).resolve().parents[5] / 'extra')
+sys.path.append(extra_lib)
 
 
 def load_pipeline(
     model_name: str, 
     model_version: str, 
-    num_in_channels: int = 9,
     brushnet_name: str | None = None,
 ):
     clear_torch_cache()
@@ -48,7 +49,7 @@ def load_pipeline(
     config = dict(torch_dtype=shared.dtype, local_files_only=False)
     
     if model_version.startswith('sd'):
-        config['num_in_channels'] = num_in_channels
+        config['num_in_channels'] = 9 if model_name.endswith('inpaint') else 4
 
     if brushnet_name is not None:
         brushnet_path = str(shared.IMAGENE_LOCAL_MODELS[f"brush/{brushnet_name}"])
@@ -69,21 +70,15 @@ def load_pipeline(
 
 
 def run_pipeline(
-    model_name: str, 
-    model_version: str, 
+    pipe, 
     image: ImageClass, 
     mask: ImageClass, 
     prompt: str = '', 
     nrompt: str = '', 
-    n_channels: int = 9,    # inpaint = 9 channels
     batch_size: int = 1,
-    brushnet_name: str | None = None,
-    brushnet_scale: float = 1.0,
-    blend_after_gen: bool = False,
+    brushnet_scale: float = None,
     **kwargs
 ):
-
-    pipe = load_pipeline(model_name, model_version, n_channels)
     
     if isinstance(image, np.ndarray):
         image = Image.fromarray(image)
@@ -96,7 +91,7 @@ def run_pipeline(
     diffusion_kwargs = dict(height = H, width = W)
     diffusion_kwargs.update(kwargs)
 
-    if brushnet_name is not None:
+    if brushnet_scale is not None:
         diffusion_kwargs['brushnet_conditioning_scale'] = brushnet_scale
 
     all_generated = []
@@ -113,20 +108,36 @@ def run_pipeline(
 
 if __name__ == "__main__":
 
-    from ..utils import POSITIVE_PROMPT, NEGATIVE_PROMPT
+    ############################################################
+    #                       Load Pipeline                      #
+    ############################################################
 
     # model_selected = "sd15/dreamshaper_v8_inpaint"
     model_selected = "sdxl/dreamshaper_light_inpaint"
-    model_version, model_name = model_selected.split('/')
-    model_channels = 9 if model_name.endswith('inpaint') else 4
+    brushnet = None
 
-    # brushnet = None
-    brushnet = "random_mask"
-    if model_version == 'sdxl':
-        brushnet += '_xl'
+    # NOTE: BrushNet must run with non-inpaint model
+    # model_selected = "sd15/dreamshaper_v8"
+    # brushnet = "random_mask"
+    # model_selected = "sdxl/dreamshaper_light"
+    # brushnet = "segmentation_mask_xl"
+
+    model_version, model_name = model_selected.split('/')
+    pipe = load_pipeline(model_name, model_version, brushnet)
+
+    ###########################################################
+    #                       Run Pipeline                      #
+    ###########################################################
+
+    from ..default import POSITIVE_PROMPT, NEGATIVE_PROMPT
 
     image = Image.open("C:/Users/Mr. RIAH/Documents/GenAI/_Visual/Anilluminus.AI/logs/image.png")
     mask  = Image.open("C:/Users/Mr. RIAH/Documents/GenAI/_Visual/Anilluminus.AI/logs/mask.png")
+
+    if brushnet is not None:
+        image, mask = preprocess_brushnet(image, mask)
+        image.save(f'./temp/brushprocessed_{model_version}_image.png')
+        mask.save(f'./temp/brushprocessed_{model_version}_mask.png')
     
     prompt = "car showroom, glossy floor reflecting the soft lighting, daylight, polished surface, large windows, city view, minimalist modern design"
     prompt = POSITIVE_PROMPT + ', ' + prompt
@@ -134,11 +145,11 @@ if __name__ == "__main__":
 
     config = dict(strength=0.9, guidance_scale=7.7, num_inference_steps=30, output_type='pil')
     if brushnet is not None:
-        config['brushnet_name'] = brushnet
+        config['brushnet_scale'] = 1.0
 
     save_prefix = 'inpainted' if not brushnet else 'brushpainted'
 
-    imgenerated = run_pipeline(model_name, model_version, image, mask, prompt, nrompt, **config)[0]
+    imgenerated = run_pipeline(pipe, image, mask, prompt, nrompt, **config)[0]
     imgenerated.save(f'./temp/{save_prefix}_{model_version}.png')
 
     imgen_blended = blend_images(image, imgenerated, mask)
