@@ -3,6 +3,7 @@ import numpy as np
 
 from PIL import Image
 from PIL.Image import Image as ImageClass
+from pathlib import Path
 
 from typing import List, Tuple
 from torch import nn
@@ -27,7 +28,7 @@ def find_submodules(pipe):
     return all_submodules
 
 
-def enable_lowvram_usage(pipe):
+def enable_lowvram_usage(pipe, offload_only: bool = False):
     """
     Memory Optimization:
         https://huggingface.co/docs/diffusers/en/optimization/memory
@@ -35,13 +36,14 @@ def enable_lowvram_usage(pipe):
     Group Offloading: 
         https://github.com/huggingface/diffusers/pull/10503
     """
-    # Slicing
-    pipe.enable_vae_slicing()
-    pipe.enable_vae_tiling()
-    pipe.enable_attention_slicing()
-    
-    if is_xformers_available():
-        pipe.enable_xformers_memory_efficient_attention()
+    if not offload_only:
+        # Slicing
+        pipe.enable_vae_tiling()
+        pipe.enable_vae_slicing()
+        pipe.enable_attention_slicing()
+        
+        if is_xformers_available():
+            pipe.enable_xformers_memory_efficient_attention()
 
     # Offloading
     # pipe.enable_model_cpu_offload()
@@ -97,6 +99,8 @@ def preprocess_brushnet(
 
     image = Image.fromarray(image).convert("RGB")
     mask = Image.fromarray(mask).convert("RGB")
+    image.save('./temp/test_image.png')
+    mask.save('./temp/test_mask.png')
     return image, mask
 
 

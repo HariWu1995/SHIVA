@@ -11,7 +11,7 @@ from .. import shared
 from ..utils import clear_torch_cache
 from .utils import enable_lowvram_usage, blend_images, preprocess_brushnet
 
-# Link to BrushNet
+# Link to Extra
 extra_lib = str(Path(__file__).resolve().parents[5] / 'extra')
 
 import sys
@@ -62,10 +62,6 @@ def load_pipeline(
         pipe = InpaintPipeline.from_single_file(model_path, **config).to(shared.device)
     else:
         pipe = InpaintPipeline.from_pretrained(model_path, **config).to(shared.device)
-
-    # enable memory savings
-    if shared.low_vram:
-        pipe = enable_lowvram_usage(pipe)
     return pipe
 
 
@@ -113,17 +109,21 @@ if __name__ == "__main__":
     ############################################################
 
     # model_selected = "sd15/dreamshaper_v8_inpaint"
-    model_selected = "sdxl/dreamshaper_light_inpaint"
-    brushnet = None
+    # model_selected = "sdxl/dreamshaper_light_inpaint"
+    # brushnet = None
 
     # NOTE: BrushNet must run with non-inpaint model
     # model_selected = "sd15/dreamshaper_v8"
     # brushnet = "random_mask"
-    # model_selected = "sdxl/dreamshaper_light"
-    # brushnet = "segmentation_mask_xl"
+    model_selected = "sdxl/dreamshaper_light"
+    brushnet = "segmentation_mask_xl"
 
     model_version, model_name = model_selected.split('/')
     pipe = load_pipeline(model_name, model_version, brushnet)
+
+    # enable memory savings
+    if shared.low_vram:
+        pipe = enable_lowvram_usage(pipe)
 
     ###########################################################
     #                       Run Pipeline                      #

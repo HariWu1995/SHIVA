@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import List, Union
 from tqdm import tqdm
 
@@ -5,10 +6,17 @@ from PIL import Image
 from PIL.Image import Image as ImageClass
 
 import numpy as np
+import torch
 
 from .. import shared
 from ..utils import clear_torch_cache
 from .utils import enable_lowvram_usage
+
+# Link to Extra
+extra_lib = str(Path(__file__).resolve().parents[5] / 'extra')
+
+import sys
+sys.path.append(extra_lib)
 
 
 def load_pipeline(
@@ -35,15 +43,14 @@ def load_pipeline(
         config['low_cpu_mem_usage'] = True 
 
     model_path = str(shared.IMAGENE_LOCAL_MODELS[f"{model_version}/{model_name}"])
-    if model_path.endswith(shared.model_extensions):
+    if (model_version == 'flux') and (model_name == 'mini'):
+        from flux_mini import load_pipeline as load_pipeline_flux_mini
+        pipe = load_pipeline_flux_mini(model_path)
+    elif model_path.endswith(shared.model_extensions):
         config.update(dict(use_safetensors=True if model_path.endswith(".safetensors") else False))
         pipe = GenerationPipeline.from_single_file(model_path, **config).to(shared.device)
     else:
         pipe = GenerationPipeline.from_pretrained(model_path, **config).to(shared.device)
-
-    # enable memory savings
-    if shared.low_vram:
-        pipe = enable_lowvram_usage(pipe)
     return pipe
 
 
@@ -74,11 +81,16 @@ if __name__ == "__main__":
     #                       Load Pipeline                      #
     ############################################################
 
-    # model_selected = "sd15/dreamshaper_v8"
-    model_selected = "sdxl/dreamshaper_light"
+    # model_selected = "flux/mini"
+    model_selected = "sd15/dreamshaper_v8"
+    # model_selected = "sdxl/dreamshaper_light"
     model_version, model_name = model_selected.split('/')
 
     pipe = load_pipeline(model_name, model_version)
+
+    # enable memory savings
+    if shared.low_vram:
+        pipe = enable_lowvram_usage(pipe)
 
     if model_version == "sd15":
         H, W = 512, 512
@@ -102,7 +114,7 @@ if __name__ == "__main__":
         width = W,
         strength = 0.9, 
         guidance_scale = 7.7, 
-        num_inference_steps = 30, 
+    num_inference_steps = 30, 
         output_type = 'pil',
     )
 

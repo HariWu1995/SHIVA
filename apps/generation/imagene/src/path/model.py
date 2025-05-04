@@ -17,6 +17,8 @@ IMAGENE_REMOTE_MODELS = {
     "sd15/sd_15_pruned_ema_only"    : "https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors",
     "sd15/sd_15_pruned_ema_inpaint" : "https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-inpainting/resolve/main/sd-v1-5-inpainting.ckpt",
 
+    # "sd15/lambdalabs_img_variations": "https://huggingface.co/lambdalabs/sd-image-variations-diffusers",
+
     "sd15/dreamshaper_v8_inpaint"  : "https://civitai.com/api/download/models/134084?type=Model&format=SafeTensor&size=full&fp=fp32",
     "sd15/dreamshaper_v8"          : "https://civitai.com/api/download/models/128713?type=Model&format=SafeTensor&size=pruned&fp=fp16",
 
@@ -50,7 +52,8 @@ IMAGENE_REMOTE_MODELS = {
     "sdxl/real_stock_photo_v2"      : "https://huggingface.co/alexgenovese/checkpoint/resolve/021e192bd744c48a85f8ae1832662e77beb9aac7/realisticStockPhoto_v20.safetensors",
     "sdxl/product_photo_midjourney" : "https://huggingface.co/alexgenovese/checkpoint/resolve/021e192bd744c48a85f8ae1832662e77beb9aac7/product-photography-midjourney.safetensors",
 
-    "sdxl/icbinp" : "https://civitai.com/api/download/models/399481?type=Model&format=SafeTensor&size=pruned&fp=fp16",
+    "sdxl/juggernaut"   : "https://civitai.com/api/download/models/782002?type=Model&format=SafeTensor&size=full&fp=fp16",
+    "sdxl/icbinp"       : "https://civitai.com/api/download/models/399481?type=Model&format=SafeTensor&size=pruned&fp=fp16",
 
     "sdxl/dreamshaper_light_inpaint" : "https://civitai.com/api/download/models/450187?type=Model&format=SafeTensor&size=pruned&fp=fp16",
     "sdxl/dreamshaper_light"         : "https://civitai.com/api/download/models/354657?type=Model&format=SafeTensor&size=full&fp=fp16",

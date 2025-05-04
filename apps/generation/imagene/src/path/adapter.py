@@ -33,11 +33,10 @@ IMAGENE_ADAPTERS_HALF = {
 
 # IP-Adapter
 #   Repo: https://github.com/tencent-ailab/IP-Adapter
-#   Checkpoint: https://huggingface.co/h94/IP-Adapter
-#               https://huggingface.co/h94/IP-Adapter-FaceID
 
 IP_ADAPTERS = {
 
+    # https://huggingface.co/h94/IP-Adapter
     "sd15/ip/ip_adapter"       : "https://huggingface.co/h94/IP-Adapter/resolve/main/models/ip-adapter_sd15.safetensors",
     "sd15/ip/ip_adapter_vitG"  : "https://huggingface.co/h94/IP-Adapter/resolve/main/models/ip-adapter_sd15_vit-G.safetensors",
     "sd15/ip/ip_adapter_light" : "https://huggingface.co/h94/IP-Adapter/resolve/main/models/ip-adapter_sd15_light.safetensors",
@@ -49,6 +48,8 @@ IP_ADAPTERS = {
     "sdxl/ip/ip_adapter_vitH"  : "https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter_sdxl_vit-h.safetensors",
     "sdxl/ip/ip_adapter_plus"  : "https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter-plus_sdxl_vit-h.safetensors",
     "sdxl/ip/ip_adapter_+face" : "https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter-plus-face_sdxl_vit-h.safetensors",
+
+    # https://huggingface.co/h94/IP-Adapter-FaceID -> skip, using Instant-ID instead
 
     # https://huggingface.co/InstantX/CSGO
     "sdxl/ip/csgo_c4_s16"   : "https://huggingface.co/InstantX/CSGO/resolve/main/csgo.bin",
