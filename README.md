@@ -75,7 +75,7 @@
 
 - [ ] Audio Generation ([Make-An-Audio](https://github.com/Text-to-Audio/Make-An-Audio) | [AudioLDM](https://github.com/haoheliu/AudioLDM) | [Amphion](https://github.com/open-mmlab/Amphion) | [AudioCraft](https://github.com/facebookresearch/audiocraft) | [Suno|Bark](https://github.com/suno-ai/bark))
 
-### View Synthesis
+### Multi-View Synthesis
 
 - [ ] Text-to-MV ([MVDream](https://github.com/bytedance/MVDream) | [MVDiffusion](https://github.com/Tangshitao/MVDiffusion))
 
