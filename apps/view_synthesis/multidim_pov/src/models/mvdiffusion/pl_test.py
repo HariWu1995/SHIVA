@@ -10,9 +10,7 @@ import pytorch_lightning as pl
 from pytorch_lightning.loggers import TensorBoardLogger
 
 from .src.dataset import MP3Ddataset, Scannetdataset
-from .src.lightning_depth import DepthGenerator
-from .src.lightning_pano_gen import PanoGenerator
-from .src.lightning_pano_outpaint import PanoOutpaintGenerator
+from .src.wrappers import DepthGenerator, PanoGenerator, PanoOutpaintor
 
 
 def parse_args():
@@ -49,8 +47,8 @@ if __name__ == "__main__":
 
     if config['model']['model_type'] == 'pano_generation':
         model = PanoGenerator(config)
-    elif config['model']['model_type'] == 'pano_generation_outpaint':
-        model = PanoOutpaintGenerator(config)
+    elif config['model']['model_type'] == 'pano_outpainting':
+        model = PanoOutpaintor(config)
     elif config['model']['model_type'] == 'depth':
         model = DepthGenerator(config)
 

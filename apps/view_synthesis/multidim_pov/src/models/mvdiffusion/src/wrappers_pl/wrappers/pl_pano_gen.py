@@ -1,7 +1,9 @@
 import os
+from tqdm import tqdm
+from PIL import Image
+
 import numpy as np
 import cv2
-from PIL import Image
 
 import pytorch_lightning as pl
 import torch
@@ -11,19 +13,19 @@ from einops import rearrange
 from diffusers import AutoencoderKL, DDIMScheduler, UNet2DConditionModel
 from transformers import CLIPTextModel, CLIPTokenizer
 
-from .models.pano.MVGenModel import MultiViewBaseModel
+from ..models.pano.MVGenModel import MultiViewBaseModel
 
 
 class PanoGenerator(pl.LightningModule):
 
-    def __init__(self, config):
+    def __init__(self, config, **kwargs):
         super().__init__()
 
         self.lr         = config['train']['lr']
         self.max_epochs = config['train']['max_epochs'] if 'max_epochs' in config['train'] else 0
-        
-        self.diff_timestep  = config['model']['diff_timestep']
-        self.guidance_scale = config['model']['guidance_scale']
+
+        self.diff_timestep  = kwargs.get( 'diff_timestep', config['model']['diff_timestep'])
+        self.guidance_scale = kwargs.get('guidance_scale', config['model']['guidance_scale'])
 
         self.tokenizer    = CLIPTokenizer.from_pretrained(config['model']['model_id'], subfolder="tokenizer", torch_dtype=torch.float16)
         self.text_encoder = CLIPTextModel.from_pretrained(config['model']['model_id'], subfolder="text_encoder", torch_dtype=torch.float16)
@@ -82,7 +84,7 @@ class PanoGenerator(pl.LightningModule):
         b, m = latents.shape[0:2]
         latents = (1 / vae.config.scaling_factor * latents)
         images = []
-        for j in range(m):
+        for j in tqdm(range(m)):
             image = vae.decode(latents[:, j]).sample
             images.append(image)
     
@@ -159,7 +161,8 @@ class PanoGenerator(pl.LightningModule):
     @torch.no_grad()
     def forward_cls_free(self, latents_high_res, _timestep, prompt_embd, batch, model):
         latents, _timestep, _prompt_embd, meta = self.gen_cls_free_guide_pair(
-            latents_high_res, _timestep, prompt_embd, batch)
+            latents_high_res, _timestep, prompt_embd, batch
+        )
 
         noise_pred = model(latents, _timestep, _prompt_embd, meta)
         noise_pred_uncond, \
@@ -181,10 +184,13 @@ class PanoGenerator(pl.LightningModule):
     def inference(self, batch):
         images = batch['images']
         bs, m, h, w, _ = images.shape
+        
         device = images.device
+        dtype = images.dtype
 
         latents = torch.randn(bs, m, 4, h//8, w//8, device=device)
 
+        print("\nEncoding text ...")
         prompt_embds = []
         for prompt in batch['prompt']:
             prompt_embds.append(self.encode_text(prompt, device)[0])
@@ -196,11 +202,13 @@ class PanoGenerator(pl.LightningModule):
         self.scheduler.set_timesteps(self.diff_timestep, device=device)
         timesteps = self.scheduler.timesteps
 
-        for i, t in enumerate(timesteps):
+        print("\nDiffusing ...")
+        for i, t in tqdm(enumerate(timesteps), total=self.diff_timestep):
             _timestep = torch.cat([t[None, None]] * m, dim=1)
             noise_pred = self.forward_cls_free(latents, _timestep, prompt_embd, batch, self.mv_base_model)
             latents = self.scheduler.step(noise_pred, t, latents).prev_sample
 
+        print("\nDecoding ...")
         images_pred = self.decode_latent(latents, self.vae)
         return images_pred
     

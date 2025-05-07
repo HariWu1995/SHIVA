@@ -22,7 +22,9 @@ def generate_video(image_paths, out_dir, out_prefix='', gen_video=True):
     )
 
     new_pano = ee.GetEquirec(2048, 4096)
-    cv2.imwrite(os.path.join(out_dir, f'{out_prefix}pano.png'), new_pano.astype(np.uint8)[540:-540])
+    pano_path = os.path.join(out_dir, f'{out_prefix}pano.png')
+    cv2.imwrite(pano_path, new_pano.astype(np.uint8)[540:-540])
+
     if not gen_video:
         return
 
@@ -39,7 +41,8 @@ def generate_video(image_paths, out_dir, out_prefix='', gen_video=True):
     size = (img.shape[1], img.shape[0])
 
     video_path = os.path.join(out_dir, f'{out_prefix}video.mp4')
-    out = cv2.VideoWriter(video_path, cv2.VideoWriter_fourcc(*'MP4V'), 60, size)
+    vcode = cv2.VideoWriter_fourcc(*'mp4v')
+    vout = cv2.VideoWriter(video_path, vcode, 60, size)
 
     interval_deg = 0.5
     num_frames = int(360 / interval_deg)
@@ -50,8 +53,8 @@ def generate_video(image_paths, out_dir, out_prefix='', gen_video=True):
         if margin > 0:
             img = img[margin:-margin]
         img = np.clip(img, 0, 255).astype(np.uint8)
-        out.write(img)
-    out.release()
+        vout.write(img)
+    vout.release()
 
 
 if __name__ == '__main__':

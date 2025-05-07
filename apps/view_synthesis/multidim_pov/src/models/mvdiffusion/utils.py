@@ -22,6 +22,32 @@ def multiview_Rs_Ks(resolution: int, num_views: int = 8):
     return Rs, Ks
 
 
+def rename_attention_keys(state_dict):
+    rename_map = {
+            'query': 'to_q',
+              'key': 'to_k',
+            'value': 'to_v',
+        'proj_attn': 'to_out.0',
+    }
+
+    new_state_dict = {}
+    for k, v in state_dict.items():
+        # Skip keys not related to attention remapping
+        if 'attentions.0' in k:
+            replaced = False
+            for old, new in rename_map.items():
+                if f".{old}." in k:
+                    new_key = k.replace(f".{old}.", f".{new}.")
+                    new_state_dict[new_key] = v
+                    replaced = True
+                    break
+            if not replaced:
+                new_state_dict[k] = v
+        else:
+            new_state_dict[k] = v
+    return new_state_dict
+
+
 # read prompts from image
 def read_prompts_from_image(image_path):
     with ExifToolHelper() as reader:

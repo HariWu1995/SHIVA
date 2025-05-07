@@ -6,9 +6,10 @@ from ..modules.utils import get_x_2d
 
 
 def get_correspondences(R, K, img_h, img_w):
-    correspondences = torch.zeros((R.shape[0], m, m, img_h, img_w, 2), device=R.device)
 
     m = R.shape[1]    
+    correspondences = torch.zeros((R.shape[0], m, m, img_h, img_w, 2), device=R.device)
+
     for i in range(m):  
         for j in range(m):
 

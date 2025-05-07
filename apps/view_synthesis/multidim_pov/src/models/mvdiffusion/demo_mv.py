@@ -48,7 +48,7 @@ def load_pipeline(config, ckpt_path, outpaint: bool = False):
     pipeline = model_class(config)
     pipeline.load_state_dict(model_ckpt, strict=False) # ignore "text_encoder.text_model.embeddings.position_ids"
     pipeline.eval()
-    pipeline.to(device=shared.device)
+    pipeline = pipeline.to(device=shared.device)
     # pipeline.to(dtype=shared.dtype)
 
     if not shared.low_vram:
@@ -95,17 +95,27 @@ def load_pipeline(config, ckpt_path, outpaint: bool = False):
 def run_pipeline(
     pipe,
     prompt,
-    image: np.ndarray | None = None,
+    images_mv = None,
     guidance_scale = 7.7,
     diffusion_steps = 25,
     resolution = 512,
     num_views = 8,
     **kwargs
 ):
+
     images = torch.zeros((1, num_views, resolution, resolution, 3))
+    if isinstance(images_mv, np.ndarray):
+        images_mv = torch.tensor(images_mv)
+    if isinstance(images_mv, torch.Tensor):
+        images_mv = [(images_mv, 0)]
+    if isinstance(images_mv, (list, tuple)):
+        for img_sv, v in images_mv:
+            if (v+1) > num_views:
+                print(f"[WARNING] Ignore view = {v+1} > {num_views}")
+                continue
+            images[0, v] = (img_sv if isinstance(img_sv, torch.Tensor) 
+                                else torch.tensor(img_sv))
     images = images.to(device=shared.device)
-    if image is not None:
-        images[0, 0] = image
 
     if isinstance(prompt, str):
         prompt = [prompt] * num_views
@@ -114,8 +124,8 @@ def run_pipeline(
         assert len(prompt) == num_views
 
     Rs, Ks = multiview_Rs_Ks(resolution, num_views)
-    Ks = torch.tensor(Ks).to(device=shared.device)[None]
-    Rs = torch.tensor(Rs).to(device=shared.device)[None]
+    Ks = torch.tensor(Ks)[None].to(device=shared.device)
+    Rs = torch.tensor(Rs)[None].to(device=shared.device)
 
     batch = {
         'images': images,
@@ -136,9 +146,20 @@ def run_pipeline(
 
 if __name__ == "__main__":
 
+    outpaint = True
     resolution = 512
     num_views = 8
 
+    # mv2pano
+    config_path = str(current_workdir / 'configs/pano_outpainting.yaml')
+    ckpt_path = MVDIFF_LOCAL_MODELS["sd2_outpaint/mvdiffusion"]
+
+    # Load pipeline
+    clear_torch_cache()
+    config = load_config(config_path)
+    pipe = load_pipeline(config, ckpt_path, outpaint = outpaint)
+
+    # Conditions
     prompt = [
         "frontal view of modern conference stage with central LED screen and two side screens, rows of white-covered tables and chairs, overhead spotlights, black floor, black ceiling",
         "front-right angle on sleek stage platform, glowing LED strip edges, abstract visuals on screens, white tables and chairs, blue spotlight beams, black floor, black ceiling",
@@ -151,53 +172,40 @@ if __name__ == "__main__":
         "front-left vantage of stage, side screen on left, rows of white tables and chairs, vivid blue spotlights overhead, black floor, black ceiling",
     ]
 
-    # T2pano
-    gen_config_path = str(current_workdir / 'configs/pano_generation.yaml')
-    gen_ckpt_path = MVDIFF_LOCAL_MODELS["sd2_original/mvdiffusion"]
-    gen_image = None
+    image_mv_list = [
+        ("C:/Users/Mr. RIAH/Documents/Projects/SHIVA/temp/multi_pov/mvdiff_outpaint_25_view01.png", 0),
+        ("C:/Users/Mr. RIAH/Documents/Projects/SHIVA/temp/multi_pov/mvdiff_outpaint_25_view02.png", 1),
+        ("C:/Users/Mr. RIAH/Documents/Projects/SHIVA/temp/multi_pov/mvdiff_outpaint_25_view03.png", 2),
+        ("C:/Users/Mr. RIAH/Documents/Projects/SHIVA/temp/multi_pov/mvdiff_outpaint_25_view08.png", 7),
+    ]
 
-    # T+I2pano
-    out_config_path = str(current_workdir / 'configs/pano_outpainting.yaml')
-    out_ckpt_path = MVDIFF_LOCAL_MODELS["sd2_outpaint/mvdiffusion"]
-    out_image_path = "C:/Users/Mr. RIAH/Pictures/_stage/stage-02.png"
-    out_image = cv2.imread(out_image_path)
-    out_image = preprocess_image(out_image, resolution)
-    out_image = torch.tensor(out_image).to(device=shared.device)
+    images_mv = []
+    for image_path, view_id in image_mv_list:
+        image = cv2.imread(image_path)
+        image = preprocess_image(image, resolution)
+        image = torch.tensor(image)
+        images_mv.append((image, view_id))
 
-    for config_path, ckpt_path, image in [
-        (out_config_path, out_ckpt_path, out_image),
-        (gen_config_path, gen_ckpt_path, gen_image), 
-    ]:
-        clear_torch_cache()
+    # Inference
+    for diff_steps in [10, 25]:
+        gen_params = dict(
+            num_views = num_views,
+            resolution = resolution,
+            guidance_scale = 9.5,
+            diffusion_steps = diff_steps,
+        )
 
-        # Load pipeline
-        outpaint = image is not None
-        config = load_config(config_path)
-        pipe = load_pipeline(config, ckpt_path, outpaint = outpaint)
+        generated = run_pipeline(pipe, prompt, images_mv, **gen_params)
 
-        # Inference
-        for diff_steps in [10, 25]:
-            gen_params = dict(
-                num_views = num_views,
-                resolution = resolution,
-                guidance_scale = 9.5 if not outpaint else 11.27,
-                diffusion_steps = diff_steps,
-            )
+        # Save output
+        print('\nSaving outputs ...')
+        prefix = 'mvdiff_' + ('outpaint' if outpaint else 'generate') + f'_{diff_steps}_'
+        image_paths = []
+        for i in range(num_views):
+            image_path = f"./temp/{prefix}view{i+1:02d}.png"
+            image_paths.append(image_path)
+            im = Image.fromarray(generated[i])
+            im.save(image_path)
 
-            generated = run_pipeline(pipe, prompt, image, **gen_params)
-
-            # Save output
-            print('\nSaving outputs ...')
-            prefix = 'mvdiff_' + ('outpaint' if outpaint else 'generate') + f'_{diff_steps}_'
-            image_paths = []
-            for i in range(num_views):
-                image_path = f"./temp/{prefix}view{i+1:02d}.png"
-                image_paths.append(image_path)
-                im = Image.fromarray(generated[i])
-                im.save(image_path)
-
-            generate_video(image_paths, './temp', prefix)
-
-        # Clean-up
-        del pipe
+        generate_video(image_paths, './temp', prefix)
 

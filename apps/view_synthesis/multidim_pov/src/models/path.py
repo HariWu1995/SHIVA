@@ -3,9 +3,15 @@ from pathlib import Path
 
 
 # FIXME: Hardcode to connect to multiple checkpoint directories
+os.environ['SHIVA_CKPT_SD20'] = "D:/stable-diffusion/sd-20"
+os.environ['SHIVA_CKPT_SD21'] = "D:/stable-diffusion/sd-21"
 os.environ['SHIVA_CKPT_MVDIFF']  = "E:/stable-diffusion"
 os.environ['SHIVA_CKPT_IMGCODER'] = "E:/MMM"
 
+
+#####################################################
+#           MULTI-VIEW DIFFUSION MODELS             #
+#####################################################
 
 CHECKPOINT_ROOT = os.environ.get('SHIVA_CKPT_MVDIFF', None)
 if CHECKPOINT_ROOT is not None:
@@ -35,7 +41,38 @@ MVDIFF_LOCAL_MODELS = {
 }
 
 
-# Check if text-/image-encoder exists
+#############################################
+#           (Base) Diffusion Models         #
+#############################################
+
+CHECKPOINT_BRANCHES = dict()
+
+for branch in ['sd20', 'sd21']:
+    CHECKPOINT_BRANCHES[branch] = os.environ.get(f'SHIVA_CKPT_{branch.upper()}', None)
+    if CHECKPOINT_BRANCHES[branch] is not None:
+        CHECKPOINT_BRANCHES[branch] = Path(CHECKPOINT_BRANCHES[branch])
+    else:
+        CHECKPOINT_BRANCHES[branch] = Path(__file__).resolve().parents[4] / f'checkpoints/{branch}'    
+    if CHECKPOINT_BRANCHES[branch].exists():
+        CHECKPOINT_BRANCHES[branch].mkdir(parents=True, exist_ok=True)
+
+SDIFF_REMOTE_MODELS = {
+    "sd21_base"     : "https://huggingface.co/stabilityai/stable-diffusion-2-1-base",
+    "sd20_base"     : "https://huggingface.co/stabilityai/stable-diffusion-2-base",
+    "sd20_inpaint"  : "https://huggingface.co/stabilityai/stable-diffusion-2-inpainting",
+}
+
+SDIFF_LOCAL_MODELS = {
+    "sd21_base"     : str(CHECKPOINT_BRANCHES['sd21'] / "checkpoints/sd21_base"),
+    "sd20_base"     : str(CHECKPOINT_BRANCHES['sd20'] / "checkpoints/sd20_base"),
+    "sd20_inpaint"  : str(CHECKPOINT_BRANCHES['sd20'] / "checkpoints/sd20_inpaint"),
+}
+
+
+#############################################
+#           (Auxilliary) Encoders           #
+#############################################
+
 IMG_ENCODER_ROOT = os.environ.get('SHIVA_CKPT_IMGCODER', None)
 if IMG_ENCODER_ROOT is not None:
     IMG_ENCODER_ROOT = Path(IMG_ENCODER_ROOT)

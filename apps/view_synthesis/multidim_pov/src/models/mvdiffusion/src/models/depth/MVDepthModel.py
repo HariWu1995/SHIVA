@@ -54,7 +54,7 @@ class MultiViewBaseModel(nn.Module):
             )
             self.condition_upblocks.append(block)
             if self.unet.up_blocks[i].upsamplers is not None:
-                stride // =2
+                stride //= 2
 
         self.trainable_parameters += [(
             list(self.cp_blocks_encoder.parameters()) +

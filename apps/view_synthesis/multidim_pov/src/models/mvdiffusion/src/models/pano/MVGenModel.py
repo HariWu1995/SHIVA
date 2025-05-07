@@ -1,3 +1,5 @@
+from tqdm import tqdm
+
 import torch
 import torch.nn as nn
 from einops import rearrange
@@ -55,16 +57,18 @@ class MultiViewBaseModel(nn.Module):
         prompt_embd = rearrange(prompt_embd, 'b m l c -> (b m) l c')
 
         # 1. process timesteps
+        print('\n\t [1 / 3] Processing timesteps ...')
         timestep = timestep.reshape(-1)
         t_emb = self.unet.time_proj(timestep)  # (bs, 320)
         emb = self.unet.time_embedding(t_emb)  # (bs, 1280)
 
         hidden_states = self.unet.conv_in(hidden_states)  # bs*m, 320, 64, 64
 
-        # unet
+        # 2. unet
         # a. downsample
+        print('\n\t [2a / 3] Down-sampling ...')
         down_block_res_samples = (hidden_states,)
-        for i, downsample_block in enumerate(self.unet.down_blocks):
+        for i, downsample_block in tqdm(enumerate(self.unet.down_blocks)):
             if hasattr(downsample_block, 'has_cross_attention') \
                     and downsample_block.has_cross_attention:
                 for resnet, attn in zip(downsample_block.resnets, 
@@ -89,6 +93,7 @@ class MultiViewBaseModel(nn.Module):
                 down_block_res_samples += (hidden_states,)
 
         # b. mid
+        print('\n\t [2b / 3] Mid-sampling ...')
         hidden_states = self.unet.mid_block.resnets[0](hidden_states, emb)
 
         if m > 1:
@@ -104,7 +109,8 @@ class MultiViewBaseModel(nn.Module):
         h, w = hidden_states.shape[-2:]
 
         # c. upsample
-        for i, upsample_block in enumerate(self.unet.up_blocks):
+        print('\n\t [2c / 3] Up-sampling ...')
+        for i, upsample_block in tqdm(enumerate(self.unet.up_blocks)):
             res_samples            = down_block_res_samples[-len(upsample_block.resnets):]
             down_block_res_samples = down_block_res_samples[:-len(upsample_block.resnets)]
 
@@ -134,7 +140,8 @@ class MultiViewBaseModel(nn.Module):
                 for upsample in upsample_block.upsamplers:
                     hidden_states = upsample(hidden_states)
 
-        # 4.post-process
+        # 3. post-process
+        print('\n\t [3 / 3] Post-processing ...')
         sample = self.unet.conv_norm_out(hidden_states)
         sample = self.unet.conv_act(sample)
         sample = self.unet.conv_out(sample)

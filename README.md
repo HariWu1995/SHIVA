@@ -77,11 +77,11 @@
 
 ### Multi-View Synthesis
 
-- [ ] Text-to-MV ([MVDream](https://github.com/bytedance/MVDream) | [MVDiffusion](https://github.com/Tangshitao/MVDiffusion))
+- [x] Text-to-MV ([MVDream](https://github.com/bytedance/MVDream))
 
-- [ ] Image-to-MV ([Zero123++](https://github.com/SUDO-AI-3D/zero123plus) | [MVDiffusion](https://github.com/Tangshitao/MVDiffusion))
+- [ ] Image-to-MV ([Zero123++](https://github.com/SUDO-AI-3D/zero123plus))
 
-- [ ] Image/Text-to-Panorama ([SD-T2I-360PanoImage](https://github.com/ArcherFMY/SD-T2I-360PanoImage))
+- [x] Image/Text-to-Panorama ([SD-T2I-360PanoImage](https://github.com/ArcherFMY/SD-T2I-360PanoImage) | [MVDiffusion](https://github.com/Tangshitao/MVDiffusion))
 
 - [ ] Camera Control ([SeVa](https://github.com/Stability-AI/stable-virtual-camera) | [CameraCtrl](https://github.com/hehao13/CameraCtrl))
 

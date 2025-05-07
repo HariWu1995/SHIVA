@@ -11,7 +11,7 @@ from einops import rearrange
 from diffusers import AutoencoderKL, DDIMScheduler, UNet2DConditionModel
 from transformers import CLIPTextModel, CLIPTokenizer
 
-from .models.depth.MVDepthModel import MultiViewBaseModel
+from ..models.depth.MVDepthModel import MultiViewBaseModel
 
 
 class DepthGenerator(pl.LightningModule):

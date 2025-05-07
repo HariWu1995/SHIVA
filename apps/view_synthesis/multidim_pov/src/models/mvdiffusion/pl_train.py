@@ -11,9 +11,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
 
 from .src.dataset import MP3Ddataset, Scannetdataset
-from .src.lightning_depth import DepthGenerator
-from .src.lightning_pano_gen import PanoGenerator
-from .src.lightning_pano_outpaint import PanoOutpaintGenerator
+from .src.wrappers import DepthGenerator, PanoGenerator, PanoOutpaintor
 
 
 def parse_args():
@@ -47,12 +45,12 @@ if __name__ == "__main__":
     train_loader = DataLoader(train_dataset, shuffle=True, num_workers=args.num_workers, drop_last=True, batch_size=config['train']['batch_size'])
     val_loader = DataLoader(val_dataset, shuffle=False, num_workers=args.num_workers, drop_last=False, batch_size=1)
 
-    if config['model']['model_type'] == 'pano_generation':
-        model = PanoGenerator(config)
-    elif config['model']['model_type'] == 'depth':
+    if config['model']['model_type'] == 'depth':
         model = DepthGenerator(config)
-    elif config['model']['model_type'] == 'pano_generation_outpaint':
-        model = PanoOutpaintGenerator(config)
+    elif config['model']['model_type'] == 'pano_generation':
+        model = PanoGenerator(config)
+    elif config['model']['model_type'] == 'pano_outpainting':
+        model = PanoOutpaintor(config)
 
     if args.ckpt_path is not None:
         model.load_state_dict(
