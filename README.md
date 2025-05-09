@@ -69,7 +69,7 @@
 
 - [ ] Story Generation ([MoPS](https://github.com/GAIR-NLP/MoPS))
 
-### Preprocessing
+### Toolkit
 
 - [x] Background Decomposition ([RemBg](https://github.com/HariWu1995/Anilluminus.AI/tree/main/src/apps/rembg))
 
@@ -83,6 +83,8 @@
 
 - [x] OpenPose Editor ([2D Editor](https://github.com/huchenlei/sd-webui-openpose-editor) | [3D Editor](https://github.com/ZhUyU1997/open-pose-editor/releases))
 
+- [x] Image Upsampling ([Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) | [GFPGAN](https://github.com/TencentARC/GFPGAN))
+
 ### Vision
 
 - [x] Image Generation
@@ -93,7 +95,7 @@
 
 - [ ] Style Transfer ([CSGO](https://github.com/instantX-research/CSGO))
 
-- [ ] Image Restoration ([DeOldify](https://github.com/jantic/DeOldify))
+- [ ] Image Restoration ([DeOldify](https://github.com/jantic/DeOldify) | [SUPIR](https://github.com/Fanghua-Yu/SUPIR))
 
 - [ ] Face Editor ([SD-Face-Editor](https://github.com/ototadana/sd-face-editor))
 

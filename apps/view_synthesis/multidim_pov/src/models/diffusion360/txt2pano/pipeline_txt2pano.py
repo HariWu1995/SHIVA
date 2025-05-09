@@ -39,7 +39,6 @@ class StableDiffusionText2PanoramaPipeline(DiffusionPipeline):
         self, 
         model: str, 
         refine: bool = False, 
-        upscale: bool = False,
         **kwargs
     ):
         """
@@ -77,21 +76,6 @@ class StableDiffusionText2PanoramaPipeline(DiffusionPipeline):
             self.pipe_sr = pipe_sr
         else:
             self.pipe_sr = None
-
-        # init upscale model
-        if upscale:
-            from basicsr.archs.rrdbnet_arch import RRDBNet
-            from realesrgan import RealESRGANer as RealESRGAN
-
-            model_path = os.path.dirname(model) + '/RealESRGAN_x2plus.pth'
-            model_arch = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, 
-                                    num_block=23, num_grow_ch=32, scale=2)
-            self.upsampler = RealESRGAN(
-                model=model_arch, model_path=model_path, dni_weight=None,
-                scale=2, tile=384, tile_pad=20, pre_pad=20, half=False, device=device,
-            )
-        else:
-            self.upsampler = None
 
     @staticmethod
     def blend_h(a, b, blend_extent):
@@ -224,27 +208,6 @@ class StableDiffusionText2PanoramaPipeline(DiffusionPipeline):
 
         if not self.upsampler:
             return output
-
-        #########################
-        #       Upsampling      #
-        #########################
-
-        print('\n\n Upsampling (x2 -> x4) ...')
-
-        output = output.resize((width * 2, height * 2))
-        output = self.upsample(output)
-
-        print('\n\n Refining (upscale x4) ...')
-
-        image = output.resize((width * 4, height * 4))
-        output = self.refine(
-            prompt, negative_prompt, image,
-            refine_strength, refine_scale_x4, 
-            num_refinement_steps,
-            control_refine_scale, generator,
-        )
-
-        return output
 
     def upsample(self, image: Image.Image):
         w, h, *_ = image.size
