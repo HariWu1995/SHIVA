@@ -6,6 +6,7 @@
 
 3. **S**haring **H**ub and **I**ncubator with **V**irtual **A**gents
 
+
 ## Folder Structure
 
 ### SHIVA
@@ -51,7 +52,22 @@
     ├─ 📄 README.md         # Documentation
     └─ 📄 requirements.txt  # Libraries to install
 
+
 ## Services
+
+### Composition
+
+- [ ] AI Agent ([GenArtist](https://github.com/zhenyuw16/GenArtist))
+
+### Language 
+
+- [x] Multi-modal Dialogue
+
+- [ ] Role Play ([RealChar](https://github.com/Shaunwei/RealChar) | [LLM-Roleplay](https://github.com/UKPLab/llm-roleplay))
+
+- [ ] Settlement Simulation ([Neighborly](https://github.com/ShiJbey/neighborly))
+
+- [ ] Story Generation ([MoPS](https://github.com/GAIR-NLP/MoPS))
 
 ### Preprocessing
 
@@ -61,19 +77,32 @@
 
 - [ ] 3D Object Segmentation ([Point-SAM](https://github.com/zyc00/Point-SAM))
 
-- [x] Video Matting ([RobustVideoMatting](https://github.com/PeterL1n/RobustVideoMatting))
+- [x] Video Matting ([RobustVideoMatting](https://github.com/PeterL1n/RobustVideoMatting) | [MatAnyone](https://github.com/pq-yang/MatAnyone))
 
 - [x] Controlnet Preprocessors ([ControlNet](https://github.com/Mikubill/sd-webui-controlnet))
 
 - [x] OpenPose Editor ([2D Editor](https://github.com/huchenlei/sd-webui-openpose-editor) | [3D Editor](https://github.com/ZhUyU1997/open-pose-editor/releases))
 
-### Uni-modal Generation
+### Vision
 
-- [x] Text Generation ([WebUI](https://github.com/oobabooga/text-generation-webui) | [Multi-Modal Extension](https://github.com/oobabooga/text-generation-webui/blob/main/extensions/multimodal/README.md))
+- [x] Image Generation
 
-- [x] Image Generation ([WebUI-A1111](https://github.com/AUTOMATIC1111/stable-diffusion-webui))
+- [ ] Image Editing ([MagicQuill](https://github.com/ant-research/MagicQuill))
 
-- [ ] Audio Generation ([Make-An-Audio](https://github.com/Text-to-Audio/Make-An-Audio) | [AudioLDM](https://github.com/haoheliu/AudioLDM) | [Amphion](https://github.com/open-mmlab/Amphion) | [AudioCraft](https://github.com/facebookresearch/audiocraft) | [Suno|Bark](https://github.com/suno-ai/bark))
+- [ ] Re-Lighting ([ICLight](https://github.com/lllyasviel/IC-Light))
+
+- [ ] Style Transfer ([CSGO](https://github.com/instantX-research/CSGO))
+
+- [ ] Image Restoration ([DeOldify](https://github.com/jantic/DeOldify))
+
+- [ ] Face Editor ([SD-Face-Editor](https://github.com/ototadana/sd-face-editor))
+
+<details>
+    <summary><b>Apps</b></summary>
+
+- [ ] Live Painting ([Krita.ai](https://github.com/Acly/krita-ai-diffusion))
+
+</details>
 
 ### Multi-View Synthesis
 
@@ -81,11 +110,11 @@
 
 - [ ] Image-to-MV ([Zero123++](https://github.com/SUDO-AI-3D/zero123plus))
 
-- [x] Image/Text-to-Panorama ([SD-T2I-360PanoImage](https://github.com/ArcherFMY/SD-T2I-360PanoImage) | [MVDiffusion](https://github.com/Tangshitao/MVDiffusion))
+- [x] Image/Text-to-Panorama ([SD-T2I-360PanoImage](https://github.com/ArcherFMY/SD-T2I-360PanoImage) | [MVDiffusion](https://github.com/Tangshitao/MVDiffusion) | [360DVD](https://github.com/Akaneqwq/360DVD))
 
-- [ ] Camera Control ([SeVa](https://github.com/Stability-AI/stable-virtual-camera) | [CameraCtrl](https://github.com/hehao13/CameraCtrl))
+- [ ] Camera Control ([SeVa](https://github.com/Stability-AI/stable-virtual-camera) | [CameraCtrl](https://github.com/hehao13/CameraCtrl) | [MotionCtrl](https://github.com/TencentARC/MotionCtrl))
 
-- [x] 3D Visualization ([Viser](https://github.com/nerfstudio-project/viser) | [Camera Trajectory|SeVa](https://github.com/Stability-AI/stable-virtual-camera/blob/main/demo_gr.py#L769))
+- [x] 3D Visualization ([Viser](https://github.com/nerfstudio-project/viser) | [Camera Trajectory](https://github.com/Stability-AI/stable-virtual-camera/blob/main/demo_gr.py#L769) | [HandyTrajDrawer](https://github.com/wzhouxiff/HandyTrajDrawer))
 
 <details>
     <summary><i>Notation</i></summary>
@@ -93,14 +122,6 @@
 - <b>MV</b>: Multi-view
 
 </details>
-
-### Editing
-
-- [ ] Image Editing ([MagicQuill](https://github.com/ant-research/MagicQuill))
-
-- [ ] Re-Lighting ([ICLight](https://github.com/lllyasviel/IC-Light))
-
-- [ ] Style Transfer ([CSGO](https://github.com/instantX-research/CSGO))
 
 ### 3D Reconstruction
 
@@ -118,6 +139,18 @@
 
 - [ ] Face Animation ([X-Pose](https://github.com/IDEA-Research/X-Pose) | [MimicTalk](https://github.com/yerfor/MimicTalk/) | [GeneFace++](https://github.com/yerfor/GeneFacePlusPlus/) | [Real3DPortrait](https://github.com/yerfor/Real3DPortrait))
 
+- [ ] Human Animation ([StableAnimator](https://github.com/Francis-Rings/StableAnimator) | [Moore-AnimateAnyone](https://github.com/MooreThreads/Moore-AnimateAnyone))
+
+- [ ] Lip Sync ([Hallo](https://github.com/fudan-generative-vision/hallo))
+
+### Human Motion
+
+- [x] [Wrapper](https://github.com/HariWu1995/HuMoUr)
+
+- [x] Human Motion ([MDM](https://github.com/GuyTevet/motion-diffusion-model) | [PriorMDM](https://github.com/priorMDM/priorMDM) | [SinMDM](https://github.com/SinMDM/SinMDM) | [MoMo](https://github.com/MonkeySeeDoCG/MoMo))
+
+- [ ] Human-Object Interaction  ([Text2HOI](https://github.com/JunukCha/Text2HOI) | [HOI-Diff](https://github.com/neu-vi/HOI-Diff))
+
 ### Virtual Try-on (ViTon)
 
 - [ ] Multi-View ViTon ([MV-VTON](https://github.com/hywang2002/MV-VTON))
@@ -126,15 +159,28 @@
 
 ### Sound
 
-- [ ] Music Generation ([MusicGPT](https://github.com/gabotechs/MusicGPT))
+- [ ] Audio Generation ([Make-An-Audio](https://github.com/Text-to-Audio/Make-An-Audio) | [AudioLDM](https://github.com/haoheliu/AudioLDM) | [Amphion](https://github.com/open-mmlab/Amphion) | [AudioCraft](https://github.com/facebookresearch/audiocraft) | [Suno|Bark](https://github.com/suno-ai/bark))
+
+- [ ] Music Generation ([MusicGPT](https://github.com/gabotechs/MusicGPT) | [YuE](https://github.com/multimodal-art-projection/YuE) | [Riffusion](https://github.com/riffusion/riffusion-hobby))
 
 - [ ] Voice Clone ([Fish Speech](https://github.com/fishaudio/fish-speech) | [OpenVoice](https://github.com/myshell-ai/OpenVoice) | [Real-Time-Voice-Cloning](https://github.com/CorentinJ/Real-Time-Voice-Cloning) | [Bark-Voice-Clone](https://github.com/serp-ai/bark-with-voice-clone))
 
 - [ ] Voice Clone VN ([viXTTS](https://github.com/thinhlpg/vixtts-demo) | [EraX-Female](https://huggingface.co/erax-ai/EraX-Smile-Female-F5-V1.0))
 
+### Coding
 
-## Applications
+- [ ] Wireframe-to-Website ([Pix2Code](https://github.com/tonybeltramelli/pix2code) | [Screenshot2Code by Emil Wallner](https://github.com/emilwallner/Screenshot-to-code) | [Screenshot2Code by Abi](https://github.com/abi/screenshot-to-code))
 
-- [ ] Digital Clone ([HeyGem](https://github.com/GuijiAI/HeyGem.ai))
+### Misc.
 
+- [ ] Raster-to-Vector ([VTracer](https://github.com/visioncortex/vtracer) | [Im2Vec](https://github.com/preddy5/Im2Vec))
+
+- [ ] Font Generation ([DeepVecFont-v2](https://github.com/yizhiwang96/deepvecfont-v2) | [DeepVecFont](https://github.com/yizhiwang96/deepvecfont))
+
+
+## References
+
+- WebUI ([WebUI-A1111](https://github.com/AUTOMATIC1111/stable-diffusion-webui) | [Dialog-WebUI](https://github.com/oobabooga/text-generation-webui))
+
+- Digital Clone ([HeyGem](https://github.com/GuijiAI/HeyGem.ai))
 

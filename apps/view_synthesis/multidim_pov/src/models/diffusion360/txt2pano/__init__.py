@@ -1,0 +1,1 @@
+from .pipeline_txt2pano import StableDiffusionText2PanoramaPipeline as Text2PanoPipeline

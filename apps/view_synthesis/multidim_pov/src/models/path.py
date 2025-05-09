@@ -29,6 +29,8 @@ MVDIFF_REMOTE_MODELS = {
 
     "sd2_original/mvdiffusion": "https://www.dropbox.com/scl/fi/yx9e0lj4fwtm9xh2wlhhg/pano.ckpt?rlkey=kowqygw7vt64r3maijk8klfl0&dl=0",
     "sd2_outpaint/mvdiffusion": "https://www.dropbox.com/scl/fi/3mtj06qx6mxt4eme1oz2r/pano_outpaint.ckpt?rlkey=xat6cwt47lzfjawum05xa5ftq&dl=0",
+
+    "sd15/diffusion360": "https://huggingface.co/archerfmy0831/sd-t2i-360panoimage",
 }
 
 
@@ -38,6 +40,8 @@ MVDIFF_LOCAL_MODELS = {
 
     "sd2_original/mvdiffusion": str(MULTIVIEW_DIFF_DIR / "MVDiffusion/pano.ckpt"),
     "sd2_outpaint/mvdiffusion": str(MULTIVIEW_DIFF_DIR / "MVDiffusion/pano_outpaint.ckpt"),
+
+    "sd15/diffusion360": str(MULTIVIEW_DIFF_DIR / "SD-360panorama"),
 }
 
 

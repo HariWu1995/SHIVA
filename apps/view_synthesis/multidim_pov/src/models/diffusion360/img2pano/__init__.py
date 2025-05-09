@@ -1,0 +1,1 @@
+from .pipeline_img2pano import StableDiffusionImage2PanoramaPipeline as Image2PanoPipeline

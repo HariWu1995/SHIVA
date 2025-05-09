@@ -28,6 +28,7 @@ pydantic==2.11.3
 supervision==0.25.1
 datasets==3.5.0
 PyExifTool
+py360convert
 
 # Data Processing
 opencv-python==4.7.0.72
@@ -53,6 +54,7 @@ facexlib
 geffnet==0.9.0
 segmentation-models-pytorch
 open-clip-torch==2.24.0
+# realesrgan==0.3.0
 
 # API
 # SpeechRecognition==3.10.0
