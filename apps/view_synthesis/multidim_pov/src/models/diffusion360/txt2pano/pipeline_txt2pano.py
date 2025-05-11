@@ -77,15 +77,6 @@ class StableDiffusionText2PanoramaPipeline(DiffusionPipeline):
         else:
             self.pipe_sr = None
 
-    @staticmethod
-    def blend_h(a, b, blend_extent):
-        blend_extent = min(a.shape[1], b.shape[1], blend_extent)
-        for x in range(blend_extent):
-            b[:, x, :] = \
-            b[:, x, :]                 * (    x / blend_extent) + \
-            a[:, -blend_extent + x, :] * (1 - x / blend_extent)
-        return b
-
     def generate(
         self,
 
@@ -205,21 +196,5 @@ class StableDiffusionText2PanoramaPipeline(DiffusionPipeline):
             num_refinement_steps,
             control_refine_scale, generator,
         )
-
-        if not self.upsampler:
-            return output
-
-    def upsample(self, image: Image.Image):
-        w, h, *_ = image.size
-    
-        blend_extend = 10
-        outscale = 2
-
-        image = np.array(image)
-        image = np.concatenate([image, 
-                                image[:, :blend_extend, :]], axis=1)
-        image, _ = self.upsampler.enhance(image, outscale=outscale)
-        image = self.blend_h(image, image, blend_extend*outscale)
-        image = Image.fromarray(image[:, :w * outscale, :])
-        return image
+        return output
 

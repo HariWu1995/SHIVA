@@ -7,23 +7,34 @@ import uuid
 import cv2
 from PIL import Image
 from tqdm import tqdm
+from typing import List
 
 import lib.Equirec2Perspec as E2P
 import lib.multi_Perspec2Equirec as m_P2E
 
 
-def generate_video(image_paths, out_dir, out_prefix='', gen_video=True):
-    pers = [cv2.imread(image_path) for image_path in image_paths]
+def generate_panoview(images_mv: List[np.ndarray], image_size: int = 2048):
 
     ee = m_P2E.Perspective(
-        pers,
+        images_mv,
         [[90,   0, 0], [90,  45, 0], [90,  90, 0], [90, 135, 0],
          [90, 180, 0], [90, 225, 0], [90, 270, 0], [90, 315, 0]]
     )
 
-    new_pano = ee.GetEquirec(2048, 4096)
+    pano_height = image_size
+    pano_width = image_size * 2
+    pano_view = ee.GetEquirec(pano_height, pano_width)
+    pano_view = pano_view.astype(np.uint8)
+    return pano_view
+
+
+def generate_video(image_paths, out_dir, out_prefix='', gen_video=True):
+    pers = [cv2.imread(image_path) for image_path in image_paths]
+    pano_view = generate_panoview(pers)
+    pano_view = pano_view[540:-540]
+
     pano_path = os.path.join(out_dir, f'{out_prefix}pano.png')
-    cv2.imwrite(pano_path, new_pano.astype(np.uint8)[540:-540])
+    cv2.imwrite(pano_path, pano_view)
 
     if not gen_video:
         return

@@ -45,7 +45,6 @@ class StableDiffusionImage2PanoramaPipeline(DiffusionPipeline):
         self, 
         model: str, 
         refine: bool = False, 
-        upscale: bool = False,
         **kwargs
     ):
         """
@@ -86,23 +85,9 @@ class StableDiffusionImage2PanoramaPipeline(DiffusionPipeline):
         else:
             self.pipe_sr = None
 
-        # init upscale model
-        if upscale:
-            from basicsr.archs.rrdbnet_arch import RRDBNet
-            from realesrgan import RealESRGANer as RealESRGAN
-
-            model_path = os.path.dirname(model) + '/RealESRGAN_x2plus.pth'
-            model_arch = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, 
-                                    num_block=23, num_grow_ch=32, scale=2)
-            self.upsampler = RealESRGAN(
-                model=model_arch, model_path=model_path, dni_weight=None,
-                scale=2, tile=384, tile_pad=20, pre_pad=20, half=False, device=device,
-            )
-        else:
-            self.upsampler = None
-
     @staticmethod
     def process_control_image(image, mask, width=1024, height=512):
+
         def to_tensor(img: Image.Image, batch_size=1):
             img = img.resize((width, height), resample=Image.BICUBIC)
             img = np.array(img).astype(np.float32) / 255.0
@@ -122,15 +107,6 @@ class StableDiffusionImage2PanoramaPipeline(DiffusionPipeline):
         control_image = (1 - mask_image) * backgr_image + mask_image * control_image
         control_image = torch.cat([mask_image[:, :1, :, :], control_image], dim=1)
         return control_image
-
-    @staticmethod
-    def blend_h(a, b, blend_extent):
-        blend_extent = min(a.shape[1], b.shape[1], blend_extent)
-        for x in range(blend_extent):
-            b[:, x, :] = \
-            b[:, x, :]                 * (    x / blend_extent) + \
-            a[:, -blend_extent + x, :] * (1 - x / blend_extent)
-        return b
 
     def generate(
         self,
@@ -157,6 +133,8 @@ class StableDiffusionImage2PanoramaPipeline(DiffusionPipeline):
             mask_path = Path(__file__).resolve().parent / 'i2p-mask.jpg'
             mask_path = str(mask_path).replace('\\','/')
             mask = load_image(mask_path)
+        mask = mask.resize((width, height))
+
         control_image = self.process_control_image(image, mask, width, height)
 
         output = self.pipe(
@@ -272,43 +250,5 @@ class StableDiffusionImage2PanoramaPipeline(DiffusionPipeline):
             num_refinement_steps,
             control_refine_scale, generator,
         )
-
-        if not self.upsampler:
-            return output
-
-        #########################
-        #       Upsampling      #
-        #########################
-
-        print('\n\n Upsampling (x2 -> x4) ...')
-
-        output = output.resize((width * 2, height * 2))
-        output = self.upsample(output)
-
-        print('\n\n Refining (upscale x4) ...')
-
-        image = output.resize((width * 4, height * 4))
-        output = self.refine(
-            prompt, negative_prompt, image,
-            refine_strength, refine_scale_x4, 
-            num_refinement_steps,
-            control_refine_scale, generator,
-        )
-
         return output
-
-    def upsample(self, image: Image.Image):
-        w, h, *_ = image.size
-
-        blend_extend = 10
-        outscale = 2
-
-        image = np.array(image)
-        image = np.concatenate([image, 
-                                image[:, :blend_extend, :]], axis=1)
-        image, _ = self.upsampler.enhance(image, outscale=outscale)
-        image = self.blend_h(image, image, blend_extend*outscale)
-        image = Image.fromarray(image[:, :w * outscale, :])
-        return image
-
 

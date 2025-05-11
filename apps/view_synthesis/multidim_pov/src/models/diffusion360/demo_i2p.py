@@ -20,9 +20,6 @@ if __name__ == "__main__":
     model_id = "sd15/diffusion360"
     model_path = shared.MVDIFF_LOCAL_MODELS[model_id]
 
-    refine = True
-    upscale = False
-
     positive_prompt = 'photorealistic, realistic textures, artstation, best quality, ultra res, 8k rendering, '\
                       'wide angle view, immersive scenery, immense, vast extent'
     negative_prompt = 'worst quality, low quality, logo, text, watermark, monochrome, blur, blurry, '\
@@ -60,7 +57,7 @@ if __name__ == "__main__":
     output_name = 'diffusion360_img2pano'
 
     # Load pipeline
-    pipe = Image2PanoPipeline(model_path, refine=refine, upscale=upscale)
+    pipe = Image2PanoPipeline(model_path, refine=True)
     
     # Inference 1: Generate panorama 
     # 1024 x  512: ~ 0h 0m 21s
@@ -80,14 +77,8 @@ if __name__ == "__main__":
         output_x2 = pipe.refine(positive_prompt, negative_prompt, output_x1)
         output_x2.save(f'./temp/{output_name}_{seed:05d}_x2.png')
 
-        if pipe.upsampler is None:
-            continue
-
         # Inference 3: Refine with upscale x4 (~ 1h 30m 43s)
-        output_x2 = output_x2.resize((1536 * 2, 768 * 2))
-        output_x2 = pipe.upsample(output_x2)
         output_x2 = output_x2.resize((1536 * 4, 768 * 4))
-
         output_x4 = pipe.refine(positive_prompt, negative_prompt, output_x2)
         output_x4.save(f'./temp/{output_name}_{seed:05d}_x4.png')
 

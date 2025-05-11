@@ -1,7 +1,10 @@
 import gradio as gr
 
-from ..src import *
-from .utils import *
+from ..src import shared
+from . import shared as ui
+from .utils import gradget
+from .ui_loader import create_ui as create_ui_loader
+from .ui_wspace import create_ui as create_ui_wspace
 
 
 # Define UI settings & layout
@@ -12,24 +15,35 @@ def create_ui(min_width: int = 25):
     
     with gr.Blocks(css=None, analytics_enabled=False) as gui:
 
-        gr.Markdown("## Template")
+        gr.Markdown("## 🕋 Multi-dim Pano-Gen")
 
-        with gr.Row():
-            img_in = gr.Image(label='Input')
-            img_out = gr.Image(label='Output')
+        with gr.Tab(label='Model Settings'):
+            create_ui_loader()
 
-        with gr.Row():
+        with gr.Tab(label='Workspace'):
+            create_ui_wspace()
 
-            with gr.Column(scale=2, **column_kwargs):
-                with gr.Row():
-                    run_button = gr.Button(value="Run", variant='primary')
-    
-        run_button.click(fn=lambda x: x, inputs=img_in, outputs=img_out)
+        # Control workspace display
+        def update_visibility():
+            return (
+                gr.update(visible = (shared.pipeline == "txt2pano")),
+                gr.update(visible = (shared.pipeline == "img2pano")),
+            )
 
-    return gui, [img_out]
+        tabs = gradget("tab_txt2pano", "tab_img2pano")
+
+        # timer = gr.Timer(value=1.0)
+        # timer.tick(fn=update_visibility, inputs=None, outputs=tabs)
+
+    return gui
 
 
 if __name__ == "__main__":
-    gui, _ = create_ui()
-    gui.launch(server_name='localhost', server_port=8000, share=True)
+    gui = create_ui()
+    gui.launch(
+          server_name = ui.host, 
+          server_port = ui.port, 
+                share = ui.share,
+            inbrowser = ui.auto_launch,
+    )
 
