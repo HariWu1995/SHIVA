@@ -28,7 +28,7 @@ def generate_panoview(images_mv: List[np.ndarray], image_size: int = 2048):
     return pano_view
 
 
-def generate_video(image_paths, out_dir, out_prefix='', gen_video=True):
+def generate_pano_video(image_paths, out_dir, out_prefix='', gen_video=True):
     pers = [cv2.imread(image_path) for image_path in image_paths]
     pano_view = generate_panoview(pers)
     pano_view = pano_view[540:-540]

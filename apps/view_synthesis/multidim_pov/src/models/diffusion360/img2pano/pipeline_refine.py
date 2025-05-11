@@ -664,16 +664,16 @@ class StableDiffusionControlNetImg2PanoPipeline(
             if negative_prompt_embeds is None:
                 negative_prompt_embeds = negative_prompt_embeds1
 
-        bs_embed, seq_len, _ = prompt_embeds.shape
+        bs, seq_len, _ = prompt_embeds.shape
 
         # duplicate text embeddings for each generation per prompt, using mps friendly method
         prompt_embeds = prompt_embeds.repeat(1, num_images_per_prompt, 1)
-        prompt_embeds = prompt_embeds.view(bs_embed * num_images_per_prompt, seq_len, -1)
+        prompt_embeds = prompt_embeds.view(bs * num_images_per_prompt, seq_len, -1)
 
         if do_classifier_free_guidance:
-            bs_embed, seq_len, _ = negative_prompt_embeds.shape
+            bs, seq_len, _ = negative_prompt_embeds.shape
             negative_prompt_embeds = negative_prompt_embeds.repeat(1, num_images_per_prompt, 1)
-            negative_prompt_embeds = negative_prompt_embeds.view(bs_embed * num_images_per_prompt, seq_len, -1)
+            negative_prompt_embeds = negative_prompt_embeds.view(bs * num_images_per_prompt, seq_len, -1)
             prompt_embeds = torch.cat([negative_prompt_embeds, prompt_embeds])
 
         return prompt_embeds

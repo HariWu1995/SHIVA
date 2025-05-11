@@ -44,6 +44,8 @@ MVDIFF_LOCAL_MODELS = {
     "sd15/diffusion360": str(MULTIVIEW_DIFF_DIR / "SD-360panorama"),
 }
 
+MVDIFF_LOCAL_MODELS = {m: p.replace('\\', '/') for m, p in MVDIFF_LOCAL_MODELS.items()}
+
 
 #############################################
 #           (Base) Diffusion Models         #
@@ -72,6 +74,8 @@ SDIFF_LOCAL_MODELS = {
     "sd20_inpaint"  : str(CHECKPOINT_BRANCHES['sd20'] / "checkpoints/sd20_inpaint"),
 }
 
+SDIFF_LOCAL_MODELS = {m: p.replace('\\', '/') for m, p in SDIFF_LOCAL_MODELS.items()}
+
 
 #############################################
 #           (Auxilliary) Encoders           #
@@ -95,4 +99,6 @@ LOCAL_IMAGE_ENCODERS = {
     "clip-vit-large-patch14": str(IMG_ENCODER_ROOT / "clip-vit-large-patch14"),
     "clip-vit-h14-laion2B"  : str(IMG_ENCODER_ROOT / "clip-vit-h14-laion2B-s32B-b79K/open_clip_pytorch_model.bin"),
 }
+
+LOCAL_IMAGE_ENCODERS = {m: p.replace('\\', '/') for m, p in LOCAL_IMAGE_ENCODERS.items()}
 

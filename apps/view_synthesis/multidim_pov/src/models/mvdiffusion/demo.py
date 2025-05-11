@@ -22,7 +22,7 @@ from diffusers.hooks import apply_group_offloading
 from diffusers.utils.import_utils import is_xformers_available
 
 from .src.wrappers import PanoGenerator, PanoOutpaintor
-from .tools.pano_video_generation import generate_video
+from .tools import generate_pano_video
 
 from .utils import preprocess_image, rename_attention_keys, multiview_Rs_Ks
 from ..path import MVDIFF_LOCAL_MODELS, SDIFF_LOCAL_MODELS
@@ -196,7 +196,7 @@ if __name__ == "__main__":
                 im = Image.fromarray(generated[i])
                 im.save(image_path)
 
-            generate_video(image_paths, './temp', prefix)
+            generate_pano_video(image_paths, './temp', prefix)
 
         # Clean-up
         del pipe

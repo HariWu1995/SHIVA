@@ -411,7 +411,7 @@ def prepare_image(image):
     return image
 
 
-class StableDiffusionControlNetImg2ImgPanoPipeline(StableDiffusionControlNetImg2ImgPipeline):
+class StableDiffusionControlNetImg2PanoPipeline(StableDiffusionControlNetImg2ImgPipeline):
     r"""
     Pipeline for text-to-image generation using Stable Diffusion with ControlNet guidance.
 

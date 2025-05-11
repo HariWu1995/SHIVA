@@ -76,7 +76,7 @@ pyliblzfse
 plyfile
 yourdfpy
 robot_descriptions
-extra/gradio_pannellum-0.0.1-py3-none-any.whl --no-deps
+# extra/gradio_pannellum-0.0.1-py3-none-any.whl --no-deps
 
 # Version control
 numpy==1.23.5

@@ -14,8 +14,8 @@ from diffusers import (
 )
 from PIL import Image
 
-from .pipeline_base   import StableDiffusionBlendExtendPipeline           as Txt2PanoBaseline
-from .pipeline_refine import StableDiffusionControlNetImg2ImgPanoPipeline as Txt2PanoRefiner
+from .pipeline_base   import StableDiffusionBlendExtendPipeline        as Txt2PanoBaseline
+from .pipeline_refine import StableDiffusionControlNetImg2PanoPipeline as Txt2PanoRefiner
 
 from ...utils import enable_lowvram_usage
 from .... import shared

@@ -24,7 +24,7 @@ current_workdir = Path(__file__).resolve().parent
 sys.path.append(str(current_workdir))
 
 from mvdiffusion.src.wrappers import PanoOutpaintor
-from mvdiffusion.tools.pano_video_generation import generate_video
+from mvdiffusion.tools import generate_pano_video
 from mvdiffusion.utils import preprocess_image, rename_attention_keys, multiview_Rs_Ks
 
 
@@ -158,6 +158,6 @@ if __name__ == "__main__":
         im = Image.fromarray(generated[i])
         im.save(image_path)
 
-    generate_video(image_paths, './temp', prefix)
+    generate_pano_video(image_paths, './temp', prefix)
 
 
