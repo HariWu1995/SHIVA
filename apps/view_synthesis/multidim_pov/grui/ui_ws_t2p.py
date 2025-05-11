@@ -11,47 +11,7 @@ from .utils import gradget, fill_prompts_mv
 
 from ..src import shared
 from ..src.utils import clear_torch_cache
-from ..src.models import infer_diff360_t2p, refine_diff360_t2p, \
-                          infer_mvdiff_t2p, generate_panoview
-
-
-def wrap_txthancement(
-    positive_prompt: str,
-    negative_prompt: str,
-    images: List[ImageClass],
-    img_size: int,
-    strength: float,
-    guidance_scale: float,
-    control_scale: float,
-    inference_step: int,
-):
-    assert shared.model_name == 'diffusion360'
-    assert shared.model is not None
-
-    # Resize before refine
-    img_size = math.ceil(img_size  / 768) * 768
-    height = img_size
-    width = img_size * 2
-
-    image = images[-1][0]
-    image = image.resize((width, height), Image.LANCZOS)
-
-    config = dict(
-        positive_prompt=positive_prompt,
-        negative_prompt=negative_prompt,
-        image=image, 
-        upscale=-1,
-        strength=strength,
-        diffusion_steps=inference_step, 
-        guidance_scale=guidance_scale, 
-        controlnet_scale=control_scale,
-    )
-    generated = refine_diff360_t2p(shared.model, **config)
-    
-    # Output Formatting --> Gallery
-    outputs = images + [(generated, f'{images[-1][1]}_x2')]
-
-    return outputs
+from ..src.models import infer_diff360_t2p, infer_mvdiff_t2p, generate_panoview
 
 
 def wrap_txtference(
@@ -71,7 +31,7 @@ def wrap_txtference(
 ):
     assert shared.pipeline == 'txt2pano'
     assert shared.model_name in ['mvdiffusion', 'diffusion360']
-    assert shared.model is not None
+    assert shared.model_base is not None
 
     if shared.model_name == 'mvdiffusion':
         prompts_8vw = []
@@ -88,15 +48,15 @@ def wrap_txtference(
             diffusion_steps=inference_step, 
             guidance_scale=guidance_scale, 
         )
-        generated = infer_mvdiff_t2p(shared.model, **config)
+        generated = infer_mvdiff_t2p(shared.model_base, **config)
 
         # Combine to panorama view
         pano_view = generate_panoview(generated)
-        # pano_view = pano_view[540:-540]
+        # pano_view = pano_view[540:-540] # remove white padding
 
         # Output Formatting --> Gallery
-        outputs = [(Image.fromarray(generated[i]), f'gen_{i}') for i in range(8)]
-        outputs += [(Image.fromarray(pano_view), 'pano_view')]
+        outputs = [(Image.fromarray(generated[i]), f'view_{i}') for i in range(8)]
+        outputs += [(Image.fromarray(pano_view), 'view_panorama')]
 
     else:
         config = dict(
@@ -106,11 +66,12 @@ def wrap_txtference(
             guidance_scale=guidance_scale, 
                 image_size=img_size, 
         )
-        generated = infer_diff360_t2p(shared.model, **config)
+        generated = infer_diff360_t2p(shared.model_base, **config)
         
         # Output Formatting --> Gallery
         outputs = [(generated, 'pano_view')]
 
+    clear_torch_cache()
     return outputs
 
 
@@ -123,7 +84,7 @@ def create_ui(min_width: int = 25):
 
     with gr.Blocks(css=None, analytics_enabled=False) as gui:
 
-        gr.Markdown("## 🗺️ Single-to-Multi-view (Panorama)")
+        gr.Markdown("## 🗺️ Prompt-to-Panorama (Multi-view)")
 
         with gr.Row(variant="panel"):
 
@@ -145,50 +106,34 @@ def create_ui(min_width: int = 25):
 
             with gr.Column():
                 ui.gradio['txt2pano_image_mv'] = gr.Gallery(label='Multi-view / Panorama-360', **gallery_kwargs)
-                gr.Markdown("ℹ️ **Note**: **Refine** is only available with **Diffusion-360** model.")
-                gr.Markdown("⚠️ **Note**: Increase **image size** and decrease other params before clicking **Refine**.")
 
                 with gr.Row():
                     with gr.Column(scale=1, min_width=5):
                         gr.Markdown('')
                     with gr.Column(scale=3, min_width=25):
                         ui.gradio['txt2pano_trigger'] = gr.Button(value=ui.symbols["trigger"], variant="primary")
-                    with gr.Column(scale=3, min_width=25):
-                        ui.gradio['txt2pano_refiner'] = gr.Button(value=ui.symbols["refiner"], variant="secondary", interactive=False)
                     with gr.Column(scale=1, min_width=5):
                         gr.Markdown('')
 
         with gr.Row(variant="panel"):
             with gr.Column():
-                ui.gradio["txt2pano_strength"] = gr.Slider(minimum=.1, maximum=.99, step=.01, value=0.9, label='Strength')
-                ui.gradio["txt2pano_guidance"] = gr.Slider(minimum=1., maximum=49, step=0.1, value=9.5, label='Guidance Scale')
+                ui.gradio["txt2pano_strength"] = gr.Slider(minimum=0.1, maximum=0.99, step=.01, value=0.9, label='Strength')
+                ui.gradio["txt2pano_guidance"] = gr.Slider(minimum=1.0, maximum=49.9, step=0.1, value=9.5, label='Guidance Scale')
                 ui.gradio["txt2pano_ctrl_scale"] = gr.Slider(minimum=.1, maximum=.99, step=.01, value=.95, label='Control Scale')
-                ui.gradio["txt2pano_num_steps"] = gr.Slider(minimum=10, maximum=100, step=1, value=20, label='Diffusion Steps')
 
             with gr.Column():
+                ui.gradio["txt2pano_num_steps"] = gr.Slider(minimum=10, maximum=100, step=1, value=20, label='Diffusion Steps')
                 ui.gradio["txt2pano_img_size"] = gr.Slider(minimum=128, maximum=2048, step=16, value=768, label='Image Size')
 
         # Event Handle
-        gen_inputs = gradget([f'txt2pano_{x}' for x in \
-                            ([f'prompt_vw{i}' for i in range(1, 9)] + \
-                             ['posprompt','negprompt','img_size','guidance','num_steps'])])
-
-        re_inputs = gradget([f'txt2pano_{x}' for x in \
-                            ['posprompt','negprompt','image_mv','img_size',
-                             'strength','guidance','ctrl_scale','num_steps']])
-
         outputs = ui.gradio['txt2pano_image_mv']
+        inputs = gradget([f'txt2pano_{x}' for x in \
+                        ([f'prompt_vw{i}' for i in range(1, 9)] + \
+                         ['posprompt','negprompt','img_size','guidance','num_steps'])])
 
-        ui.gradio['txt2pano_trigger'].click(fn=wrap_txtference, inputs=gen_inputs, outputs=outputs)
-        ui.gradio['txt2pano_refiner'].click(fn=wrap_txthancement, inputs=re_inputs, outputs=outputs)
+        ui.gradio['txt2pano_trigger'].click(fn=wrap_txtference, inputs=inputs, outputs=outputs)
 
         # Schedule
-        def verify_refiner():
-            return gr.update(interactive=(shared.model_name == "diffusion360"))
-
-        timer = gr.Timer(value=1.0)
-        timer.tick(fn=verify_refiner, inputs=None, outputs=ui.gradio['txt2pano_refiner'])
-
         def filter_promptbox():
             return \
                 [gr.update(visible=(shared.model_name == "diffusion360")) for _ in range(2)] + \
@@ -198,8 +143,8 @@ def create_ui(min_width: int = 25):
         prompt_boxes += (['prompt_guy'] + [f'prompt_vw{i}' for i in range(1, 9)])
         prompt_boxes = gradget(*[f'txt2pano_{x}' for x in prompt_boxes])
 
-        timer_2 = gr.Timer(value=10)
-        timer_2.tick(fn=filter_promptbox, inputs=None, outputs=prompt_boxes)
+        timer = gr.Timer(value=10)
+        timer.tick(fn=filter_promptbox, inputs=None, outputs=prompt_boxes)
 
     return gui
 

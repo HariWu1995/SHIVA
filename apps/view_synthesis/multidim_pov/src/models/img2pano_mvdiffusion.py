@@ -136,7 +136,7 @@ if __name__ == "__main__":
     for p, v in image_mv_list:
         image_mv[v] = cv2.imread(p)
 
-    resolution = 512
+    resolution = 256
     num_views = 8
 
     # Load model

@@ -1,6 +1,7 @@
 from pathlib import Path
 from PIL import Image
 
+import math
 import torch
 from diffusers import ControlNetModel
 from diffusers.utils import load_image
@@ -52,8 +53,9 @@ def inference(
     **kwargs
 ):
     w, h = image.size
-    w_fit = (w // 768 + 1) * 768
-    h_fit = (h // 768 + 1) * 768
+    w_fit = math.ceil(w / 768) * 768
+    h_fit = math.ceil(h / 768) * 768
+    upscale = int(upscale)
 
     if upscale > 0:
         width  = w_fit * upscale

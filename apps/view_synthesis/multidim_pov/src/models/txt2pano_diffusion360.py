@@ -41,7 +41,8 @@ def inference(
     height = image_size
     width = image_size * 2
 
-    positive_prompt = f'<360panorama>, {positive_prompt}'
+    if '<360panorama>' not in positive_prompt:
+        positive_prompt = f'<360panorama>, {positive_prompt}'
 
     gen_params = dict(
          prompt = positive_prompt,

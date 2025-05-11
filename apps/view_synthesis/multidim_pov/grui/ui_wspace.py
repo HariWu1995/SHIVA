@@ -3,6 +3,7 @@ import gradio as gr
 from . import shared as ui
 from .ui_ws_i2p import create_ui as create_ui_img2pano
 from .ui_ws_t2p import create_ui as create_ui_txt2pano
+from .ui_ws_p2p import create_ui as create_ui_pano2pano
 from .ui_panview import create_ui as create_ui_panview
 
 
@@ -18,7 +19,11 @@ def create_ui(min_width: int = 25):
         with gr.Tab(label="Txt2Pano"):
             ui.gradio["tab_txt2pano"] = create_ui_txt2pano()
 
-        ui.gradio["pano365_viewer"] = create_ui_panview()        
+        with gr.Tab(label="Upscale"):
+            ui.gradio["tab_pano2pano"] = create_ui_pano2pano()
+
+        with gr.Tab(label="365-Viewer"):
+            ui.gradio["pano365_viewer"] = create_ui_panview()        
 
     return gui
 

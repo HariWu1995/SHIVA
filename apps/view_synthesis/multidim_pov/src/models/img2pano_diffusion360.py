@@ -97,7 +97,8 @@ def inference(
     mask = mask.resize((width, height))
     control_image = process_control_image(image, mask, width=width, height=height)
 
-    positive_prompt = f'<360panorama>, {positive_prompt}'
+    if '<360panorama>' not in positive_prompt:
+        positive_prompt = f'<360panorama>, {positive_prompt}'
 
     gen_params = dict(
          prompt = positive_prompt,
