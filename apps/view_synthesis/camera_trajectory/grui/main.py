@@ -109,14 +109,17 @@ def main(
 
         all_ports = find_available_ports(count=5)
         with gr.Row():
-            with gr.Column(scale=4):
+            with gr.Column(scale=5):
                 with gr.Row(variant="panel"):
                     viser_host = gr.Textbox(value="localhost", interactive=False, label="Viser Host")
                     viser_port = gr.Dropdown(value=all_ports[0], choices=all_ports, label="Viser Port")
                     session = gr.Textbox(label="Session Hash", interactive=False)
-            with gr.Column(scale=1):
+            with gr.Column(scale=1, min_width=50):
                 gr.Markdown(attention_catcher)
                 viser = gr.Button("Run Viser", variant="primary")
+
+        with gr.Accordion(label="🛠️ User Guide", open=False):
+            gr.Markdown(USER_GUIDE)
         
         with gr.Row():
             viewport = gr.HTML(container=True, render=True)
@@ -250,8 +253,6 @@ def main(
         # Register the session initialization and cleanup functions.
         viser.click(fn=start_server_and_abort_event, inputs=[viser_host, viser_port], outputs=[renderer, viewport, session])
         app.unload(fn=stop_server_and_abort_event)
-
-        gr.Markdown(USER_GUIDE)
 
     app.queue(max_size=5).launch(
         share=share,

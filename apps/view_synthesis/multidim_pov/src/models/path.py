@@ -85,14 +85,14 @@ IMG_ENCODER_ROOT = os.environ.get('SHIVA_CKPT_IMGCODER', None)
 if IMG_ENCODER_ROOT is not None:
     IMG_ENCODER_ROOT = Path(IMG_ENCODER_ROOT)
 else:
-    IMG_ENCODER_ROOT = Path(__file__).parents[4] / 'checkpoints/multiview'
+    IMG_ENCODER_ROOT = Path(__file__).parents[4] / 'checkpoints/iencoder'
 
 if os.path.isdir(IMG_ENCODER_ROOT) is False:
     os.makedirs(IMG_ENCODER_ROOT)
 
 REMOTE_IMAGE_ENCODERS = {
     "clip-vit-large-patch14": "https://huggingface.co/openai/clip-vit-large-patch14",
-    "clip-vit-h14-laion2B"  : "https://huggingface.co/laion/CLIP-ViT-H-14-laion2B-s32B-b79K",
+    "clip-vit-h14-laion2B"  : "https://huggingface.co/laion/CLIP-ViT-H-14-laion2B-s32B-b79K/resolve/main/open_clip_pytorch_model.bin",
 }
 
 LOCAL_IMAGE_ENCODERS = {

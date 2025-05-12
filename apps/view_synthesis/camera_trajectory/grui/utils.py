@@ -47,8 +47,6 @@ function refresh() {
 
 USER_GUIDE = """
 ---
-## 🛠️ User Guide:
-
 ### 1️⃣ Start the Server
 - Click the **`Run Viser`** button to initialize and launch the Viser server.
 
@@ -67,7 +65,8 @@ USER_GUIDE = """
 
 attention_catcher = """
 <div style="border: 2px solid #f39c12; background-color: #fffbe6; padding: 16px; border-radius: 8px; font-weight: bold; color: #c0392b; font-size: 13px; text-align: center;">
-    👇 Click the Button start server
+    Click Button to start server <br>
+    👇👇👇
 </div>
 """
 

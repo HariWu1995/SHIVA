@@ -3,6 +3,10 @@ import time
 import torch
 
 
+def get_device():
+    return torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+
 # Device variables
 device = get_device()
 dtype = torch.float16 if str(device).__contains__("cuda") else torch.float32

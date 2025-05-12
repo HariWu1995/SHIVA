@@ -471,9 +471,9 @@ class CameraTrajectory:
 
 @dataclasses.dataclass
 class GuiState:
-    preview_render: bool
     preview_fov: float
     preview_aspect: float
+    preview_render: bool
     camera_traj_list: list | None
     active_input_index: int
 
@@ -696,6 +696,7 @@ def load_gui(
         hint="Show a preview of the render in the viewport.",
         icon=viser.Icon.CAMERA_CHECK,
     )
+
     preview_render_stop_button = server.gui.add_button(
         "Exit render preview",
         color="red",
@@ -705,12 +706,15 @@ def load_gui(
 
     @preview_render_button.on_click
     def _(_) -> None:
+
         gui_state.preview_render = True
+        preset_submit_button.disabled = True
+
         preview_render_button.visible = False
         preview_render_stop_button.visible = True
+
         play_button.visible = False
         pause_button.visible = True
-        preset_submit_button.disabled = True
 
         maybe_pose_and_fov_rad = compute_and_update_preview_camera_state()
         if maybe_pose_and_fov_rad is None:
@@ -736,12 +740,15 @@ def load_gui(
                 client.camera.position = pose.translation()
 
     def stop_preview_render() -> None:
+
         gui_state.preview_render = False
+        preset_submit_button.disabled = False
+
         preview_render_button.visible = True
         preview_render_stop_button.visible = False
+
         play_button.visible = True
         pause_button.visible = False
-        preset_submit_button.disabled = False
 
         # Revert camera poses.
         for client in server.get_clients().values():
@@ -781,9 +788,9 @@ def load_gui(
             disabled=get_max_frame_index() == 1,
         )
 
-        play_button.disabled = preview_frame_slider.disabled
-        preview_render_button.disabled = preview_frame_slider.disabled
-        set_traj_button.disabled = preview_frame_slider.disabled
+        play_button.disabled            = preview_frame_slider.disabled
+        set_traj_button.disabled        = preview_frame_slider.disabled
+        preview_render_button.disabled  = preview_frame_slider.disabled
 
         @preview_frame_slider.on_update
         def _(_) -> None:
@@ -802,6 +809,7 @@ def load_gui(
                 position=pose.translation(),
                 color=(10, 200, 30),
             )
+
             if gui_state.preview_render:
                 for client in server.get_clients().values():
                     with client.atomic():
@@ -833,11 +841,13 @@ def load_gui(
             maybe_pose_and_fov_rad = camera_traj.interpolate_pose_and_fov_rad(i / num_frames)
             if maybe_pose_and_fov_rad is None:
                 return
+
             pose, fov_rad = maybe_pose_and_fov_rad
             H = img_wh[1]
             W = img_wh[0]
             K = get_intrinsics(W, H, fov_rad)
             w2c = pose.inverse().as_matrix()
+
             camera_traj_list.append({
                 "w2c": w2c.flatten().tolist(),
                   "K":   K.flatten().tolist(),
@@ -918,3 +928,4 @@ def load_gui(
     camera_traj.default_transition_sec = transition_sec_number.value
 
     return gui_state
+
