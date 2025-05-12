@@ -14,7 +14,7 @@ import splines.quaternion
 import viser
 import viser.transforms as vt
 
-from .geometry import get_preset_pose_fov
+from ..src.geometry import get_preset_pose_fov
 
 
 @dataclasses.dataclass

@@ -34,3 +34,40 @@ def find_available_ports(count: int = 1,
                 tried_ports.add(port)
     return available_ports
 
+
+# Make sure that gradio uses dark theme.
+_APP_JS = """
+function refresh() {
+    const url = new URL(window.location);
+    if (url.searchParams.get('__theme') !== 'dark') {
+        url.searchParams.set('__theme', 'dark');
+    }
+}
+"""
+
+USER_GUIDE = """
+---
+## 🛠️ User Guide:
+
+### 1️⃣ Start the Server
+- Click the **`Run Viser`** button to initialize and launch the Viser server.
+
+### 2️⃣ Select Multi-view
+- In the **`Examples`** section:
+  - Choose your desired image. It will expand the relative multi-view.
+  - Click **`Confirm`** to proceed.
+- Then, click **`Process multi-view`** to begin processing the selected image.
+
+### 3️⃣ Viser Interaction
+- For detailed instructions and tips on using Viser, click [**Viser Interaction**](https://github.com/Stability-AI/stable-virtual-camera/blob/main/docs/GR_USAGE.md#advanced)
+
+#### 4️⃣ Save Your Setup
+- Once the camera trajectory is already set, click the **`Save data`** button to store your configuration and processed results.
+"""
+
+attention_catcher = """
+<div style="border: 2px solid #f39c12; background-color: #fffbe6; padding: 16px; border-radius: 8px; font-weight: bold; color: #c0392b; font-size: 13px; text-align: center;">
+    👇 Click the Button start server
+</div>
+"""
+

@@ -1,10 +1,13 @@
 import os
 import os.path as osp
+
 import copy
 import json
 import time
+
 from datetime import datetime
 from typing import Literal
+from pathlib import Path
 
 import torch
 from einops import rearrange
@@ -16,11 +19,11 @@ import viser
 from viser import ViserServer
 from viser import transforms as vTr
 
-from .gui import load_gui
-from .scene import transform_img_and_K
-from .utils import set_bg_color
-from .geometry import get_default_intrinsics, normalize_scene
-from .preprocessor import Dust3r
+from .cam_traj import load_gui
+from ..src.utils import set_bg_color
+from ..src.scene import transform_img_and_K
+from ..src.geometry import get_default_intrinsics, normalize_scene
+from ..src.preprocessor import Dust3r
 
 
 basic_trajectories = Literal[
@@ -65,9 +68,14 @@ def create_transforms_simple(save_path, img_paths, img_whs, c2ws, Ks):
         json.dump(out, of, indent=4)
 
 
+ROOT_DIR = Path(__file__).resolve().parents[4]
+
+MODEL_DIR = ROOT_DIR / "checkpoints"
+DUST3R_PATH = MODEL_DIR / "3d/DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth"
+
 class Renderer:
 
-    def __init__(self, server: ViserServer, model_path: str):
+    def __init__(self, server: ViserServer, model_path: str = DUST3R_PATH):
         self.server = server
         self.DUST3R = Dust3r(device=DEVICE, model_path=model_path)
         self.gui_state = None
@@ -249,13 +257,13 @@ class Renderer:
             @camera_scale_slider.on_update
             def _(_) -> None:
                 for i in range(len(frustum_nodes)):
-                    frustum_nodes[i].scale = 0.1 * scene_scale * 10**camera_scale_slider.value
+                    frustum_nodes[i].scale = 0.1 * scene_scale * 10 ** camera_scale_slider.value
 
             point_scale_slider = server.gui.add_slider("Log point scale", initial_value=0.0, min=-2.0, max=2.0, step=0.1)
             @point_scale_slider.on_update
             def _(_) -> None:
                 for i in range(len(pcd_nodes)):
-                    pcd_nodes[i].point_size = (0.01 * scene_scale * 10**point_scale_slider.value)
+                    pcd_nodes[i].point_size = (0.01 * scene_scale * 10 ** point_scale_slider.value)
 
         self.gui_state = load_gui(
             server,

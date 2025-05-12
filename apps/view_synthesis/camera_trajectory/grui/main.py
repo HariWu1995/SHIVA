@@ -13,62 +13,23 @@ import numpy as np
 import gradio as gr
 import viser
 
-from ..src import Renderer, set_bg_color
-from .utils import find_available_ports
+from ..src.utils import set_bg_color
+from .render import Renderer
+from .utils import _APP_JS, USER_GUIDE, attention_catcher, find_available_ports
 
 
 ROOT_DIR = Path(__file__).resolve().parents[4]
 
 SAVE_DIR = ROOT_DIR / "temp"
 SAMPLE_DIR = ROOT_DIR / "_samples" / "camera"
-MODEL_DIR = ROOT_DIR / "checkpoints"
-DUST3R_PATH = MODEL_DIR / "3d/DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth"
 
 SERVERS = {}
 ABORT_EVENTS = {}
 
 EXAMPLE_MAP = []
-for ex in  ['garden-4_*.jpg', 'telebooth-2_*.jpg', 
-            'vgg-lab-4_*.png', 'backyard-7_*.jpg']:
+for ex in  ['garden-4_*.jpg','telebooth-2_*.jpg','vgg-lab-4_*.png','backyard-7_*.jpg']:
     ex_mv = sorted(glob(str(SAMPLE_DIR / ex)))
     EXAMPLE_MAP.append((ex_mv[0], ex_mv))
-
-
-# Make sure that gradio uses dark theme.
-_APP_JS = """
-function refresh() {
-    const url = new URL(window.location);
-    if (url.searchParams.get('__theme') !== 'dark') {
-        url.searchParams.set('__theme', 'dark');
-    }
-}
-"""
-
-USER_GUIDE = """
----
-## 🛠️ User Guide:
-
-### 1️⃣ Start the Server
-- Click the **`Run Viser`** button to initialize and launch the Viser server.
-
-### 2️⃣ Select Multi-view
-- In the **`Examples`** section:
-  - Choose your desired image. It will expand the relative multi-view.
-  - Click **`Confirm`** to proceed.
-- Then, click **`Process multi-view`** to begin processing the selected image.
-
-### 3️⃣ Viser Interaction
-- For detailed instructions and tips on using Viser, click [**Viser Interaction**](https://github.com/Stability-AI/stable-virtual-camera/blob/main/docs/GR_USAGE.md#advanced)
-
-#### 4️⃣ Save Your Setup
-- Once the camera trajectory is already set, click the **`Save data`** button to store your configuration and processed results.
-"""
-
-attention_catcher = """
-<div style="border: 2px solid #f39c12; background-color: #fffbe6; padding: 16px; border-radius: 8px; font-weight: bold; color: #c0392b; font-size: 13px; text-align: center;">
-    👇 Click the Button start server
-</div>
-"""
 
 
 def start_server_and_abort_event(
@@ -95,12 +56,11 @@ def start_server_and_abort_event(
     SERVERS[request.session_hash] = server
     ABORT_EVENTS[request.session_hash] = threading.Event()
 
+    iframe = f'<iframe src="{server_url}" style="display: block; margin: auto; width: 100%; height: max(60vh, 600px);" frameborder="0"></iframe>'
+
     return (
-        Renderer(server, model_path=DUST3R_PATH),
-        gr.HTML(
-            f'<iframe src="{server_url}" style="display: block; margin: auto; width: 100%; height: max(60vh, 600px);" frameborder="0"></iframe>',
-            container=True,
-        ),
+        Renderer(server),
+        gr.HTML(iframe, container=True),
         request.session_hash,
     )
 
