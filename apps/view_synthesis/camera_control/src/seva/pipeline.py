@@ -1,4 +1,5 @@
 from typing import List, Literal, Optional, Tuple, Union
+from tqdm import tqdm
 from PIL import Image
 
 import os
@@ -11,8 +12,9 @@ import torchvision.transforms.functional as tvF
 
 from .io import decode_output, save_output
 from .utils import randomize_seed, seed_everything
+from .config import VERSION_DICT
 from .samplers import create_samplers, do_sample
-from .sampling import DDPMDiscretization, DiscreteDenoiser
+from .sampling import DDPMDiscretizer, DiscreteDenoiser
 from .modules import AutoEncoder, CLIPConditioner
 from .model import SGMWrapper, load_model
 from .eval import (
@@ -22,8 +24,11 @@ from .eval import (
     chunk_input_and_test, assemble,
     replace_or_include_input_for_dict,
     get_value_dict, extend_dict, 
+    get_k_from_dict, pad_indices,
+    update_kv_for_dict,
 )
 
+from .. import shared
 from ..path import SDIFF_LOCAL_MODELS, CAMCTRL_LOCAL_MODELS
 
 
@@ -33,15 +38,6 @@ if IS_TORCH_NIGHTLY:
     COMPILE = True
 else:
     COMPILE = False
-
-VERSION_DICT = {
-    "H": 576,
-    "W": 576,
-    "T": 21,
-    "C": 4,
-    "f": 8,
-    "options": {},
-}
 
 
 def load_pipeline(
@@ -56,12 +52,11 @@ def load_pipeline(
 
     auto_encoder = AutoEncoder(sd_model_path, chunk_size=1)
 
-    conditioner = CLIPConditioner().to(device=shared.device)
-    model_wrapper = model_wrapper.to(device=shared.device)
-    auto_encoder = auto_encoder.to(device=shared.device)
-
-    discretizer = DDPMDiscretization()
-    ddenoiser = DiscreteDenoiser(discretization=discretizer, num_idx=1000, device=shared.device)
+    conditioner = CLIPConditioner().to(device=shared.device, dtype=torch.float32)
+    model_wrapper = model_wrapper.to(device=shared.device, dtype=torch.float32)
+    auto_encoder = auto_encoder.to(device=shared.device, dtype=torch.float32)
+    discretizer = DDPMDiscretizer()
+    ddenoiser = DiscreteDenoiser(device=shared.device, discretizer=discretizer, num_idx=1000)
 
     if COMPILE:
         conditioner = torch.compile(conditioner, dynamic=False)
@@ -69,6 +64,7 @@ def load_pipeline(
         model_wrapper = torch.compile(model_wrapper, dynamic=False)
 
     return model_wrapper, auto_encoder, conditioner, ddenoiser
+    # return None, None, None, None
 
 
 def inference(
@@ -87,10 +83,10 @@ def inference(
     use_prior_traj,
     traj_prior_Ks,
     traj_prior_c2ws,
-    seed: int = -1,
 
     # Misc.
-    version_dict=VERSION_DICT,
+    version_dict,
+    seed: int = -1,
     save_path=None,
     gradio=False,
     abort_event=None,
@@ -104,6 +100,10 @@ def inference(
     F = version_dict["f"]
     opt = version_dict["options"]
 
+    if isinstance(T, (list, tuple)):
+        T = int(T[0])
+    assert isinstance(T, int)
+
     if isinstance(image_cond, str):
         image_cond = {"img": [image_cond]}
 
@@ -111,7 +111,8 @@ def inference(
     imgs_clip = []
     img_size = None
 
-    for i, (img, K) in enumerate(zip(image_cond["img"], camera_cond["K"])):
+    for i, (img, K) in enumerate(
+                        zip(image_cond["img"], camera_cond["K"])):
 
         if isinstance(img, str) or img is None:
             img, K = load_img_and_K(img or img_size, None, K=K, device="cpu")  # type: ignore
@@ -194,10 +195,6 @@ def inference(
             prior_k[1] /= H
             traj_prior_Ks[i] = prior_k
 
-    opt["num_frames"] = T
-    discretizer = denoiser.discretization
-    torch.cuda.empty_cache()
-
     if seed <= 0:
         seed = randomize_seed()
     seed_everything(seed)
@@ -222,7 +219,11 @@ def inference(
             video_save_fps=2,
         )
 
-    if not use_traj_prior:
+    opt["num_frames"] = T
+    discretizer = denoiser.discretizer
+    torch.cuda.empty_cache()
+
+    if not use_prior_traj:
         chunk_strategy = opt.get("chunk_strategy", "gt")
         (
             _,
@@ -264,8 +265,8 @@ def inference(
 
             curr_imgs, curr_imgs_clip, curr_c2ws, curr_Ks = [
                 assemble(
-                    input=x[chunk_input_inds],
-                     test=y[chunk_test_inds],
+                    inputs=x[chunk_input_inds],
+                     tests=y[chunk_test_inds],
                     input_maps=curr_input_maps,
                      test_maps=curr_test_maps,
                 )
@@ -280,7 +281,8 @@ def inference(
                         test_imgs, 
                         test_imgs_clip, 
                         test_c2ws, 
-                        test_Ks],
+                        test_Ks,
+                    ],
                 )
             ]
 
@@ -316,6 +318,7 @@ def inference(
                 )
             extend_dict(all_samples, samples)
             all_test_inds.extend(chunk_test_inds)
+
     else:
         assert traj_prior_c2ws is not None, (
             "`traj_prior_c2ws` MUST be set when using 2-pass sampling. "
@@ -358,6 +361,7 @@ def inference(
         all_samples = {}
         all_prior_inds = []
 
+        device = input_imgs.device
         pbar = tqdm(enumerate(zip(input_inds_per_chunk, input_sels_per_chunk,
                                   prior_inds_per_chunk, prior_sels_per_chunk)),
                         total=len(input_inds_per_chunk), leave=False)
@@ -376,17 +380,17 @@ def inference(
 
             curr_imgs, curr_imgs_clip, curr_c2ws, curr_Ks = [
                 assemble(
-                    input=x[chunk_input_inds],
-                    test=y[chunk_prior_inds],
+                    inputs=x[chunk_input_inds],
+                    tests=y[chunk_prior_inds],
                     input_maps=curr_input_maps,
                     test_maps=curr_prior_maps,
                 )
                 for x, y in zip(
                     [
-                        torch.cat([input_imgs     , get_k_from_dict(all_samples, "samples-rgb").to(device)], dim=0),
-                        torch.cat([input_imgs_clip, get_k_from_dict(all_samples, "samples-rgb").to(device)], dim=0),
-                        torch.cat([input_c2ws, traj_prior_c2ws[all_prior_inds]], dim=0),
-                        torch.cat([input_Ks  , traj_prior_Ks  [all_prior_inds]], dim=0),
+                        torch.cat([input_imgs       , get_k_from_dict(all_samples, "samples-rgb").to(device)], dim=0),
+                        torch.cat([input_imgs_clip  , get_k_from_dict(all_samples, "samples-rgb").to(device)], dim=0),
+                        torch.cat([input_c2ws       , traj_prior_c2ws[all_prior_inds]], dim=0),
+                        torch.cat([input_Ks         , traj_prior_Ks  [all_prior_inds]], dim=0),
                     ],  # procedually append generated prior views to the input views
                     [
                         traj_prior_imgs,
@@ -432,6 +436,8 @@ def inference(
             samples = decode_output(samples, T_1st_pass, chunk_prior_sels)  # decode into dict
             extend_dict(all_samples, samples)
             all_prior_inds.extend(chunk_prior_inds)
+    
+            torch.cuda.empty_cache()
 
         if opt.get("save_first_pass", True):
             save_output(
@@ -459,9 +465,9 @@ def inference(
         traj_prior_c2ws = torch.cat([input_c2ws, traj_prior_c2ws], dim=0)[prior_argsort]
         traj_prior_Ks   = torch.cat([input_Ks  , traj_prior_Ks  ], dim=0)[prior_argsort]
 
-        update_kv_for_dict(all_samples, "samples-rgb" , traj_prior_imgs)
-        update_kv_for_dict(all_samples, "samples-c2ws", traj_prior_c2ws)
-        update_kv_for_dict(all_samples, "samples-intrinsics", traj_prior_Ks)
+        update_kv_for_dict(all_samples, "samples-rgb"       , traj_prior_imgs)
+        update_kv_for_dict(all_samples, "samples-c2ws"      , traj_prior_c2ws)
+        update_kv_for_dict(all_samples, "samples-intrinsics", traj_prior_Ks  )
 
         chunk_strategy = opt.get("chunk_strategy", "nearest")
         (
@@ -503,8 +509,8 @@ def inference(
 
             curr_imgs, curr_imgs_clip, curr_c2ws, curr_Ks = [
                 assemble(
-                    input=x[chunk_prior_inds],
-                    test=y[chunk_test_inds],
+                    inputs=x[chunk_prior_inds],
+                    tests=y[chunk_test_inds],
                     input_maps=curr_prior_maps,
                     test_maps=curr_test_maps,
                 )
@@ -546,6 +552,8 @@ def inference(
 
             extend_dict(all_samples, samples)
             all_test_inds.extend(chunk_test_inds)
+
+            torch.cuda.empty_cache()
 
         all_samples = {
                 key: value[np.argsort(all_test_inds)] 

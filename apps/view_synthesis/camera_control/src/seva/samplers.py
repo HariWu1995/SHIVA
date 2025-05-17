@@ -1,8 +1,13 @@
-import torch
 import threading
-import gradio as gr
+import math
+
+import torch
+from torch.nn import functional as tF
+from einops import repeat
 
 from .sampling import EulerEDMSampler, MultiviewCFG, MultiviewTemporalCFG, VanillaCFG
+from .utils import onload, offload
+from .. import shared
 
 
 class GradioTrackedSampler(EulerEDMSampler):
@@ -25,7 +30,7 @@ class GradioTrackedSampler(EulerEDMSampler):
         uc: dict | None = None,
         num_steps: int | None = None,
         verbose: bool = True,
-        global_pbar: gr.Progress | None = None,
+        global_pbar = None,
         **guider_kwargs,
     ) -> torch.Tensor | None:
 
@@ -58,7 +63,7 @@ class GradioTrackedSampler(EulerEDMSampler):
 
 def create_samplers(
     guider_types: int | list[int],
-    discretization,
+    discretizer,
     num_frames: list[int] | None,
     num_steps: int,
     cfg_min: float = 1.0,
@@ -70,14 +75,18 @@ def create_samplers(
         1: MultiviewCFG,
         2: MultiviewTemporalCFG,
     }
+
     samplers = []
+
     if not isinstance(guider_types, (list, tuple)):
         guider_types = [guider_types]
+    
     for i, guider_type in enumerate(guider_types):
         if guider_type not in guider_mapping:
             raise ValueError(
                 f"Invalid guider type {guider_type}. Must be one of {list(guider_mapping.keys())}"
             )
+
         guider_cls = guider_mapping[guider_type]
         guider_args = ()
         if guider_type > 0:
@@ -90,7 +99,7 @@ def create_samplers(
         if abort_event is not None:
             sampler = GradioTrackedSampler(
                 abort_event,
-                discretization=discretization,
+                discretizer=discretizer,
                 guider=guider,
                 num_steps=num_steps,
                 s_churn=0.0,
@@ -102,7 +111,7 @@ def create_samplers(
             )
         else:
             sampler = EulerEDMSampler(
-                discretization=discretization,
+                discretizer=discretizer,
                 guider=guider,
                 num_steps=num_steps,
                 s_churn=0.0,
@@ -118,7 +127,7 @@ def create_samplers(
 
 def do_sample(
     model,
-    ae,
+    auto_encoder,
     conditioner,
     denoiser,
     sampler,
@@ -133,91 +142,81 @@ def do_sample(
     decoding_t=1,
     verbose=True,
     global_pbar=None,
+    sampling_on_cpu: bool = False,
     **_,
 ):
-    imgs = value_dict["cond_frames"].to("cuda")
-    input_masks = value_dict["cond_frames_mask"].to("cuda")
-    pluckers = value_dict["plucker_coordinate"].to("cuda")
+    if sampling_on_cpu:
+        device = 'cpu'
+    else:
+        device = shared.device
+
+    imgs     = value_dict["cond_frames"].to(device=device)
+    masks    = value_dict["cond_frames_mask"].to(device=device)
+    pluckers = value_dict["plucker_coordinate"].to(device=device)
+
+    offload(auto_encoder)
+    offload(conditioner)
+    offload(model)
 
     num_samples = [1, T]
-    with torch.inference_mode(), torch.autocast("cuda"):
-        load_model(ae)
-        load_model(conditioner)
-        latents = torch.nn.functional.pad(
-            ae.encode(imgs[input_masks], encoding_t), (0, 0, 0, 0, 0, 1), value=1.0
-        )
-        c_crossattn = repeat(conditioner(imgs[input_masks]).mean(0), "d -> n 1 d", n=T)
+    with torch.inference_mode(), torch.autocast(str(device)):
+
+        onload(auto_encoder)
+        onload(conditioner)
+
+        latents = auto_encoder.encode(imgs[masks], encoding_t)
+        latents = tF.pad(latents, (0, 0, 0, 0, 0, 1), value=1.0)
+
+        cond = conditioner(imgs[masks])
+        c_crossattn = repeat(cond.mean(0), "d -> n 1 d", n=T)
         uc_crossattn = torch.zeros_like(c_crossattn)
+
         c_replace = latents.new_zeros(T, *latents.shape[1:])
-        c_replace[input_masks] = latents
+        c_replace[masks] = latents
         uc_replace = torch.zeros_like(c_replace)
-        c_concat = torch.cat(
-            [
-                repeat(
-                    input_masks,
-                    "n -> n 1 h w",
-                    h=pluckers.shape[2],
-                    w=pluckers.shape[3],
-                ),
-                pluckers,
-            ],
-            1,
-        )
-        uc_concat = torch.cat(
-            [pluckers.new_zeros(T, 1, *pluckers.shape[-2:]), pluckers], 1
-        )
+
+        uc_concat = pluckers.new_zeros(T, 1, *pluckers.shape[-2:])
+        c_concat = repeat(masks, "n -> n 1 h w", h=pluckers.shape[2],
+                                                 w=pluckers.shape[3])
+
+        c_concat = torch.cat([c_concat, pluckers], dim=1)
+        uc_concat = torch.cat([uc_concat, pluckers], dim=1)
+
         c_dense_vector = pluckers
         uc_dense_vector = c_dense_vector
-        c = {
-            "crossattn": c_crossattn,
-            "replace": c_replace,
-            "concat": c_concat,
-            "dense_vector": c_dense_vector,
-        }
-        uc = {
-            "crossattn": uc_crossattn,
-            "replace": uc_replace,
-            "concat": uc_concat,
-            "dense_vector": uc_dense_vector,
-        }
-        unload_model(ae)
-        unload_model(conditioner)
 
-        additional_model_inputs = {"num_frames": T}
-        additional_sampler_inputs = {
-            "c2w": value_dict["c2w"].to("cuda"),
-            "K": value_dict["K"].to("cuda"),
-            "input_frame_mask": value_dict["cond_frames_mask"].to("cuda"),
+        c  = {"crossattn":  c_crossattn, "replace":  c_replace, "concat":  c_concat, "dense_vector":  c_dense_vector}
+        uc = {"crossattn": uc_crossattn, "replace": uc_replace, "concat": uc_concat, "dense_vector": uc_dense_vector}
+
+        offload(auto_encoder)
+        offload(conditioner)
+
+        xtra_model_inputs = {"num_frames": T}
+        xtra_sampler_inputs = {
+                           "K": value_dict["K"].to(device=device),
+                         "c2w": value_dict["c2w"].to(device=device),
+            "input_frame_mask": value_dict["cond_frames_mask"].to(device=device),
         }
+
         if global_pbar is not None:
-            additional_sampler_inputs["global_pbar"] = global_pbar
+            xtra_sampler_inputs["global_pbar"] = global_pbar
 
         shape = (math.prod(num_samples), C, H // F, W // F)
-        randn = torch.randn(shape).to("cuda")
+        randn = torch.randn(shape).to(device=device)
 
-        load_model(model)
+        onload(model)
         samples_z = sampler(
-            lambda input, sigma, c: denoiser(
-                model,
-                input,
-                sigma,
-                c,
-                **additional_model_inputs,
-            ),
-            randn,
-            scale=cfg,
-            cond=c,
-            uc=uc,
-            verbose=verbose,
-            **additional_sampler_inputs,
+            lambda x, sigma, c: denoiser(model, x, sigma, c, **xtra_model_inputs),
+            randn, scale=cfg, cond=c, uc=uc, verbose=verbose, **xtra_sampler_inputs,
         )
         if samples_z is None:
             return
-        unload_model(model)
 
-        load_model(ae)
-        samples = ae.decode(samples_z, decoding_t)
-        unload_model(ae)
+        offload(model)
+        onload(auto_encoder)
+
+        samples = auto_encoder.decode(samples_z, decoding_t)
+        offload(auto_encoder)
 
     return samples
 

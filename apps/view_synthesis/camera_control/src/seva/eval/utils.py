@@ -1,6 +1,8 @@
 import os
 import torch
 
+from ..geometry import to_hom_pose, get_plucker_coordinates
+
 
 def is_k_in_dict(d, k):
     return any(map(lambda x: x.startswith(k), d.keys()))
@@ -65,16 +67,13 @@ def get_value_dict(
 
     # camera centering
     ref_c2ws = all_c2ws
+    ref_c2ws_norm = ref_c2ws[:, :3, 3] \
+                  - ref_c2ws[:, :3, 3].median(0, keepdim=True).values
 
-    camera_dist_2med = torch.norm(
-        ref_c2ws[:, :3, 3] - ref_c2ws[:, :3, 3].median(0, keepdim=True).values,
-        dim=-1,
-    )
+    camera_dist_2med = torch.norm(ref_c2ws_norm, dim=-1)
+    camera_dist_2med_quant = torch.quantile(camera_dist_2med, 0.97) * 10
 
-    valid_mask = camera_dist_2med <= torch.clamp(
-        torch.quantile(camera_dist_2med, 0.97) * 10,
-        max=1e6,
-    )
+    valid_mask = camera_dist_2med <= torch.clamp(camera_dist_2med_quant, max=1e6)
 
     c2w[:, :3, 3] -= ref_c2ws[valid_mask, :3, 3].mean(0, keepdim=True)
     w2c = torch.linalg.inv(c2w)

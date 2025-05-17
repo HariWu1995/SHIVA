@@ -18,7 +18,8 @@ def replace_or_include_input_for_dict(samples, test_indices, imgs, c2w, K):
 
         elif "intrinsics" in sample:
             K[test_indices] = (
-        value[test_indices] if value.shape[0] == K.shape[0] else value).to(device=K.device, dtype=K.dtype)
+        value[test_indices] if value.shape[0] == K.shape[0] 
+                          else value).to(device = K.device, dtype = K.dtype)
             samples_new[sample] = K
 
         else:

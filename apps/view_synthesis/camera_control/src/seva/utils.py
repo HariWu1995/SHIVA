@@ -8,6 +8,8 @@ import torch
 import safetensors.torch as safetorch
 from huggingface_hub import hf_hub_download
 
+from .. import shared
+
 
 def _get_rel_paths(path_dir: str) -> List[str]:
     """Recursively get relative paths of files in a directory."""
@@ -28,4 +30,14 @@ def seed_everything(seed: int = 0):
 
 def randomize_seed():
     return rd.randint(1, np.iinfo(int).max)
+
+
+def onload(model):
+    model.to(device=shared.device)
+
+
+def offload(model):
+    if shared.low_vram:
+        model.cpu()
+        torch.cuda.empty_cache()
 

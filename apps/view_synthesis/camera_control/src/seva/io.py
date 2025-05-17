@@ -16,9 +16,9 @@ def save_output(
     for sample in samples:
         media_type = "video"
         if "/" in sample:
-            sample_, media_type = sample.split("/")
+            sample_name, media_type = sample.split("/")
         else:
-            sample_ = sample
+            sample_name = sample
 
         value = samples[sample]
         if isinstance(value, torch.Tensor):
@@ -31,15 +31,15 @@ def save_output(
         if media_type == "image":
             value = (value.permute(0, 2, 3, 1) + 1) / 2.0
             value = (value * 255).clamp(0, 255).to(torch.uint8)
-            iio.imwrite(
-                os.path.join(save_path, f"{sample_}.mp4") if sample_ else f"{save_path}.mp4",
-                value,
-                fps=video_save_fps,
-                macro_block_size=1,
-                ffmpeg_log_level="error",
-            )
+            # iio.imwrite(
+            #     os.path.join(save_path, f"{sample_name}.mp4") if sample_name else f"{save_path}.mp4",
+            #     value,
+            #     # fps=video_save_fps,
+            #     # macro_block_size=1,
+            #     # ffmpeg_log_level="error",
+            # )
 
-            sample_dir = s.path.join(save_path, sample_)
+            sample_dir = os.path.join(save_path, sample_name)
             if os.path.isdir(sample_dir) is False:
                 os.makedirs(sample_dir)
             for i, s in enumerate(value):
@@ -49,15 +49,15 @@ def save_output(
             value = (value.permute(0, 2, 3, 1) + 1) / 2.0
             value = (value * 255).clamp(0, 255).to(torch.uint8)
             iio.imwrite(
-                os.path.join(save_path, f"{sample_}.mp4"),
+                os.path.join(save_path, f"{sample_name}.mp4"),
                 value,
-                fps=video_save_fps,
-                macro_block_size=1,
-                ffmpeg_log_level="error",
+                # fps=video_save_fps,
+                # macro_block_size=1,
+                # ffmpeg_log_level="error",
             )
        
         elif media_type == "raw":
-            torch.save(value, os.path.join(save_path, f"{sample_}.pt"))
+            torch.save(value, os.path.join(save_path, f"{sample_name}.pt"))
 
         else:
             print(f"`media_type` = {media_type} is not supported! This step is skipped!")

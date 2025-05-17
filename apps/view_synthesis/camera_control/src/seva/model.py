@@ -1,7 +1,8 @@
-from dataclasses import dataclass, field
-
+import os
 import torch
 import torch.nn as nn
+from safetensors.torch import load_file as safe_load
+from dataclasses import dataclass, field
 
 from .modules.transformer import MultiviewTransformer
 from .modules.layers import (
@@ -15,14 +16,17 @@ def load_model(
     weight_name: str = "model.safetensors",
     device: str | torch.device = "cuda",
     verbose: bool = False,
-) -> Seva:
+):
+    print(pretrained_model_name_or_path)
     if os.path.isdir(pretrained_model_name_or_path):
         weight_path = os.path.join(pretrained_model_name_or_path, weight_name)
     else:
-        weight_path = hf_hub_download(repo_id=pretrained_model_name_or_path, filename=weight_name)
-        config_path = hf_hub_download(repo_id=pretrained_model_name_or_path, filename="config.yaml")
+        raise FileNotFoundError(f"{pretrained_model_name_or_path} does't exist!")
+        # from huggingface_hub import hf_hub_download
+        # weight_path = hf_hub_download(repo_id=pretrained_model_name_or_path, filename=weight_name)
+        # config_path = hf_hub_download(repo_id=pretrained_model_name_or_path, filename="config.yaml")
 
-    state_dict = safetorch.load_file(weight_path, device=str(device))
+    state_dict = safe_load(weight_path, device=str(device))
 
     with torch.device("meta"):
         model = Seva(SevaParams()).to(torch.bfloat16)

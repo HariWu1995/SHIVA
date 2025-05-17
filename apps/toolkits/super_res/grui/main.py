@@ -46,7 +46,7 @@ def create_ui(min_width: int = 25):
 
             with gr.Column():
                 img_in = gr.Image(label='Input')
-                scaler = gr.Slider(value=2, minimum=1, maximum=10, step=1, label='Scale')
+                scaler = gr.Slider(value=2, minimum=1, maximum=100, step=1, label='Scale')
                 facenabler = gr.Checkbox(value=False, label="Enhance Face")
 
             with gr.Column():

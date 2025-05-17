@@ -1,7 +1,5 @@
 from PIL import Image
 from typing import List, Literal, Optional, Tuple, Union
-from colorama import Fore, Style, init
-init(autoreset=True)
 
 import math
 import numpy as np

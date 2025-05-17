@@ -49,7 +49,7 @@ class EpsScaling(object):
         return c_skip, c_out, c_in, c_noise
 
 
-class DDPMDiscretization(object):
+class DDPMDiscretizer(object):
 
     def __init__(
         self,
@@ -91,24 +91,26 @@ class DDPMDiscretization(object):
 
 
 class DiscreteDenoiser(object):
+
     sigmas: torch.Tensor
 
     def __init__(
         self,
-        discretization: DDPMDiscretization,
+        discretizer: DDPMDiscretizer,
         num_idx: int = 1000,
         device: str | torch.device = "cpu",
     ):
         self.scaling = EpsScaling()
-        self.discretization = discretization
+        self.discretizer = discretizer
         self.num_idx = num_idx
         self.device = device
         self.register_sigmas()
 
     def register_sigmas(self):
-        self.sigmas = self.discretization(self.num_idx, do_append_zero=False, flip=True, device=self.device)
+        self.sigmas = self.discretizer(self.num_idx, do_append_zero=False, flip=True, device=self.device)
 
     def sigma_to_idx(self, sigma: torch.Tensor) -> torch.Tensor:
+        sigma = sigma.to(self.device)
         dists = sigma - self.sigmas[:, None]
         return dists.abs().argmin(dim=0).view(sigma.shape)
 
@@ -293,7 +295,7 @@ class EulerEDMSampler(object):
 
     def __init__(
         self,
-        discretization: DDPMDiscretization,
+        discretizer: DDPMDiscretizer,
         guider: VanillaCFG | MultiviewCFG | MultiviewTemporalCFG,
         num_steps: int | None = None,
         verbose: bool = False,
@@ -304,7 +306,7 @@ class EulerEDMSampler(object):
         s_noise=1.0,
     ):
         self.num_steps = num_steps
-        self.discretization = discretization
+        self.discretizer = discretizer
         self.guider = guider
         self.verbose = verbose
         self.device = device
@@ -322,7 +324,7 @@ class EulerEDMSampler(object):
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, int, dict, dict]:
         num_steps = num_steps or self.num_steps
         assert num_steps is not None, "num_steps must be specified"
-        sigmas = self.discretization(num_steps, device=self.device)
+        sigmas = self.discretizer(num_steps, device=self.device)
         x *= torch.sqrt(1.0 + sigmas[0] ** 2.0)
         num_sigmas = len(sigmas)
         s_in = x.new_ones([x.shape[0]])
@@ -337,7 +339,7 @@ class EulerEDMSampler(object):
     def sampler_step(
         self,
         sigma: torch.Tensor,
-        next_sigma: torch.Tensor,
+    next_sigma: torch.Tensor,
         denoiser,
         x: torch.Tensor,
         scale: float | torch.Tensor,
@@ -351,7 +353,8 @@ class EulerEDMSampler(object):
         eps = torch.randn_like(x) * self.s_noise
         x = x + eps * append_dims(sigma_hat**2 - sigma**2, x.ndim) ** 0.5
 
-        denoised = denoiser(*self.guider.prepare_inputs(x, sigma_hat, cond, uc))
+        denoised = self.guider.prepare_inputs(x, sigma_hat, cond, uc)
+        denoised = denoiser(*denoised)
         denoised = self.guider(denoised, sigma_hat, scale, **guider_kwargs)
 
         d = to_d(x, sigma_hat, denoised)
@@ -371,7 +374,8 @@ class EulerEDMSampler(object):
     ) -> torch.Tensor:
 
         uc = cond if uc is None else uc
-        x, s_in, sigmas, num_sigmas, cond, uc = self.prepare_sampling_loop(x, cond, uc, num_steps)
+        x, s_in, sigmas, \
+            num_sigmas, cond, uc = self.prepare_sampling_loop(x, cond, uc, num_steps)
         
         for i in self.get_sigma_gen(num_sigmas, verbose=verbose):
             gamma = (

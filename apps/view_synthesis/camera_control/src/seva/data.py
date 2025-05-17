@@ -1,4 +1,3 @@
-import json
 import os
 import os.path as osp
 from glob import glob
@@ -6,6 +5,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import cv2
 import imageio.v3 as iio
+
+import json
 import numpy as np
 import torch
 
@@ -80,10 +81,10 @@ class DirectParser(BaseParser):
             self.imsize_dict[i] = (img.shape[1], img.shape[0])
 
         if points is not None:
-            self.points = points
             assert points_rgb is not None
             self.points_rgb = points_rgb
             self.points_err = np.zeros((len(points),))
+            self.points = points
 
         self.imgs = imgs
         self.mono_disps = mono_disps

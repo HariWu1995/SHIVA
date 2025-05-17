@@ -1,5 +1,7 @@
+import math
 import numpy as np
 
+from typing import List, Literal, Optional, Tuple, Union
 from ..geometry import get_camera_dist
 
 
@@ -119,9 +121,9 @@ def compute_relative_inds(source_inds, target_inds):
                 upper_ind = upper_inds[0]
                 rel_lower_ind = int(np.where(source_inds == lower_ind)[0][0])
                 rel_upper_ind = int(np.where(source_inds == upper_ind)[0][0])
-                relative_ind = rel_lower_ind + (
-                             ind - lower_ind) / (
-                       upper_ind - lower_ind) * (rel_upper_ind - rel_lower_ind)
+                relative_ind = \
+                rel_lower_ind + (ind - lower_ind) \
+                        / (upper_ind - lower_ind) * (rel_upper_ind - rel_lower_ind)
             else:
                 # Out of range
                 relative_inds.append(float("nan"))  # Or some other placeholder
@@ -138,4 +140,48 @@ def find_nearest_source_inds(
     dists = get_camera_dist(source_c2ws, target_c2ws, mode=mode).cpu().numpy()
     sorted_inds = np.argsort(dists, axis=0).T
     return sorted_inds[:, :nearest_num]
+
+
+def pad_indices(
+    input_indices: List[int],
+    test_indices: List[int],
+    T: int,
+    padding_mode: Literal["first", "last", "none"] = "last",
+):
+    assert padding_mode in ["last", "none"], "`first` padding is not supported yet."
+    if padding_mode == "last":
+        padded_indices = [i for i in range(T) if i not in (input_indices + test_indices)]
+    else:
+        padded_indices = []
+
+    input_selects = list(range(len(input_indices)))
+    test_selects = list(range(len(test_indices)))
+
+    if max(input_indices) > max(test_indices):
+        # last elem from input
+        input_selects += [input_selects[-1]] * len(padded_indices)
+        input_indices = input_indices + padded_indices
+        sorted_inds = np.argsort(input_indices)
+        input_indices = [input_indices[ind] for ind in sorted_inds]
+        input_selects = [input_selects[ind] for ind in sorted_inds]
+    else:
+        # last elem from test
+        test_selects += [test_selects[-1]] * len(padded_indices)
+        test_indices = test_indices + padded_indices
+        sorted_inds = np.argsort(test_indices)
+        test_indices = [test_indices[ind] for ind in sorted_inds]
+        test_selects = [test_selects[ind] for ind in sorted_inds]
+
+    if padding_mode == "last":
+        input_maps = np.array([-1] * T)
+        test_maps = np.array([-1] * T)
+    else:
+        input_maps = np.array([-1] * (len(input_indices) + len(test_indices)))
+        test_maps = np.array([-1] * (len(input_indices) + len(test_indices)))
+
+    input_maps[input_indices] = input_selects
+    test_maps[test_indices] = test_selects
+
+    return input_indices, test_indices, input_maps, test_maps
+
 

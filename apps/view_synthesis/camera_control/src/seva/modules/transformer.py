@@ -1,9 +1,20 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-from torch.nn.attention import SDPBackend, sdpa_kernel
-
 from einops import rearrange, repeat
+
+try:
+    import flash_attn
+    print("✅ flash-attention is installed.")
+    
+    from torch.nn.attention import SDPBackend, sdpa_kernel
+    print("✅ `SDPBackend` and `sdpa_kernel` will be used.")
+
+    USE_FLASH_ATTENTION = True
+
+except ImportError:
+    print("❌ flash-attention is NOT installed.")
+    USE_FLASH_ATTENTION = False
 
 
 class GEGLU(nn.Module):
@@ -76,7 +87,10 @@ class Attention(nn.Module):
 
         q, k, v = map(lambda t: rearrange(t, "b l (h d) -> b h l d", h=self.heads), (q, k, v))
 
-        with sdpa_kernel(SDPBackend.FLASH_ATTENTION):
+        if USE_FLASH_ATTENTION:
+            with sdpa_kernel(SDPBackend.FLASH_ATTENTION):
+                out = F.scaled_dot_product_attention(q, k, v)
+        else:   
             out = F.scaled_dot_product_attention(q, k, v)
 
         out = rearrange(out, "b h l d -> b l (h d)")

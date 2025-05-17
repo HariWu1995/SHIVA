@@ -6,7 +6,7 @@ from pathlib import Path
 os.environ['SHIVA_CKPT_SD15'] = "D:/stable-diffusion/sd-15"
 os.environ['SHIVA_CKPT_SD20'] = "D:/stable-diffusion/sd-20"
 os.environ['SHIVA_CKPT_SD21'] = "D:/stable-diffusion/sd-21"
-os.environ['SHIVA_CKPT_CAM_CTRL'] = "E:/stable-diffusion"
+os.environ['SHIVA_CKPT_CAM_CTRL'] = "E:/"
 os.environ['SHIVA_CKPT_IMGCODER'] = "E:/MMM"
 
 

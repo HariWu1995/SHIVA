@@ -114,7 +114,7 @@
 
 - [x] Image/Text-to-Panorama ([SD-T2I-360PanoImage](https://github.com/ArcherFMY/SD-T2I-360PanoImage) | [MVDiffusion](https://github.com/Tangshitao/MVDiffusion) | [360DVD](https://github.com/Akaneqwq/360DVD))
 
-- [ ] Camera Control ([SeVa](https://github.com/Stability-AI/stable-virtual-camera) | [CameraCtrl](https://github.com/hehao13/CameraCtrl) | [MotionCtrl](https://github.com/TencentARC/MotionCtrl))
+- [x] Camera Control ([SeVa](https://github.com/Stability-AI/stable-virtual-camera) | [CameraCtrl](https://github.com/hehao13/CameraCtrl) | [MotionCtrl](https://github.com/TencentARC/MotionCtrl))
 
 - [x] 3D Visualization ([Viser](https://github.com/nerfstudio-project/viser) | [Camera Trajectory](https://github.com/Stability-AI/stable-virtual-camera/blob/main/demo_gr.py#L769) | [HandyTrajDrawer](https://github.com/wzhouxiff/HandyTrajDrawer))
 

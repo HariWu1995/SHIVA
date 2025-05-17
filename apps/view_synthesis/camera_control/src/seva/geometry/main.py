@@ -5,7 +5,9 @@ import torch
 import torch.nn.functional as F
 
 from .preset import DEFAULT_FOV_RAD, get_default_intrinsics
+from .trans import img2cam, cam2world
 from .homog import to_hom
+from .utils import viewmatrix
 
 
 def get_camera_dist(
@@ -34,12 +36,13 @@ def get_camera_dist(
 
 def get_image_grid(img_h, img_w):
     # add 0.5 is VERY important especially when your img_h and img_w
-    # is not very large (e.g., 72)!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # is not very large (e.g., 72)
     y_range = torch.arange(img_h, dtype=torch.float32).add_(0.5)
     x_range = torch.arange(img_w, dtype=torch.float32).add_(0.5)
-    Y, X = torch.meshgrid(y_range, x_range, indexing="ij")  # [H,W]
-    xy_grid = torch.stack([X, Y], dim=-1).view(-1, 2)  # [HW,2]
-    return to_hom(xy_grid)  # [HW,3]
+    Y, X = torch.meshgrid(y_range, x_range, indexing="ij")          # [H,  W]
+    xy_grid = torch.stack([X, Y], dim=-1).view(-1, 2)               # [HW, 2]
+    xy_hom = to_hom(xy_grid)                                        # [HW, 3]
+    return xy_hom
 
 
 def get_center_and_ray(img_h, img_w, pose, intr):  # [HW,2]
@@ -47,14 +50,14 @@ def get_center_and_ray(img_h, img_w, pose, intr):  # [HW,2]
     # assert(opt.camera.model=="perspective")
 
     # compute center and ray
-    grid_img = get_image_grid(img_h, img_w)  # [HW,3]
-    grid_3D_cam = img2cam(grid_img.to(intr.device), intr.float())  # [B,HW,3]
-    center_3D_cam = torch.zeros_like(grid_3D_cam)  # [B,HW,3]
+    grid_img = get_image_grid(img_h, img_w)                         # [   HW, 3]
+    grid_3D_cam = img2cam(grid_img.to(intr.device), intr.float())   # [B, HW, 3]
+    center_3D_cam = torch.zeros_like(grid_3D_cam)                   # [B, HW, 3]
 
     # transform from camera to world coordinates
-    grid_3D = cam2world(grid_3D_cam, pose)  # [B,HW,3]
-    center_3D = cam2world(center_3D_cam, pose)  # [B,HW,3]
-    ray = grid_3D - center_3D  # [B,HW,3]
+    grid_3D = cam2world(grid_3D_cam, pose)          # [B, HW, 3]
+    center_3D = cam2world(center_3D_cam, pose)      # [B, HW, 3]
+    ray = grid_3D - center_3D                       # [B, HW, 3]
 
     return center_3D, ray, grid_3D_cam
 

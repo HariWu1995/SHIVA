@@ -1,7 +1,8 @@
 import torch
 from torch import nn
-
 from diffusers.models import AutoencoderKL  # type: ignore
+
+from ... import shared
 
 
 class AutoEncoder(nn.Module):
@@ -18,6 +19,10 @@ class AutoEncoder(nn.Module):
         super().__init__()
         self.module = AutoencoderKL.from_pretrained(model_path, subfolder="vae", **vae_kwargs)
         self.module.eval().requires_grad_(False)  # type: ignore
+        if shared.low_vram:
+            self.module.enable_slicing()
+            self.module.enable_tiling()
+
         self.chunk_size = chunk_size
 
     def _encode(self, x: torch.Tensor) -> torch.Tensor:
