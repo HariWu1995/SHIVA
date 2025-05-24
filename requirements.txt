@@ -69,6 +69,7 @@ numba==0.57.0
 pooch==1.8.1
 markdown
 omegaconf
+termcolor
 jsonschema==4.21.1
 # av==8.0.3
 # https://pyav.org/docs/develop/overview/installation.html#build-on-windows
