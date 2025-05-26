@@ -135,7 +135,7 @@
 
 ### Animation
 
-- [ ] 2D Animation ([Animate Anything](https://github.com/alibaba/animate-anything) | [MOFA-Video](https://github.com/MyNiuuu/MOFA-Video))
+- [x] 2D Animation ([Animate Anything](https://github.com/alibaba/animate-anything) | [MOFA-Video](https://github.com/MyNiuuu/MOFA-Video))
 
 - [ ] 3D Animation ([Make It Animatable](https://github.com/jasongzy/Make-It-Animatable))
 
