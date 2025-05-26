@@ -10,6 +10,7 @@ import numpy as np
 import torch
 from einops import rearrange
 
+from .. import shared
 from .utils import save_video_frames
 from .pipelines import load_pipeline
 from .data.camera import Camera
@@ -20,11 +21,10 @@ current_dir = Path(__file__).resolve().parent
 
 
 def run_inference(
+    pipeline,
     image,
     prompt,
-    device,
     cam_params,
-    pipeline,
 
     num_steps: int = 20,
     min_guidance_scale: float = 1.0,
@@ -39,10 +39,10 @@ def run_inference(
 ):
     # Preprocess
     plucker_embedding = preprocess_traj(image_width, image_height,
-                                        traj_width, traj_height, cam_params, device)
+                                        traj_width, traj_height, cam_params, shared.device)
 
     # Generate
-    generator = torch.Generator(device=device)
+    generator = torch.Generator(device=shared.device)
     generator.manual_seed(seed)
 
     with torch.no_grad():
@@ -71,11 +71,9 @@ def run_inference(
 
 if __name__ == '__main__':
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
     # Load pipeline
     model_id = "svdxt"
-    pipeline = load_pipeline(model_id, device)
+    pipeline = load_pipeline(model_id)
 
     # Load trajectory
     trajectory_id = '0f47577ab3441480'
@@ -101,7 +99,7 @@ if __name__ == '__main__':
         image = Image.open(f"./temp/target_images/{sample}.png")
 
         # Run pipeline
-        output = run_inference(image, prompt, device, cam_params, pipeline)
+        output = run_inference(pipeline, image, prompt, cam_params)
         
         # Save
         output_path = f"./temp/{sample}{trajectory_id}_{model_id}.mp4"

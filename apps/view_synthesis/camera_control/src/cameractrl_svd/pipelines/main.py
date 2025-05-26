@@ -20,7 +20,7 @@ config_dir = str(Path(__file__).resolve().parents[1] / "configs/train_cameractrl
 config_dir = config_dir.replace('\\', '/')
 
 
-def load_pipeline(model_name, device):
+def load_pipeline(model_name):
     assert model_name in ['svd', 'svdxt']
 
     if model_name == 'svd':
@@ -56,9 +56,9 @@ def load_pipeline(model_name, device):
     vae = TemporalDecoder.from_pretrained(model_path, subfolder="vae")
     unet = UNetTrajCond.from_pretrained(model_path, subfolder="unet", **model_kwargs)
     
-    vae.to(device)
-    unet.to(device)
-    image_encoder.to(device)
+    vae.to(shared.device)
+    unet.to(shared.device)
+    image_encoder.to(shared.device)
 
     # Load adaptor
     pose_encoder = CameraPoseEncoder(**traj_kwargs)
@@ -87,7 +87,7 @@ def load_pipeline(model_name, device):
         image_encoder=image_encoder,
         feature_extractor=feature_extractor,
     )
-    pipeline = pipeline.to(device)
+    pipeline = pipeline.to(shared.device)
 
     # Enable low VRAM strategy
     if shared.low_vram:
