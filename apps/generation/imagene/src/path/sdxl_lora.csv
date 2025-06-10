@@ -1,4 +1,5 @@
 id,category,article,version,description,trigger_words,weight,download_url,url
+sdxl_0000,architecture,booth_exhibition,v10,,Exhibition Booth,,https://civitai.com/api/download/models/1071057?type=Model&format=SafeTensor,https://civitai.com/models/956649/exhibition-booth-sd
 sdxl_0001,architecture,booth_concept,v10,,"theme,realistic,3d,c4d rendering,spotlight,shining,shadows,booth",0.7-1,https://civitai.com/api/download/models/227017?type=Model&format=SafeTensor,https://civitai.com/models/201687/sdxlbooths-for-e-commerce-or-dataset
 sdxl_0002,art,papercut,v10,,papercut,,https://civitai.com/api/download/models/133503?type=Model&format=SafeTensor,https://civitai.com/models/122567/papercut-sdxl
 sdxl_0003,art,paper_quillinh,v40,,"yanzhi,paper quilling",,https://civitai.com/api/download/models/135020?type=Model&format=SafeTensor,https://civitai.com/models/121009/papercut-sdxl-paper-quilling
