@@ -93,7 +93,7 @@
 
 - [ ] Re-Lighting ([ICLight](https://github.com/lllyasviel/IC-Light))
 
-- [ ] Style Transfer ([CSGO](https://github.com/instantX-research/CSGO))
+- [x] Style Transfer ([CSGO](https://github.com/instantX-research/CSGO))
 
 - [ ] Image Restoration ([DeOldify](https://github.com/jantic/DeOldify) | [SUPIR](https://github.com/Fanghua-Yu/SUPIR))
 
