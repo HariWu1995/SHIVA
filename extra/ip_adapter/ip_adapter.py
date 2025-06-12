@@ -179,18 +179,18 @@ class IPAdapter:
                 attn_processor.scale = scale
 
     def generate(
-            self,
-            pil_image=None,
-            clip_image_embeds=None,
-            prompt=None,
-            negative_prompt=None,
-            scale=1.0,
-            num_samples=4,
-            seed=None,
-            guidance_scale=7.5,
-            num_inference_steps=30,
-            neg_content_emb=None,
-            **kwargs,
+        self,
+        pil_image=None,
+        clip_image_embeds=None,
+        prompt=None,
+        negative_prompt=None,
+        scale=1.0,
+        num_samples=4,
+        seed=None,
+        guidance_scale=7.5,
+        num_inference_steps=30,
+        neg_content_emb=None,
+        **kwargs,
     ):
         self.set_scale(scale)
 
@@ -248,18 +248,23 @@ class IPAdapter:
 
 class IPAdapter_CS:
 
-    def __init__(self, sd_pipe, image_encoder_path, ip_ckpt, device, 
-                        num_content_tokens=4,
-                        num_style_tokens=4,
-                        target_content_blocks=["block"], 
-                        target_style_blocks=["block"], 
-                        content_image_encoder_path=None,
-                        controlnet_adapter=False,
-                        controlnet_target_content_blocks=None,
-                        controlnet_target_style_blocks=None,
-                        content_model_resampler=False,
-                        style_model_resampler=False,
-        ):
+    def __init__(
+        self, 
+        sd_pipe, 
+        image_encoder_path, 
+        ip_ckpt, 
+        device, 
+        num_content_tokens=4,
+        num_style_tokens=4,
+        target_content_blocks=["block"], 
+        target_style_blocks=["block"], 
+        content_image_encoder_path=None,
+        controlnet_adapter=False,
+        controlnet_target_content_blocks=None,
+        controlnet_target_style_blocks=None,
+        content_model_resampler=False,
+        style_model_resampler=False,
+    ):
         self.device = device
         self.ip_ckpt = ip_ckpt
         self.image_encoder_path = image_encoder_path
@@ -573,21 +578,21 @@ class IPAdapter_CS:
                         attn_processor.style_scale = style_scale
 
     def generate(
-            self,
-            pil_content_image=None,
-            pil_style_image=None,
-            clip_content_image_embeds=None,
-            clip_style_image_embeds=None,
-            prompt=None,
-            negative_prompt=None,
-            content_scale=1.0,
-            style_scale=1.0,
-            num_samples=4,
-            seed=None,
-            guidance_scale=7.5,
-            num_inference_steps=30,
-            neg_content_emb=None,
-            **kwargs,
+        self,
+        pil_content_image=None,
+        pil_style_image=None,
+        clip_content_image_embeds=None,
+        clip_style_image_embeds=None,
+        prompt=None,
+        negative_prompt=None,
+        content_scale=1.0,
+        style_scale=1.0,
+        num_samples=4,
+        seed=None,
+        guidance_scale=7.5,
+        num_inference_steps=30,
+        neg_content_emb=None,
+        **kwargs,
     ):
         self.set_scale(content_scale, style_scale)
 
@@ -659,22 +664,22 @@ class IPAdapterXL_CS(IPAdapter_CS):
     """SDXL"""
 
     def generate(
-            self,
-            pil_content_image,
-            pil_style_image,
-            prompt=None,
-            negative_prompt=None,
-            content_scale=1.0,
-            style_scale=1.0,
-            num_samples=4,
-            seed=None,
-            content_image_embeds=None,
-            style_image_embeds=None,
-            num_inference_steps=30,
-            neg_content_emb=None,
-            neg_content_prompt=None,
-            neg_content_scale=1.0,
-            **kwargs,
+        self,
+        pil_content_image,
+        pil_style_image,
+        prompt=None,
+        negative_prompt=None,
+        content_scale=1.0,
+        style_scale=1.0,
+        num_samples=4,
+        seed=None,
+        content_image_embeds=None,
+        style_image_embeds=None,
+        num_inference_steps=30,
+        neg_content_emb=None,
+        neg_content_prompt=None,
+        neg_content_scale=1.0,
+        **kwargs,
     ):
         self.set_scale(content_scale, style_scale)
 
@@ -753,18 +758,23 @@ class IPAdapterXL_CS(IPAdapter_CS):
 class CSComposer(IPAdapterXL_CS):
     """Content-Style Composer"""
 
-    def __init__(self, sd_pipe, image_encoder_path, ip_ckpt, device, 
-                        num_content_tokens=4,
-                        num_style_tokens=32,
-                        target_content_blocks=['down_blocks'], 
-                        target_style_blocks=["up_blocks"], 
-                        controlnet_adapter=True,
-                        controlnet_target_content_blocks=[],
-                        controlnet_target_style_blocks=["down_blocks"],
-                        content_image_encoder_path=None,
-                        content_model_resampler=True,
-                        style_model_resampler=True,
-        ):
+    def __init__(
+        self, 
+        sd_pipe, 
+        image_encoder_path, 
+        ip_ckpt, 
+        device, 
+        num_content_tokens=4,
+        num_style_tokens=32,
+        target_content_blocks=['down_blocks'], 
+        target_style_blocks=["up_blocks"], 
+        controlnet_adapter=True,
+        controlnet_target_content_blocks=[],
+        controlnet_target_style_blocks=["down_blocks"],
+        content_image_encoder_path=None,
+        content_model_resampler=True,
+        style_model_resampler=True,
+    ):
         super().__init__(sd_pipe, image_encoder_path, ip_ckpt, device,
                             num_content_tokens, num_style_tokens,
                         target_content_blocks, target_style_blocks,
@@ -885,18 +895,18 @@ class IPAdapterXL(IPAdapter):
     """SDXL"""
 
     def generate(
-            self,
-            pil_image,
-            prompt=None,
-            negative_prompt=None,
-            scale=1.0,
-            num_samples=4,
-            seed=None,
-            num_inference_steps=30,
-            neg_content_emb=None,
-            neg_content_prompt=None,
-            neg_content_scale=1.0,
-            **kwargs,
+        self,
+        pil_image,
+        prompt=None,
+        negative_prompt=None,
+        scale=1.0,
+        num_samples=4,
+        seed=None,
+        num_inference_steps=30,
+        neg_content_emb=None,
+        neg_content_prompt=None,
+        neg_content_scale=1.0,
+        **kwargs,
     ):
         self.set_scale(scale)
 
@@ -1049,15 +1059,15 @@ class IPAdapterPlusXL(IPAdapter):
         return image_prompt_embeds, uncond_image_prompt_embeds
 
     def generate(
-            self,
-            pil_image,
-            prompt=None,
-            negative_prompt=None,
-            scale=1.0,
-            num_samples=4,
-            seed=None,
-            num_inference_steps=30,
-            **kwargs,
+        self,
+        pil_image,
+        prompt=None,
+        negative_prompt=None,
+        scale=1.0,
+        num_samples=4,
+        seed=None,
+        num_inference_steps=30,
+        **kwargs,
     ):
         self.set_scale(scale)
 
@@ -1112,3 +1122,119 @@ class IPAdapterPlusXL(IPAdapter):
         ).images
 
         return images
+
+
+class IPAdapterXL_CSGO(IPAdapterXL_CS):
+    """SDXL"""
+
+    def init_proj(self, num_tokens, content_or_style_='content', model_resampler=False):
+
+        if content_or_style_ == 'content':
+            if model_resampler:
+                image_proj_model = Resampler(
+                    dim=self.pipe.unet.config.cross_attention_dim,
+                    depth=4,
+                    dim_head=64,
+                    heads=12,
+                    num_queries=num_tokens,
+                    embedding_dim=self.content_image_encoder.config.hidden_size,
+                    output_dim=self.pipe.unet.config.cross_attention_dim,
+                    ff_mult=4,
+                ).to(self.device, dtype=torch.float16)
+            else:
+                image_proj_model = ImageProjModel(
+                    cross_attention_dim=self.pipe.unet.config.cross_attention_dim,
+                    clip_embeddings_dim=self.image_encoder.config.projection_dim,
+                    clip_extra_context_tokens=num_tokens,
+                ).to(self.device, dtype=torch.float16)
+
+        if content_or_style_ == 'style':
+            if model_resampler:
+                image_proj_model = Resampler(
+                    dim=self.pipe.unet.config.cross_attention_dim,
+                    depth=4,
+                    dim_head=64,
+                    heads=12,
+                    num_queries=num_tokens,
+                    embedding_dim=self.content_image_encoder.config.hidden_size,
+                    output_dim=self.pipe.unet.config.cross_attention_dim,
+                    ff_mult=4,
+                ).to(self.device, dtype=torch.float16)
+            else:
+                image_proj_model = ImageProjModel(
+                    cross_attention_dim=self.pipe.unet.config.cross_attention_dim,
+                    clip_embeddings_dim=self.image_encoder.config.projection_dim,
+                    clip_extra_context_tokens=num_tokens,
+                ).to(self.device, dtype=torch.float16)
+
+        return image_proj_model
+
+    @torch.inference_mode()
+    def get_image_embeds(self, pil_image=None, clip_image_embeds=None, content_or_style_=''):
+
+        if isinstance(pil_image, Image.Image):
+            pil_image = [pil_image]
+
+        if content_or_style_ == 'style':
+
+            if self.style_model_resampler:
+                clip_image = self.clip_image_processor(images=pil_image, return_tensors="pt").pixel_values
+                clip_image_embeds = self.image_encoder(clip_image.to(self.device, dtype=torch.float16),
+                                                       output_hidden_states=True).hidden_states[-2]
+                image_prompt_embeds = self.style_image_proj_model(clip_image_embeds)
+                uncond_image_prompt_embeds = self.style_image_proj_model(torch.zeros_like(clip_image_embeds))
+
+            else:
+                clip_image = self.clip_image_processor(images=pil_image, return_tensors="pt").pixel_values
+                clip_image_embeds = self.image_encoder(clip_image.to(self.device, dtype=torch.float16)).image_embeds
+                image_prompt_embeds = self.style_image_proj_model(clip_image_embeds)
+                uncond_image_prompt_embeds = self.style_image_proj_model(torch.zeros_like(clip_image_embeds))
+
+            return image_prompt_embeds, uncond_image_prompt_embeds
+
+        else:
+
+            if self.content_image_encoder_path is not None:
+                clip_image = self.content_image_processor(images=pil_image, return_tensors="pt").pixel_values
+                outputs = self.content_image_encoder(clip_image.to(self.device, dtype=torch.float16),
+                                                     output_hidden_states=True)
+                clip_image_embeds = outputs.last_hidden_state
+                image_prompt_embeds = self.content_image_proj_model(clip_image_embeds)
+
+                # uncond_clip_image_embeds = self.image_encoder(
+                #     torch.zeros_like(clip_image), output_hidden_states=True
+                # ).last_hidden_state
+                uncond_image_prompt_embeds = self.content_image_proj_model(torch.zeros_like(clip_image_embeds))
+                return image_prompt_embeds, uncond_image_prompt_embeds
+
+            else:
+                if self.content_model_resampler:
+
+                    clip_image = self.clip_image_processor(images=pil_image, return_tensors="pt").pixel_values
+                    clip_image = clip_image.to(self.device, dtype=torch.float16)
+                    clip_image_embeds = self.image_encoder(clip_image, output_hidden_states=True).hidden_states[-2]
+                    # clip_image_embeds = clip_image_embeds.to(self.device, dtype=torch.float16)
+        
+                    image_prompt_embeds = self.content_image_proj_model(clip_image_embeds)
+                    # uncond_clip_image_embeds = self.image_encoder(
+                    #             torch.zeros_like(clip_image), output_hidden_states=True
+                    #         ).hidden_states[-2]
+                    uncond_image_prompt_embeds = self.content_image_proj_model(torch.zeros_like(clip_image_embeds))
+                else:
+                    clip_image = self.clip_image_processor(images=pil_image, return_tensors="pt").pixel_values
+                    clip_image_embeds = self.image_encoder(clip_image.to(self.device, dtype=torch.float16)).image_embeds
+                    image_prompt_embeds = self.content_image_proj_model(clip_image_embeds)
+                    uncond_image_prompt_embeds = self.content_image_proj_model(torch.zeros_like(clip_image_embeds))
+
+                return image_prompt_embeds, uncond_image_prompt_embeds
+
+        #     # clip_image = self.clip_image_processor(images=pil_image, return_tensors="pt").pixel_values
+        #     clip_image = clip_image.to(self.device, dtype=torch.float16)
+        #     clip_image_embeds = self.image_encoder(clip_image, output_hidden_states=True).hidden_states[-2]
+        #     image_prompt_embeds = self.content_image_proj_model(clip_image_embeds)
+        #     uncond_clip_image_embeds = self.image_encoder(
+        #         torch.zeros_like(clip_image), output_hidden_states=True
+        #     ).hidden_states[-2]
+        #     uncond_image_prompt_embeds = self.content_image_proj_model(uncond_clip_image_embeds)
+        # return image_prompt_embeds, uncond_image_prompt_embeds
+
